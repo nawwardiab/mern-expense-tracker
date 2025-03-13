@@ -60,8 +60,7 @@ Before coding, we designed a wireframe to visualize the application's layout and
   profilePicture: { type: String, default: "" },
   createdAt: { type: Date, default: Date.now },
   income: { type: String, default: 0 },
-  paymentMethod: { type: String, default: "" },
-  // paymentMethod: { type: String, required: true } -> optional
+  // paymentMethod: { type: String } -> optional
 },
   {timestamp:true}
 
@@ -194,6 +193,58 @@ Before coding, we designed a wireframe to visualize the application's layout and
 | `ExpenseList.jsx` | Lists all expenses                                      |
 | `Filter.jsx`      | Filters expenses by category/date/amount                |
 | `Summary.jsx`     | Displays expense summary and statistics                 |
+
+### Reusable Components 
+
+Global: (Except Login, Signup, Onboarding)
+
+Navbar
+Sidebar
+Icons
+(footer)
+
+
+Login/Sign Up/
+Onboarding Pages:
+Form (With Rendering Logic)
+image
+ 
+
+HomePage:
+Cards
+List
+Icons
+
+Expense Manager:
+List items
+Buttons
+
+Group Expense Management:
+Event Details (Group expense info)
+ List icons
+
+Settings:
+Buttons
+Icons
+
+Modals:
+Form
+(Suggestions for buttons)
+
+
+### Usable Components
+
+Onboarding:
+- Steps
+
+Home:
+Chart
+Expense Chart Modal
+
+Group Expense Management:
+List
+Button
+
 
 ### Pages
 
