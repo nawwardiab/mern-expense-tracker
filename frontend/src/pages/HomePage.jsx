@@ -1,10 +1,8 @@
+import React from 'react';
 
-function HomePage() {
-  return (
-    <div>
-        <h3>this is homepage</h3>
-        </div>
-  )
-}
 
-export default HomePage;
+const HomePage = () => {
+    return <h1 className=' flex justify-center text-7xl text-blue-800'>HomePage</h1>;
+  };
+  
+  export default HomePage;

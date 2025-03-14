@@ -31,6 +31,21 @@ export const login = async (req, res, next) => {
   }
 };
 
+//Logut
+export const logout = async (req, res, next) => {
+  try {
+    res.clearCookie("jwtToken", { httpOnly: true });
+
+    res.status(200).json({
+      success: true,
+      status: 200,
+      data: "User logged out",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 //!   Get user profile
 //!   GET /users/profile
 export const getUserProfile = async (req, res, next) => {
