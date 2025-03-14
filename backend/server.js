@@ -8,7 +8,7 @@ import usersRouter from "./routes/usersRouter.js";
 import {
   globalErrorHandler,
   routeNotFound,
-} from "./middleware/errorHandlers.js";
+} from "./middleware/errorHandler.js";
 
 await connectDB();
 const app = express();
