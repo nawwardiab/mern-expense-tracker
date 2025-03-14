@@ -2,7 +2,8 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App.jsx";
-import { GlobalProvider } from "./contexts/Context"; // Import the global context provider
+import { GlobalProvider } from "./contexts/Context"; // Global context provider
+import {AuthProvider} from "./contexts/AuthContext"; // Auth context provider
 import { setAxiosDefaults } from "./utils/axiosConfig";
 import "./index.css";
 
@@ -13,7 +14,9 @@ createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>
       <GlobalProvider>
-        <App />
+        <AuthProvider> 
+          <App />
+        </AuthProvider>
       </GlobalProvider>
     </BrowserRouter>
   </React.StrictMode>

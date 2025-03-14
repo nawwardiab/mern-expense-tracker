@@ -11,28 +11,39 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     checkAuth();
+  
   }, []);
 
   // Check authentication status
   const checkAuth = async () => {
     dispatch({ type: "LOADING" });
+  
     try {
-      const { data } = await axios.get("/users/");
+      const { data } = await axios.get("/users/profile"); 
       dispatch({ type: "AUTH_CHECK", payload: data });
     } catch (error) {
-      console.error("Auth check failed:", error);
+      console.error("Auth check failed:", error.response?.data || error.message);
       dispatch({ type: "AUTH_CHECK", payload: null });
     }
   };
+  
 
   // Login function
   const login = async (email, password) => {
     try {
-      await axios.post("/users/login", { email, password });
+      const { data } = await axios.post("/users/login", { email, password });
+      
+    
+      
       await checkAuth();
 
-      // Redirect based on onboarding status
-      navigate(state.user?.completedOnboarding ? "/dashboard" : "/onboarding");
+     
+      
+      
+      setTimeout(() => {
+        // ✅ Wait for state update before navigating  // Redirect based on onboarding status
+        navigate(state.user?.completedOnboarding ? "/homepage" : "/onboarding");
+      }, 500);
       
     } catch (error) {
       console.error("Login error:", error);
@@ -52,17 +63,17 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Logout function with redirection
-  const logout = async () => {
-    try {
-      await axios.get("/users/logout");
-      dispatch({ type: "LOGOUT" });
-      navigate("/login");
-    } catch (error) {
-      console.error("Logout error:", error);
-    }
-  };
-
+ // Logout function
+ const logout = async () => {
+  try {
+    await axios.get("/users/logout");
+    localStorage.removeItem("token"); // ✅ Remove token
+    dispatch({ type: "LOGOUT" });
+    navigate("/login");
+  } catch (error) {
+    console.error("Logout error:", error);
+  }
+};
   return (
     <AuthContext.Provider value={{ user: state.user, signup, login, logout, loading: state.loading }}>
       {!state.loading && children}

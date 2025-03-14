@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
+import { useContext } from "react"; 
 import LandingPage from "./pages/LandingPage";
 import Login from "./pages/LoginPage";
 import Signup from "./pages/SignupPage";
@@ -8,36 +9,46 @@ import ExpenseManager from "./pages/ExpenseManager";
 import GroupExpenses from "./pages/GroupExpenses";
 import ExpenseDetail from "./pages/ExpenseDetail";
 import SettingPage from "./pages/SettingPage";
+import { AuthContext } from "./contexts/AuthContext";
 import { useGlobalContext } from "./contexts/Context"; // Import Global Context
+import ProtectedLayout from "./layouts/ProtectedLayout"; // Import Layout
+import MinimalLayout from "./layouts/MinimalLayout";
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children }) => {
-  const { user, loading } = useGlobalContext(); // Access user from global state
+  const { user, loading } = useContext(AuthContext);
 
-  if (loading) return <div>Loading...</div>; // Prevent flash of unauthenticated content
-  if (!user) return <Navigate to="/login" />;
-  if (!user.completedOnboarding) return <Navigate to="/onboarding" />;
+  if (loading) return <p>Loading...</p>; // ✅ Prevents premature redirection
 
-  return children;
+  return user ? children : <Navigate to="/" replace />;
 };
 
 function App() {
   return (
     <Routes>
-      {/* Public Routes */}
-      <Route path="/" element={<LandingPage />} />
+      {/* landindigPage with minimal Navbar */}
+
+      <Route
+        path="/"
+        element={
+          <MinimalLayout>
+            <LandingPage />
+          </MinimalLayout>
+        }
+      />
+      {/* Public Routes (No Navbar) */}
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
-
-      {/* Onboarding (Must Complete Before Dashboard) */}
       <Route path="/onboarding" element={<OnboardingPage />} />
 
-      {/* Protected Routes */}
+      {/* Protected Routes with Navbar */}
       <Route
         path="/homepage"
         element={
           <ProtectedRoute>
-            <HomePage />
+            <ProtectedLayout>
+              <HomePage />
+            </ProtectedLayout>
           </ProtectedRoute>
         }
       />
@@ -45,7 +56,9 @@ function App() {
         path="/expenses"
         element={
           <ProtectedRoute>
-            <ExpenseManager />
+            <ProtectedLayout>
+              <ExpenseManager />
+            </ProtectedLayout>
           </ProtectedRoute>
         }
       />
@@ -53,7 +66,9 @@ function App() {
         path="/expenses/group"
         element={
           <ProtectedRoute>
-            <GroupExpenses />
+            <ProtectedLayout>
+              <GroupExpenses />
+            </ProtectedLayout>
           </ProtectedRoute>
         }
       />
@@ -61,15 +76,21 @@ function App() {
         path="/expenses/:id"
         element={
           <ProtectedRoute>
-            <ExpenseDetail />
+            <ProtectedLayout>
+              <ExpenseDetail />
+            </ProtectedLayout>
           </ProtectedRoute>
         }
       />
+
+      {/* Settings Page with a Minimal Navbar */}
       <Route
         path="/settings"
         element={
           <ProtectedRoute>
-            <SettingPage />
+            <ProtectedLayout>
+              <SettingPage />
+            </ProtectedLayout>
           </ProtectedRoute>
         }
       />
@@ -78,4 +99,3 @@ function App() {
 }
 
 export default App;
-
