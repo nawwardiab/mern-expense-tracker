@@ -29,7 +29,7 @@ const Login = () => {
             setLoading(true);
             await login(formData.email, formData.password);
             setSuccessMessage("Login successful!");
-            setTimeout(() => navigate("/homepage"), 2000);
+            setTimeout(() => navigate("/onboarding"), 2000);
         } catch (err) {
             setErrorMessage("Invalid email or password. Please try again.");
         } finally {
