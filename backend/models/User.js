@@ -10,6 +10,7 @@ const userSchema = new Schema(
     createdAt: { type: Date, default: Date.now },
     income: { type: String, default: 0 },
     paymentMethod: { type: String, default: "" },
+    isOnboarded: { type: Boolean, default: false },
   },
   { timestamp: true }
 );
