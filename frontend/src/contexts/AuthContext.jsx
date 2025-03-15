@@ -42,7 +42,8 @@ export const AuthProvider = ({ children }) => {
       
       setTimeout(() => {
         // ✅ Wait for state update before navigating  // Redirect based on onboarding status
-        navigate(state.user?.completedOnboarding ? "/homepage" : "/onboarding");
+        //navigate(state.user?.completedOnboarding ? "/homepage" : "/onboarding");
+        navigate("./homepage")
       }, 500);
       
     } catch (error) {

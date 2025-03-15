@@ -53,7 +53,7 @@ function App() {
         }
       />
       <Route
-        path="/expenses"
+        path="/expense-manager"
         element={
           <ProtectedRoute>
             <ProtectedLayout>
