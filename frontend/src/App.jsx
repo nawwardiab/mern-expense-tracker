@@ -3,6 +3,7 @@ import { useContext } from "react";
 import LandingPage from "./pages/LandingPage";
 import Login from "./pages/LoginPage";
 import Signup from "./pages/SignupPage";
+import ForgotPassword from "./pages/ForgotPassword";
 import OnboardingPage from "./pages/OnboardingPage";
 import HomePage from "./pages/HomePage";
 import ExpenseManager from "./pages/ExpenseManager";
@@ -40,6 +41,7 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/onboarding" element={<OnboardingPage />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
 
       {/* Protected Routes with Navbar */}
       <Route
