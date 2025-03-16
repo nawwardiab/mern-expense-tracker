@@ -1,17 +1,13 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaHome } from "react-icons/fa";
+import { FaHome, FaArrowLeft } from "react-icons/fa";
 
-const Signup = () => {
+const ForgotPassword = () => {
     const navigate = useNavigate();
-    
     const [formData, setFormData] = useState({
-        fullName: "",
-        email: "",
         password: "",
         confirmPassword: "",
     });
-    
     const [errorMessage, setErrorMessage] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
     const [loading, setLoading] = useState(false);
@@ -22,7 +18,7 @@ const Signup = () => {
     };
 
     // Handle form submission
-    const handleSignup = async (e) => {
+    const handleReset = async (e) => {
         e.preventDefault();
         setErrorMessage("");
         setSuccessMessage("");
@@ -34,25 +30,21 @@ const Signup = () => {
 
         try {
             setLoading(true);
-            const res = await fetch("http://localhost:8000/users/register", {
-                method: "POST",
+            const res = await fetch("http://localhost:8000/users/profile", {
+                method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 credentials: "include",
-                body: JSON.stringify({
-                    fullName: formData.fullName,
-                    email: formData.email,
-                    password: formData.password,
-                }),
+                body: JSON.stringify({ password: formData.password }),
             });
 
             const data = await res.json();
             if (res.ok) {
-                setSuccessMessage("Signup successful! Redirecting to Login...");
+                setSuccessMessage("Password reset successful! Redirecting to Login...");
                 setTimeout(() => navigate("/login"), 2000);
             } else {
-                setErrorMessage(data.error || "Signup failed");
+                setErrorMessage(data.error || "Password reset failed");
             }
         } catch (error) {
             setErrorMessage("Something went wrong. Please try again.");
@@ -63,25 +55,33 @@ const Signup = () => {
 
     return (
         <div className="flex h-screen">
-            {/* Left Side - Image Section */}
-            <div className="w-1/2 bg-white flex items-center justify-center relative">
-                <button 
-                    onClick={() => navigate("/")} 
-                    className="absolute top-4 left-4 text-black hover:text-gray-500 transition text-lg flex items-center"
-                >
-                    <FaHome className="mr-2" /> Home
-                </button>
+               {/* Left Side - Image Section */}
+               <div className="w-1/2 bg-white flex items-center justify-center relative">
+                <div className="absolute top-4 left-4 flex gap-4">
+                    <button 
+                        onClick={() => navigate("/")} 
+                        className="text-black hover:text-gray-500 transition text-lg flex items-center"
+                    >
+                        <FaHome className="mr-1" /> Home
+                    </button>
+                    <button 
+                        onClick={() => navigate("/login")} 
+                        className="text-black hover:text-gray-500 transition text-lg flex items-center"
+                    >
+                        <FaArrowLeft className="mr-1" /> Back
+                    </button>
+                </div>
                 <img
-                    src="/signup.png"
-                    alt="Signup"
+                    src="/forgotpassword.png"
+                    alt="Reset Password"
                     className="w-full h-full object-contain object-center"
                 />
             </div>
 
-            {/* Right Side - Signup Form */}
+            {/* Right Side - Reset Password Form */}
             <div className="w-1/2 flex items-center justify-center bg-white p-10">
                 <div className="w-full max-w-md">
-                    <h2 className="text-3xl font-bold mb-6">Create Account</h2>
+                    <h2 className="text-3xl font-bold mb-6 text-center">Reset Password</h2>
 
                     {errorMessage && (
                         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded-md text-center flex items-center justify-center gap-2 mb-4">
@@ -94,37 +94,13 @@ const Signup = () => {
                         </div>
                     )}
 
-                    <form className="space-y-4" onSubmit={handleSignup}>
+                    <form className="space-y-4" onSubmit={handleReset}>
                         <div>
-                            <label className="block text-gray-700 font-medium">Full Name</label>
-                            <input
-                                type="text"
-                                name="fullName"
-                                placeholder="Enter your full name"
-                                value={formData.fullName}
-                                onChange={handleChange}
-                                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-gray-700 font-medium">Email</label>
-                            <input
-                                type="email"
-                                name="email"
-                                placeholder="Enter email"
-                                value={formData.email}
-                                onChange={handleChange}
-                                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-gray-700 font-medium">Password</label>
+                            <label className="block text-gray-700 font-medium">New Password</label>
                             <input
                                 type="password"
                                 name="password"
-                                placeholder="Enter password"
+                                placeholder="Enter new password"
                                 value={formData.password}
                                 onChange={handleChange}
                                 className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -132,11 +108,11 @@ const Signup = () => {
                         </div>
 
                         <div>
-                            <label className="block text-gray-700 font-medium">Confirm Password</label>
+                            <label className="block text-gray-700 font-medium">Confirm New Password</label>
                             <input
                                 type="password"
                                 name="confirmPassword"
-                                placeholder="Confirm password"
+                                placeholder="Confirm new password"
                                 value={formData.confirmPassword}
                                 onChange={handleChange}
                                 className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -148,7 +124,7 @@ const Signup = () => {
                             className="w-full bg-black text-white py-3 rounded-md hover:bg-gray-800 transition"
                             disabled={loading}
                         >
-                            {loading ? "Signing up..." : "Continue"}
+                            {loading ? "Resetting..." : "Reset Password"}
                         </button>
                     </form>
                 </div>
@@ -157,4 +133,4 @@ const Signup = () => {
     );
 };
 
-export default Signup;
+export default ForgotPassword;
