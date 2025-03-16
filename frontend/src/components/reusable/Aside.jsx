@@ -58,7 +58,7 @@ const Aside = () => {
             <FaCog className="text-lg" /> Settings
           </Link>
           <Link
-            to="/settings"
+            to="/"
             className="flex items-center gap-3 p-2 hover:underline underline-offset-4  rounded text-sm text-black font-semibold"
           >
             <MdLogout className="text-lg" /> Logout
