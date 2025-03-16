@@ -1,6 +1,6 @@
 import React from "react";
 
 const GroupExpense = () => {
-  <h1>GroupExpense Page---</h1>  
+  return <h1 className=' flex justify-center text-7xl text-blue-800'>Group Expenses ----</h1>;
 }
 export default GroupExpense

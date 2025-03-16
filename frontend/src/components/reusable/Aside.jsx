@@ -13,7 +13,7 @@ const Aside = () => {
   };
 
   return (
-    <aside className="w-64 bg-slate-200 text-white fixed h-screen">
+    <aside className="w-64 bg-gray-200 text-white fixed h-screen">
       {/* Section 1 - Current Page Name */}
       <div className="h-16 flex items-center justify-center shadow-md">
         <h2 className="text-lg font-semibold text-black">{getPageName()}</h2>
@@ -25,25 +25,25 @@ const Aside = () => {
         <div className="space-y-4 flex-grow ">
           <Link
             to="/homepage"
-            className="flex items-center gap-3 p-2 hover:underline underline-offset-4 rounded text-sm text-black font-thin"
+            className="flex items-center gap-3 p-2 hover:underline underline-offset-4 rounded text-sm text-black font-semibold"
           >
             <FaHome className="text-lg" /> Home
           </Link>
           <Link
             to="/expense-manager"
-            className="flex items-center gap-3 p-2 hover:underline underline-offset-4 rounded text-sm text-black font-thin"
+            className="flex items-center gap-3 p-2 hover:underline underline-offset-4 rounded text-sm text-black font-semibold"
           >
             <FaDonate className="text-lg" /> Manage Expenses
           </Link>
           <Link
             to="/expenses/group"
-            className="flex items-center gap-3 p-2 hover:underline underline-offset-4  rounded text-sm text-black font-thin"
+            className="flex items-center gap-3 p-2 hover:underline underline-offset-4  rounded text-sm text-black font-semibold"
           >
             <FaUserFriends className="text-lg" /> Group Events
           </Link>
           <Link
             to="/homepage"
-            className="flex items-center gap-3 p-2 hover:underline underline-offset-4 rounded text-sm text-black font-thin"
+            className="flex items-center gap-3 p-2 hover:underline underline-offset-4 rounded text-sm text-black font-semibold"
           >
             <MdOutlinePayment className="text-lg" /> Financial Overview
           </Link>
@@ -53,15 +53,15 @@ const Aside = () => {
         <div className=" mb-32">
           <Link
             to="/settings"
-            className="flex items-center gap-3 p-2 hover:underline underline-offset-4  rounded text-sm text-black font-thin"
+            className="flex items-center gap-3 p-2 hover:underline underline-offset-4  rounded text-sm text-black font-semibold"
           >
             <FaCog className="text-lg" /> Settings
           </Link>
           <Link
             to="/settings"
-            className="flex items-center gap-3 p-2 hover:underline underline-offset-4  rounded text-sm text-black font-thin"
+            className="flex items-center gap-3 p-2 hover:underline underline-offset-4  rounded text-sm text-black font-semibold"
           >
-            <MdLogout className="text-lg" />
+            <MdLogout className="text-lg" /> Logout
           </Link>
         </div>
       </nav>

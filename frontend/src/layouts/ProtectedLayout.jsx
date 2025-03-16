@@ -8,10 +8,13 @@ const ProtectedLayout = () => {
   return (
     <div className="flex h-screen">
       {/* Sidebar */}
-      <Aside />
+       {/* Sidebar - Hidden on Small Screens, Visible on Medium and Larger */}
+       <div className="hidden md:block">
+        <Aside />
+      </div>
 
       {/* Main Content */}
-      <div className="flex-1 ml-64">
+      <div className="flex-1 md:ml-64 w-full">
         <Navbar />
         <main className="p-4">
           <Outlet />
