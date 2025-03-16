@@ -1,6 +1,6 @@
 import React from "react";
 
 const ExpenseManager = () => {
-  <h1>ExpenseManager Page---</h1>  
+  return <h1 className=' flex justify-center text-7xl text-blue-800'>Expense Manager....</h1>;
 }
 export default ExpenseManager

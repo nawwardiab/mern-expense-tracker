@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import { useContext } from "react"; 
+import { useContext } from "react";
 import LandingPage from "./pages/LandingPage";
 import Login from "./pages/LoginPage";
 import Signup from "./pages/SignupPage";
@@ -18,8 +18,9 @@ import MinimalLayout from "./layouts/MinimalLayout";
 // Protected Route Wrapper
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useContext(AuthContext);
+  console.log("User:", user);
 
-  if (loading) return <p>Loading...</p>; // ✅ Prevents premature redirection
+  if (loading) return <p>Loading...</p>; //Prevents premature redirection
 
   return user ? children : <Navigate to="/" replace />;
 };
@@ -48,54 +49,60 @@ function App() {
         path="/homepage"
         element={
           <ProtectedRoute>
-            <ProtectedLayout>
-              <HomePage />
-            </ProtectedLayout>
+            <ProtectedLayout />
           </ProtectedRoute>
         }
-      />
+      >
+        <Route index element={<HomePage />} />
+      </Route>
       <Route
-        path="/expenses"
+        path="/expense-manager"
         element={
           <ProtectedRoute>
-            <ProtectedLayout>
-              <ExpenseManager />
-            </ProtectedLayout>
+            <ProtectedLayout />
           </ProtectedRoute>
         }
-      />
+      >
+        <Route index element={<ExpenseManager />} />
+      </Route>
+      
       <Route
         path="/expenses/group"
         element={
           <ProtectedRoute>
-            <ProtectedLayout>
-              <GroupExpenses />
-            </ProtectedLayout>
+            <ProtectedLayout/>
+            
           </ProtectedRoute>
         }
-      />
+      >
+        <Route index element={<GroupExpenses />} />
+      </Route>
+
       <Route
         path="/expenses/:id"
         element={
           <ProtectedRoute>
-            <ProtectedLayout>
-              <ExpenseDetail />
-            </ProtectedLayout>
+            <ProtectedLayout />
           </ProtectedRoute>
         }
-      />
+      >
+        <Route index element={<ExpenseDetail />} />
+      </Route>
 
-      {/* Settings Page with a Minimal Navbar */}
+      {/* Settings Page with a Minimal Navbar 
+   
+      />*/}
+
       <Route
         path="/settings"
         element={
           <ProtectedRoute>
-            <ProtectedLayout>
-              <SettingPage />
-            </ProtectedLayout>
+            <ProtectedLayout />
           </ProtectedRoute>
         }
-      />
+      >
+        <Route index element={<SettingPage />} />
+      </Route>
     </Routes>
   );
 }
