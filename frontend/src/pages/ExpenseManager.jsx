@@ -1,27 +1,60 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import ExpenseList from "../components/ExpenseList";
+import { FaFilter } from "react-icons/fa"; // ✅ Import Filter Icon
+import { setAxiosDefaults } from "../utils/axiosConfig";
+
+// Apply Axios default settings
+setAxiosDefaults();
 
 const ExpenseManager = () => {
-  const [expenses, setExpenses] = useState([]);
+  const [expenses, setExpenses] = useState([]); // Stores all expenses
+  const [filteredExpenses, setFilteredExpenses] = useState([]); // Stores filtered results
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
+  const [occurrence, setOccurrence] = useState("");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
 
+  // 🔹 Fetch ALL expenses once when component loads
   useEffect(() => {
     fetchExpenses();
   }, []);
 
+  // Function to Fetch Expenses from Backend (NO FILTERS)
   const fetchExpenses = async () => {
     try {
-      const { data } = await axios.get("/expenses", {
-        params: { search, category, dateFrom, dateTo },
-      });
-      setExpenses(data);
+      const { data } = await axios.get("/expenses", { withCredentials: true }); // ✅ Fetch all expenses
+      setExpenses(data.data); // ✅ Store all expenses in state
+      setFilteredExpenses(data.data); // ✅ Initially set filtered list to show all
     } catch (error) {
-      console.error("Error fetching expenses:", error);
+      console.error("Error fetching expenses:", error.response?.data || error);
     }
   };
+
+  // 🔹 Function to Filter Expenses in the Frontend
+  useEffect(() => {
+    let filtered = expenses;
+
+    // ✅ Apply Search Filter (Case-Insensitive)
+    if (search) {
+      filtered = filtered.filter((expense) =>
+        expense.title.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+
+    // ✅ Apply Category Filter
+    if (category) {
+      filtered = filtered.filter((expense) => expense.category === category);
+    }
+
+    // ✅ Apply Occurrence Filter
+    if (occurrence) {
+      filtered = filtered.filter((expense) => expense.recurringFrequency === occurrence.toLowerCase());
+    }
+
+    setFilteredExpenses(filtered); // ✅ Update filtered state
+  }, [search, category, occurrence, expenses]); // ✅ Runs when filters change
 
   return (
     <div className="p-8 max-w-6xl mx-auto">
@@ -29,19 +62,20 @@ const ExpenseManager = () => {
       <h1 className="text-4xl font-bold text-center mb-6">Manage your expenses</h1>
 
       {/* Search & Filter Button */}
-      <div className="flex gap-4 my-6">
+      <div className="flex gap-4 my-6 items-center">
         <input
           type="text"
           placeholder="Search expenses"
           className="border p-3 flex-1 rounded-lg shadow-md"
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => setSearch(e.target.value)} // ✅ Filters dynamically
         />
         <button
-          onClick={fetchExpenses}
-          className="bg-black text-white px-6 py-3 rounded-lg shadow-md"
+          className="bg-black text-white px-6 py-3 rounded-lg shadow-md flex items-center gap-2"
+          onClick={fetchExpenses} // ✅ Apply Filters
         >
-          Filter
+          <FaFilter className="text-white text-lg" /> {/* ✅ Filter Icon */}
+          Apply
         </button>
       </div>
 
@@ -52,9 +86,8 @@ const ExpenseManager = () => {
           {["Fixed", "Group Expenses", "Food&Drinks", "Entertainment", "Subscriptions", "Others"].map((cat) => (
             <button
               key={cat}
-              className={`px-4 py-2 rounded-lg shadow-md ${category === cat ? "bg-black text-white" : "border"
-                }`}
-              onClick={() => setCategory(cat)}
+              className={`px-4 py-2 rounded-lg shadow-md ${category === cat ? "bg-black text-white" : "border"}`}
+              onClick={() => setCategory(category === cat ? "" : cat)} // ✅ Toggle selection
             >
               {cat}
             </button>
@@ -69,7 +102,8 @@ const ExpenseManager = () => {
           {["Weekly", "Monthly", "Yearly", "One-Time"].map((occ) => (
             <button
               key={occ}
-              className="px-4 py-2 border rounded-lg shadow-md"
+              className={`px-4 py-2 rounded-lg shadow-md ${occurrence === occ ? "bg-black text-white" : "border"}`}
+              onClick={() => setOccurrence(occurrence === occ ? "" : occ)} // ✅ Toggle selection
             >
               {occ}
             </button>
@@ -77,22 +111,8 @@ const ExpenseManager = () => {
         </div>
       </div>
 
-      {/* Expense List */}
-      <div className="my-8">
-        <h2 className="font-semibold text-lg">Expense List</h2>
-        <div className="border rounded-lg shadow-md">
-          {expenses.length > 0 ? (
-            expenses.map((expense) => (
-              <div key={expense._id} className="flex justify-between p-4 border-b">
-                <span className="text-lg">{expense.title}</span>
-                <span className="font-bold text-lg">${expense.amount.toFixed(2)}</span>
-              </div>
-            ))
-          ) : (
-            <p className="text-center p-4">No expenses found.</p>
-          )}
-        </div>
-      </div>
+      {/* Expense List Component */}
+      <ExpenseList expenses={filteredExpenses} /> {/* ✅ Uses filtered data */}
     </div>
   );
 };
