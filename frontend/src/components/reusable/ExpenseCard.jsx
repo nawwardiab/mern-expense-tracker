@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { FaEdit, FaTimes } from "react-icons/fa";
 
-const ExpenseDetails = ({ expense, onClose }) => {
+const ExpenseCard = ({ expense, onClose }) => {
   const [editedExpense, setEditedExpense] = useState(expense);
   const [isEditing, setIsEditing] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
@@ -94,4 +94,4 @@ const ExpenseDetails = ({ expense, onClose }) => {
   );
 };
 
-export default ExpenseDetails;
+export default ExpenseCard;

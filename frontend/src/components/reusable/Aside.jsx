@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { FaHome, FaUserFriends, FaCog, FaDonate } from "react-icons/fa";
-import { MdOutlinePayment, MdLogout } from "react-icons/md";
+import {  MdLogout } from "react-icons/md";
 
 const Aside = () => {
   const location = useLocation();
@@ -41,12 +41,7 @@ const Aside = () => {
           >
             <FaUserFriends className="text-lg" /> Group Events
           </Link>
-          <Link
-            to="/homepage"
-            className="flex items-center gap-3 p-2 hover:underline underline-offset-4 rounded text-sm text-black font-semibold"
-          >
-            <MdOutlinePayment className="text-lg" /> Financial Overview
-          </Link>
+        
         </div>
 
         {/**nav section 2 */}
