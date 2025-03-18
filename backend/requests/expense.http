@@ -6,13 +6,13 @@ POST http://localhost:8000/expenses/add
 Content-Type: application/json
 
 {
-  "title": "Starbucks Coffee",
-  "amount": 4.99,
-  "category": "Food&Drinks",
-  "transactionDate": "2025-03-15",
-  "isRecurring": false,
-  "recurringFrequency": "one-time",
-  "notes": "Cappuccino & croissant"
+  "title": "Coworking Space",
+  "amount": 80.00,
+  "category": "Fixed",
+  "transactionDate": "2025-03-13",
+  "isRecurring": true,
+  "recurringFrequency": "monthly",
+  "notes": "Hot desk rental"
 }
 
 

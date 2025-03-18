@@ -1,22 +1,24 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import ExpenseList from "../components/ExpenseList";
-import { FaFilter } from "react-icons/fa"; // ✅ Import Filter Icon
+import { FaFilter, FaWallet } from "react-icons/fa";
+import { FaChartPie } from "react-icons/fa";
 import { setAxiosDefaults } from "../utils/axiosConfig";
 
 // Apply Axios default settings
 setAxiosDefaults();
 
 const ExpenseManager = () => {
-  const [expenses, setExpenses] = useState([]); // Stores all expenses
-  const [filteredExpenses, setFilteredExpenses] = useState([]); // Stores filtered results
+  const [expenses, setExpenses] = useState([]);
+  const [filteredExpenses, setFilteredExpenses] = useState([]);
+  const [totalFilteredExpenses, setTotalFilteredExpenses] = useState(0);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
   const [occurrence, setOccurrence] = useState("");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
 
-  // 🔹 Fetch ALL expenses once when component loads
+  // Fetch ALL expenses once when component loads
   useEffect(() => {
     fetchExpenses();
   }, []);
@@ -24,57 +26,61 @@ const ExpenseManager = () => {
   // Function to Fetch Expenses from Backend (NO FILTERS)
   const fetchExpenses = async () => {
     try {
-      const { data } = await axios.get("/expenses", { withCredentials: true }); // ✅ Fetch all expenses
-      setExpenses(data.data); // ✅ Store all expenses in state
-      setFilteredExpenses(data.data); // ✅ Initially set filtered list to show all
+      const { data } = await axios.get("/expenses", { withCredentials: true });
+      setExpenses(data.data);
+      setFilteredExpenses(data.data);
+      updateTotalSpent(data.data);
     } catch (error) {
       console.error("Error fetching expenses:", error.response?.data || error);
     }
   };
 
-  // 🔹 Function to Filter Expenses in the Frontend
+  // Function to Filter Expenses in the Frontend
   useEffect(() => {
     let filtered = expenses;
 
-    // ✅ Apply Search Filter (Case-Insensitive)
+    // Apply Search Filter (Case-Insensitive)
     if (search) {
       filtered = filtered.filter((expense) =>
         expense.title.toLowerCase().includes(search.toLowerCase())
       );
     }
-
-    // ✅ Apply Category Filter
+    // Apply Category Filter
     if (category) {
       filtered = filtered.filter((expense) => expense.category === category);
     }
-
-    // ✅ Apply Occurrence Filter
+    // Apply Occurrence Filter
     if (occurrence) {
       filtered = filtered.filter((expense) => expense.recurringFrequency === occurrence.toLowerCase());
     }
 
-    setFilteredExpenses(filtered); // ✅ Update filtered state
-  }, [search, category, occurrence, expenses]); // ✅ Runs when filters change
+    setFilteredExpenses(filtered);
+    updateTotalSpent(filtered);
+  }, [search, category, occurrence, expenses]);
+
+  // Function to Calculate Total Expenses
+  const updateTotalSpent = (filteredData) => {
+    const total = filteredData.reduce((sum, expense) => sum + expense.amount, 0);
+    setTotalFilteredExpenses(total);
+  };
 
   return (
     <div className="p-8 max-w-6xl mx-auto">
-      {/* Title */}
       <h1 className="text-4xl font-bold text-center mb-6">Manage your expenses</h1>
 
-      {/* Search & Filter Button */}
       <div className="flex gap-4 my-6 items-center">
         <input
           type="text"
           placeholder="Search expenses"
           className="border p-3 flex-1 rounded-lg shadow-md"
           value={search}
-          onChange={(e) => setSearch(e.target.value)} // ✅ Filters dynamically
+          onChange={(e) => setSearch(e.target.value)}
         />
         <button
           className="bg-black text-white px-6 py-3 rounded-lg shadow-md flex items-center gap-2"
-          onClick={fetchExpenses} // ✅ Apply Filters
+          onClick={fetchExpenses}
         >
-          <FaFilter className="text-white text-lg" /> {/* ✅ Filter Icon */}
+          <FaFilter className="text-white text-lg" />
           Apply
         </button>
       </div>
@@ -87,7 +93,7 @@ const ExpenseManager = () => {
             <button
               key={cat}
               className={`px-4 py-2 rounded-lg shadow-md ${category === cat ? "bg-black text-white" : "border"}`}
-              onClick={() => setCategory(category === cat ? "" : cat)} // ✅ Toggle selection
+              onClick={() => setCategory(category === cat ? "" : cat)}
             >
               {cat}
             </button>
@@ -103,7 +109,7 @@ const ExpenseManager = () => {
             <button
               key={occ}
               className={`px-4 py-2 rounded-lg shadow-md ${occurrence === occ ? "bg-black text-white" : "border"}`}
-              onClick={() => setOccurrence(occurrence === occ ? "" : occ)} // ✅ Toggle selection
+              onClick={() => setOccurrence(occurrence === occ ? "" : occ)}
             >
               {occ}
             </button>
@@ -111,8 +117,25 @@ const ExpenseManager = () => {
         </div>
       </div>
 
-      {/* Expense List Component */}
-      <ExpenseList expenses={filteredExpenses} /> {/* ✅ Uses filtered data */}
+      {/* Expenses & Total Summary Layout */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Expense List (Takes 2/3 of space) */}
+        <div className="md:col-span-2">
+          <ExpenseList expenses={filteredExpenses} />
+        </div>
+
+        {/* Total Spent Summary (Takes 1/3 of space) */}
+        <div className="flex justify-center w-full">
+          <div className="p-6 bg-blue-50 rounded-xl shadow-lg flex flex-col items-center text-center w-full max-w-md">
+            <FaWallet className="text-blue-600 text-5xl mb-3 mt-10" />
+            <h2 className="text-xl font-semibold mt-4">Total Spent</h2>
+            <p className="text-3xl font-bold text-gray-800 mt-2">€{totalFilteredExpenses.toFixed(2)}</p>
+            <p className="text-sm text-gray-600 mt-2">Filtered expenses total</p>
+          </div>
+        </div>
+
+      </div>
+
     </div>
   );
 };
