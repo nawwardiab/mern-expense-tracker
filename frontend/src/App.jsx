@@ -8,7 +8,7 @@ import OnboardingPage from "./pages/OnboardingPage";
 import HomePage from "./pages/HomePage";
 import ExpenseManager from "./pages/ExpenseManager";
 import GroupExpenses from "./pages/GroupExpenses";
-import ExpenseDetail from "./pages/ExpenseDetail";
+
 import SettingPage from "./pages/SettingPage";
 import { AuthContext } from "./contexts/AuthContext";
 import { useGlobalContext } from "./contexts/Context"; // Import Global Context
@@ -78,16 +78,7 @@ function App() {
         <Route index element={<GroupExpenses />} />
       </Route>
 
-      <Route
-        path="/expenses/:id"
-        element={
-          <ProtectedRoute>
-            <ProtectedLayout />
-          </ProtectedRoute>
-        }
-      >
-        <Route index element={<ExpenseDetail />} />
-      </Route>
+     
 
       {/* Settings Page with a Minimal Navbar 
    
