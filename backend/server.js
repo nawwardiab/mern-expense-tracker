@@ -5,6 +5,7 @@ import "dotenv/config";
 
 import connectDB from "./utils/database.js";
 import usersRouter from "./routes/usersRouter.js";
+import expensesRouter from "./routes/expensesRouter.js";
 import {
   globalErrorHandler,
   routeNotFound,
@@ -15,20 +16,19 @@ const app = express();
 
 const PORT = process.env.PORT || 6000;
 
-
-app.use(cors({
-  origin: "http://localhost:5173", 
-  credentials: true, 
-})
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
 );
-
-
 
 app.use(cookieParser());
 app.use(express.json());
 
 //? Routers
 app.use("/users", usersRouter);
+app.use("/expenses", expensesRouter);
 
 //! Error Handlers
 app.use(routeNotFound);
