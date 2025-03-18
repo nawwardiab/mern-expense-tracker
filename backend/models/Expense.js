@@ -27,6 +27,7 @@ const expenseSchema = new Schema(
       ],
     },
     transactionDate: { type: Date, required: true },
+    endDate: {type: Date,required:false},
     isRecurring: { type: Boolean, default: false },
     recurringFrequency: {
       type: String,

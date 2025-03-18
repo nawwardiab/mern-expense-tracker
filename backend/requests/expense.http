@@ -1,18 +1,23 @@
 ### Get all expenses (authenticated)
 GET http://localhost:8000/expenses
+Content-Type: application/json
+Cookie: jwtToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZDkxZTI3MjAyZWE0ZTRiZTZjNGMyYyIsImlhdCI6MTc0MjI4MjMyNiwiZXhwIjoxNzQyMzY4NzI2fQ.ZDpd3Kv9rfzadTFictZIHp_0XObrRJq72ip7I673GsI; Max-Age=600; Path=/; Expires=Tue, 18 Mar 2025 07:28:46 GMT; HttpOnly
+
 
 ### Add new expense (authenticated)
 POST http://localhost:8000/expenses/add
 Content-Type: application/json
+Cookie: jwtToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZDkxZTI3MjAyZWE0ZTRiZTZjNGMyYyIsImlhdCI6MTc0MjI4MjMyNiwiZXhwIjoxNzQyMzY4NzI2fQ.ZDpd3Kv9rfzadTFictZIHp_0XObrRJq72ip7I673GsI; Max-Age=600; Path=/; Expires=Tue, 18 Mar 2025 07:28:46 GMT; HttpOnly
 
 {
-  "title": "Spotify Subscription",
-  "amount": 15.99,
-  "category": "Subscriptions",
+  "title": "Gym",
+  "amount": 155.99,
+  "category": "other",
   "transactionDate": "2025-03-16",
-  "isRecurring": true,
-  "recurringFrequency": "monthly",
-  "notes": "Monthly subscription fee"
+  "endDate": "2025-04-17",
+  "isRecurring":true,
+  "recurringFrequency": "weekly",
+  "notes": "to be arranged"
 }
 
 ### Edit existing expense (authenticated)
