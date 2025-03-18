@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import ExpenseList from "../components/ExpenseList";
 import { FaFilter, FaWallet } from "react-icons/fa";
-import { FaChartPie } from "react-icons/fa";
+import { TbListSearch } from "react-icons/tb";
 import { setAxiosDefaults } from "../utils/axiosConfig";
 
 // Apply Axios default settings
@@ -68,21 +68,15 @@ const ExpenseManager = () => {
     <div className="p-8 max-w-6xl mx-auto">
       <h1 className="text-4xl font-bold text-center mb-6">Manage your expenses</h1>
 
-      <div className="flex gap-4 my-6 items-center">
+      <div className="flex gap-4 my-6 items-center relative">
         <input
           type="text"
-          placeholder="Search expenses"
-          className="border p-3 flex-1 rounded-lg shadow-md"
+          placeholder="Filter expenses ..."
+          className="border p-3 flex-1 rounded-lg shadow-md pr-12"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <button
-          className="bg-black text-white px-6 py-3 rounded-lg shadow-md flex items-center gap-2"
-          onClick={fetchExpenses}
-        >
-          <FaFilter className="text-white text-lg" />
-          Apply
-        </button>
+        <TbListSearch className="absolute right-4 text-gray-500 text-4xl" />
       </div>
 
       {/* Popular Categories */}
@@ -126,7 +120,7 @@ const ExpenseManager = () => {
 
         {/* Total Spent Summary (Takes 1/3 of space) */}
         <div className="flex justify-center w-full">
-          <div className="p-6 bg-blue-50 rounded-xl shadow-lg flex flex-col items-center text-center w-full max-w-md">
+          <div className="p-5 bg-blue-50 rounded-xl shadow-lg flex flex-col items-center text-center w-full max-w-md">
             <FaWallet className="text-blue-600 text-5xl mb-3 mt-10" />
             <h2 className="text-xl font-semibold mt-4">Total Spent</h2>
             <p className="text-3xl font-bold text-gray-800 mt-2">€{totalFilteredExpenses.toFixed(2)}</p>
