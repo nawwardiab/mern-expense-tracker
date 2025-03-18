@@ -1,37 +1,41 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import { LuPartyPopper } from "react-icons/lu";
+import { TiGroupOutline } from "react-icons/ti";
+import { MdRestaurant } from "react-icons/md";
+import { TbContract,TbDeviceUnknownFilled } from "react-icons/tb";
+import { GiTiedScroll } from "react-icons/gi";
 
-const ExpenseItem = ({ expense }) => {
-const navigate =useNavigate()
 
-  // Function to navigate to the ExpenseDetail page
-  const handleNavigate = () => {
-    navigate(`/expense/${expense.id}`, { state: { expense } });
+const ExpenseItem = ({ expense, onClick }) => {
+  // Define the icons for each category
+  const categoryIcons = {
+    Fixed: <GiTiedScroll/>,
+    "Group Expenses":<TiGroupOutline size={24}/>,
+    "Food&Drinks": <MdRestaurant size={24}/>,
+    Entertainment: <LuPartyPopper size={24}/>,
+    Subscriptions: <TbContract size={24}/>,
+    Others: <TbDeviceUnknownFilled size={24}/>,
   };
-  
+
+  // Set the icon based on the expense category
+  const categoryIcon = categoryIcons[expense.category] || "🔍"; // Default to 🔍 if the category is not recognized
+
   return (
     <div
       className="flex justify-between items-center p-4 bg-white rounded-lg shadow-md cursor-pointer hover:bg-gray-100 transition"
-      onClick={handleNavigate}
+      onClick={() => {
+        console.log("ExpenseItem clicked:", expense); // ✅ Debugging log
+        if (onClick) onClick(); // ✅ Ensure onClick is called
+      }}
     >
-      {/* Expense Icon & Details */}
       <div className="flex items-center gap-4">
-        <div className="bg-black text-white p-3 rounded-full">
-          {/* Example: Food & Drink Icon */}
-          🍽️
-        </div>
+        <div className="bg-black text-white p-3 rounded-full">{categoryIcon}</div>
         <div>
-          <h3 className="font-bold text-lg">{expense.name}</h3>
+          <h3 className="font-bold text-lg">{expense.title}</h3>
           <p className="text-gray-500">{expense.category}</p>
         </div>
       </div>
 
-      {/* Expense Amount - Styled Dynamically */}
-      <span
-        className={`text-lg font-bold ${
-          expense.amount < 0 ? "text-red-500" : "text-green-500"
-        }`}
-      >
+      <span className={`text-lg font-bold ${expense.amount < 0 ? "text-red-500" : "text-green-500"}`}>
         {expense.amount < 0 ? `-$${Math.abs(expense.amount)}` : `$${expense.amount}`}
       </span>
     </div>
@@ -39,3 +43,9 @@ const navigate =useNavigate()
 };
 
 export default ExpenseItem;
+
+
+
+
+
+
