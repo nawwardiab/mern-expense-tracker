@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import createError from "http-errors";
-
 import UserModel from "../models/User.js";
+import "dotenv/config";
 
 const checkToken = async (req, res, next) => {
   try {

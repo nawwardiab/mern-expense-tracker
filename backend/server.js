@@ -10,7 +10,7 @@ import {
   routeNotFound,
 } from "./middleware/errorHandler.js";
 
-await connectDB();
+connectDB();
 const app = express();
 
 const PORT = process.env.PORT || 6000;

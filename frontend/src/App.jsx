@@ -1,5 +1,5 @@
-import { Routes, Route, Navigate } from "react-router-dom";
-import { useContext } from "react";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { useContext, useEffect, useState } from "react";
 import LandingPage from "./pages/LandingPage";
 import Login from "./pages/LoginPage";
 import Signup from "./pages/SignupPage";
@@ -11,25 +11,42 @@ import GroupExpenses from "./pages/GroupExpenses";
 import ExpenseDetail from "./pages/ExpenseDetail";
 import SettingPage from "./pages/SettingPage";
 import { AuthContext } from "./contexts/AuthContext";
-import { useGlobalContext } from "./contexts/Context"; // Import Global Context
-import ProtectedLayout from "./layouts/ProtectedLayout"; // Import Layout
+import { useGlobalContext } from "./contexts/Context"; 
+import ProtectedLayout from "./layouts/ProtectedLayout"; 
 import MinimalLayout from "./layouts/MinimalLayout";
 
-// Protected Route Wrapper
+
 const ProtectedRoute = ({ children }) => {
-  const { user, loading } = useContext(AuthContext);
-  console.log("User:", user);
+  const { user, loading, checkAuth } = useContext(AuthContext);
+  const location = useLocation();
 
-  if (loading) return <p>Loading...</p>; //Prevents premature redirection
+  useEffect(() => {
+    if (!user || Object.keys(user).length === 0) {
+      checkAuth();
+    }
+  }, [user, checkAuth]);
 
-  return user ? children : <Navigate to="/" replace />;
+  if (loading || !user || Object.keys(user).length === 0) {
+    return <p>Loading user data...</p>;
+  }
+
+  if (!user.isOnboarded && location.pathname !== "/onboarding") {
+    return <Navigate to="/onboarding" replace />;
+  }
+
+  if (user.isOnboarded && location.pathname === "/onboarding") {
+    return <Navigate to="/homepage" replace />;
+  }
+
+  return children;
 };
+
+
 
 function App() {
   return (
     <Routes>
-      {/* landindigPage with minimal Navbar */}
-
+      {/* Landing Page with Minimal Navbar */}
       <Route
         path="/"
         element={
@@ -38,11 +55,21 @@ function App() {
           </MinimalLayout>
         }
       />
+
       {/* Public Routes (No Navbar) */}
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
-      <Route path="/onboarding" element={<OnboardingPage />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
+
+      {/* Onboarding Route: Users who completed onboarding should be redirected */}
+      <Route
+        path="/onboarding"
+        element={
+          <ProtectedRoute>
+            <OnboardingPage />
+          </ProtectedRoute>
+        }
+      />
 
       {/* Protected Routes with Navbar */}
       <Route
@@ -54,7 +81,8 @@ function App() {
         }
       >
         <Route index element={<HomePage />} />
-      </Route>
+        </Route>
+
       <Route
         path="/expense-manager"
         element={
@@ -70,8 +98,7 @@ function App() {
         path="/expenses/group"
         element={
           <ProtectedRoute>
-            <ProtectedLayout/>
-            
+            <ProtectedLayout />
           </ProtectedRoute>
         }
       >
@@ -89,10 +116,7 @@ function App() {
         <Route index element={<ExpenseDetail />} />
       </Route>
 
-      {/* Settings Page with a Minimal Navbar 
-   
-      />*/}
-
+      {/* Settings Page with a Minimal Navbar */}
       <Route
         path="/settings"
         element={
@@ -103,6 +127,7 @@ function App() {
       >
         <Route index element={<SettingPage />} />
       </Route>
+
     </Routes>
   );
 }
