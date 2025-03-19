@@ -36,7 +36,7 @@ const ExpenseItem = ({ expense, onClick }) => {
       </div>
 
       <span className={`text-lg font-bold ${expense.amount < 0 ? "text-red-500" : "text-green-500"}`}>
-        {expense.amount < 0 ? `-$${Math.abs(expense.amount)}` : `$${expense.amount}`}
+        {expense.amount < 0 ? `-€${Math.abs(expense.amount)}` : `€${expense.amount}`}
       </span>
     </div>
   );

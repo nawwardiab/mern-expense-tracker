@@ -13,7 +13,7 @@ const Aside = () => {
   };
 
   return (
-    <aside className="w-64 bg-gray-200 text-black flex flex-col h-[calc(100vh-4rem)]">
+    <aside className="w-64 bg-gray-200 text-black flex flex-col min-h-full">
       {/* Section 1 - Current Page Name */}
       <div className="h-16 flex items-center justify-center shadow-md">
         <h2 className="text-lg font-semibold">{getPageName()}</h2>
