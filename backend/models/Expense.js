@@ -26,14 +26,31 @@ const expenseSchema = new Schema(
         "Others",
       ],
     },
-    transactionDate: { type: Date, required: true },
-    startDate: { type: Date, required: false },
-    endDate: {type: Date,required:false},
+    transactionDate: {
+      type: Date,
+      required: function () {
+        return !this.isRecurring; // Only required if NOT recurring
+      },
+    },
+    startDate: {
+      type: Date,
+      required: function () {
+        return this.isRecurring; // Required ONLY for recurring expenses
+      },
+    },
+    endDate: {
+      type: Date,
+      required: function () {
+        return this.isRecurring; // Required ONLY for recurring expenses
+      },
+    },
     isRecurring: { type: Boolean, default: false },
     recurringFrequency: {
       type: String,
-      enum: ["daily", "weekly", "monthly", "one-time"],
-      default: "one-time",
+      enum: ["daily", "weekly", "monthly", "yearly", "one-time"], 
+      required: function () {
+        return this.isRecurring; // Must be present if recurring
+      },
     },
     notes: { type: String, default: "" },
 
@@ -49,3 +66,4 @@ const expenseSchema = new Schema(
 );
 
 export default model("Expense", expenseSchema);
+
