@@ -60,6 +60,7 @@ const ExpenseManager = () => {
     setTotalFilteredExpenses(total);
   };
 
+
   const getCurrencySymbol = (currencyCode) => {
     const symbols = {
       USD: "$",
@@ -70,6 +71,8 @@ const ExpenseManager = () => {
   };
 
 
+ 
+
   return (
     <div className="p-4 md:p-8 max-w-6xl mx-auto">
       <h1 className="text-2xl md:text-4xl font-bold text-center mb-6">
@@ -78,7 +81,6 @@ const ExpenseManager = () => {
 
       {/* Search Input */}
       <div className="relative flex flex-col sm:flex-row gap-4 items-center">
-      <div className="flex gap-4 my-6 items-center relative ">
         <input
           type="text"
           placeholder="Search expenses..."
@@ -86,9 +88,9 @@ const ExpenseManager = () => {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <TbListSearch className="absolute right-4 text-gray-500 text-4xl" />
+        <TbListSearch className="absolute right-4 text-gray-500 text-3xl sm:text-4xl" />
       </div>
-      </div>
+    
 
       {/* Filters Section */}
       <div className="my-6">
@@ -136,15 +138,14 @@ const ExpenseManager = () => {
         {/* Total Spent Summary (Takes full width on mobile, 1/3 on larger screens) */}
         <div className="flex justify-center w-full">
           <div className="p-5 bg-blue-50 rounded-xl shadow-lg flex flex-col items-center text-center w-full max-w-md">
-            <FaWallet className="text-blue-600 text-5xl mb-3 mt-10" />
-            <h2 className="text-xl font-semibold mt-4">Total Spent</h2>
+            <FaWallet className="text-blue-600 text-4xl sm:text-5xl mb-3 mt-6 sm:mt-10" />
+            <h2 className="text-lg sm:text-xl font-semibold mt-4">Total Spent</h2>
 
-             {/* ✅ Show correct currency symbol dynamically */}
-             <p className="text-3xl font-bold text-gray-800 mt-2">
+             {/* Show correct currency symbol dynamically */}
+              <p className="text-2xl sm:text-3xl font-bold text-gray-800 mt-2">
               {getCurrencySymbol(user?.currency)}{totalFilteredExpenses.toFixed(2)}
             </p>
-
-            <p className="text-sm text-gray-600 mt-2">Filtered expenses total</p>
+            <p className="text-xs sm:text-sm text-gray-600 mt-2">Filtered expenses total</p>
           </div>
         </div>
       </div>
