@@ -23,7 +23,7 @@ const ExpenseItem = ({ expense, onClick }) => {
     <div
       className="flex justify-between items-center p-4 bg-white rounded-lg shadow-md cursor-pointer hover:bg-gray-100 transition"
       onClick={() => {
-        console.log("ExpenseItem clicked:", expense); // ✅ Debugging log
+       
         if (onClick) onClick(); // ✅ Ensure onClick is called
       }}
     >
