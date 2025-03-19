@@ -46,6 +46,7 @@ const ExpenseItem = ({ expense, currencySymbol, onClick }) => {
         </div>
       </div>
 
+
       <span
         className={`text-lg font-bold ${
           expense.amount < 0 ? "text-red-500" : "text-green-500"
