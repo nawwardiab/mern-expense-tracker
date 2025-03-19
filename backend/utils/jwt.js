@@ -1,6 +1,5 @@
 import jwt from "jsonwebtoken";
 import "dotenv/config";
-import "dotenv/config";
 
 
 export const createSendToken = (res, status, user) => {
@@ -12,7 +11,9 @@ export const createSendToken = (res, status, user) => {
 
   //! Set cookie option
   const cookieOptions = {
-    maxAge: 1 * 24 * 60 * 60 * 1000,
+
+    maxAge: 1 * 24 * 60 * 60 * 1000, // 1 day instead of 10 mins for testing 
+
     httpOnly: true,
     };
 
