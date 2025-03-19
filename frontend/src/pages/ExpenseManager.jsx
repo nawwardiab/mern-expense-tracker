@@ -18,12 +18,10 @@ const ExpenseManager = () => {
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
 
-  // Fetch ALL expenses once when component loads
   useEffect(() => {
     fetchExpenses();
   }, []);
 
-  // Function to Fetch Expenses from Backend (NO FILTERS)
   const fetchExpenses = async () => {
     try {
       const { data } = await axios.get("/expenses", { withCredentials: true });
@@ -35,58 +33,56 @@ const ExpenseManager = () => {
     }
   };
 
-  // Function to Filter Expenses in the Frontend
   useEffect(() => {
     let filtered = expenses;
-
-    // Apply Search Filter (Case-Insensitive)
     if (search) {
       filtered = filtered.filter((expense) =>
         expense.title.toLowerCase().includes(search.toLowerCase())
       );
     }
-    // Apply Category Filter
     if (category) {
       filtered = filtered.filter((expense) => expense.category === category);
     }
-    // Apply Occurrence Filter
     if (occurrence) {
       filtered = filtered.filter((expense) => expense.recurringFrequency === occurrence.toLowerCase());
     }
-
     setFilteredExpenses(filtered);
     updateTotalSpent(filtered);
   }, [search, category, occurrence, expenses]);
 
-  // Function to Calculate Total Expenses
   const updateTotalSpent = (filteredData) => {
     const total = filteredData.reduce((sum, expense) => sum + expense.amount, 0);
     setTotalFilteredExpenses(total);
   };
 
   return (
-    <div className="p-8 max-w-6xl mx-auto">
-      <h1 className="text-4xl font-bold text-center mb-6">Manage your expenses</h1>
+    <div className="p-4 md:p-8 max-w-6xl mx-auto">
+      <h1 className="text-2xl md:text-4xl font-bold text-center mb-6">
+        Manage your expenses
+      </h1>
 
-      <div className="flex gap-4 my-6 items-center relative">
+      {/* Search Input */}
+      <div className="relative flex flex-col sm:flex-row gap-4 items-center">
         <input
           type="text"
-          placeholder="Filter expenses ..."
-          className="border p-3 flex-1 rounded-lg shadow-md pr-12"
+          placeholder="Search expenses..."
+          className="border p-3 flex-1 rounded-lg shadow-md pr-12 w-full sm:w-auto"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <TbListSearch className="absolute right-4 text-gray-500 text-4xl" />
+        <TbListSearch className="absolute right-4 text-gray-500 text-3xl sm:text-4xl" />
       </div>
 
-      {/* Popular Categories */}
+      {/* Filters Section */}
       <div className="my-6">
         <h2 className="font-semibold text-lg">Popular Categories</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 mt-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 sm:gap-4 mt-3">
           {["Fixed", "Group Expenses", "Food&Drinks", "Entertainment", "Subscriptions", "Others"].map((cat) => (
             <button
               key={cat}
-              className={`px-4 py-2 rounded-lg shadow-md ${category === cat ? "bg-black text-white" : "border"}`}
+              className={`px-3 sm:px-4 py-2 rounded-lg shadow-md text-sm sm:text-base ${
+                category === cat ? "bg-black text-white" : "border"
+              }`}
               onClick={() => setCategory(category === cat ? "" : cat)}
             >
               {cat}
@@ -98,11 +94,13 @@ const ExpenseManager = () => {
       {/* Occurrence Filters */}
       <div className="my-6">
         <h2 className="font-semibold text-lg">Occurrence</h2>
-        <div className="grid grid-cols-4 gap-4 mt-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 mt-3">
           {["Weekly", "Monthly", "Yearly", "One-Time"].map((occ) => (
             <button
               key={occ}
-              className={`px-4 py-2 rounded-lg shadow-md ${occurrence === occ ? "bg-black text-white" : "border"}`}
+              className={`px-3 sm:px-4 py-2 rounded-lg shadow-md text-sm sm:text-base ${
+                occurrence === occ ? "bg-black text-white" : "border"
+              }`}
               onClick={() => setOccurrence(occurrence === occ ? "" : occ)}
             >
               {occ}
@@ -112,26 +110,29 @@ const ExpenseManager = () => {
       </div>
 
       {/* Expenses & Total Summary Layout */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Expense List (Takes 2/3 of space) */}
-        <div className="md:col-span-2">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Expense List (Takes full width on mobile, 2/3 on larger screens) */}
+        <div className="lg:col-span-2">
           <ExpenseList expenses={filteredExpenses} />
         </div>
 
-        {/* Total Spent Summary (Takes 1/3 of space) */}
+        {/* Total Spent Summary (Takes full width on mobile, 1/3 on larger screens) */}
         <div className="flex justify-center w-full">
           <div className="p-5 bg-blue-50 rounded-xl shadow-lg flex flex-col items-center text-center w-full max-w-md">
-            <FaWallet className="text-blue-600 text-5xl mb-3 mt-10" />
-            <h2 className="text-xl font-semibold mt-4">Total Spent</h2>
-            <p className="text-3xl font-bold text-gray-800 mt-2">€{totalFilteredExpenses.toFixed(2)}</p>
-            <p className="text-sm text-gray-600 mt-2">Filtered expenses total</p>
+            <FaWallet className="text-blue-600 text-4xl sm:text-5xl mb-3 mt-6 sm:mt-10" />
+            <h2 className="text-lg sm:text-xl font-semibold mt-4">Total Spent</h2>
+            <p className="text-2xl sm:text-3xl font-bold text-gray-800 mt-2">
+              €{totalFilteredExpenses.toFixed(2)}
+            </p>
+            <p className="text-xs sm:text-sm text-gray-600 mt-2">
+              Filtered expenses total
+            </p>
           </div>
         </div>
-
       </div>
-
     </div>
   );
 };
 
 export default ExpenseManager;
+
