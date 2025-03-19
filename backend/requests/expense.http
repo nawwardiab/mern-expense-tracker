@@ -1,9 +1,13 @@
 ### Get all expenses (authenticated)
 GET http://localhost:8000/expenses
+Content-Type: application/json
+Cookie: jwtToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZDkxZTI3MjAyZWE0ZTRiZTZjNGMyYyIsImlhdCI6MTc0MjI4MjMyNiwiZXhwIjoxNzQyMzY4NzI2fQ.ZDpd3Kv9rfzadTFictZIHp_0XObrRJq72ip7I673GsI; Max-Age=600; Path=/; Expires=Tue, 18 Mar 2025 07:28:46 GMT; HttpOnly
+
 
 ### Add new expense (authenticated)
 POST http://localhost:8000/expenses/add
 Content-Type: application/json
+Cookie: jwtToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZDkxZTI3MjAyZWE0ZTRiZTZjNGMyYyIsImlhdCI6MTc0MjI4MjMyNiwiZXhwIjoxNzQyMzY4NzI2fQ.ZDpd3Kv9rfzadTFictZIHp_0XObrRJq72ip7I673GsI; Max-Age=600; Path=/; Expires=Tue, 18 Mar 2025 07:28:46 GMT; HttpOnly
 
 {
   "title": "Coworking Space",

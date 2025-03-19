@@ -57,7 +57,6 @@ const Navbar = () => {
 
       {/* Desktop Menu */}
       <div className="hidden md:flex justify-between items-baseline w-48 mr-16">
-        <IoIosNotifications className="text-2xl text-gray-700 hover:text-black cursor-pointer" />
         <IoIosAddCircle
           className="text-2xl text-gray-700 hover:text-black cursor-pointer"
           onClick={() => navigate("/expenses")}
@@ -66,7 +65,7 @@ const Navbar = () => {
           className="text-2xl text-gray-700 hover:text-black cursor-pointer"
           onClick={() => navigate("/expenses/group")}
         />
-
+        <IoIosNotifications className="text-2xl text-gray-700 hover:text-black cursor-pointer" />
         {/* User Profile */}
         <div className="hidden md:block">
           {user?.profilePicture ? (
@@ -93,32 +92,55 @@ const Navbar = () => {
         <div className="absolute top-16 right-4 text-xs font-thin bg-gray-600 p-4 rounded-lg shadow-md md:hidden">
           <ul className="flex flex-col space-y-4">
             <li>
-              <Link to="/Homepage" onClick={closeMobileMenu} className="hover:text-white hover:underline">
+              <Link
+                to="/Homepage"
+                onClick={closeMobileMenu}
+                className="hover:text-white hover:underline"
+              >
                 Home
               </Link>
             </li>
             <li>
-              <Link to="/expenses/group" onClick={closeMobileMenu} className="hover:text-white hover:underline">
+              <Link
+                to="/expenses/group"
+                onClick={closeMobileMenu}
+                className="hover:text-white hover:underline"
+              >
                 Group Events
               </Link>
             </li>
             <li>
-              <Link to="/expenses/group" onClick={closeMobileMenu} className="hover:text-white hover:underline">
+              <Link
+                to="/expense-manager"
+                onClick={closeMobileMenu}
+                className="hover:text-white hover:underline"
+              >
                 Group Expense Manager
               </Link>
             </li>
             <li>
-              <Link to="/expenses/add-group" onClick={closeMobileMenu} className="hover:text-white hover:underline">
+              <Link
+                to="/expenses/add-group"
+                onClick={closeMobileMenu}
+                className="hover:text-white hover:underline"
+              >
                 Add Expense Group
               </Link>
             </li>
             <li>
-              <Link to="/settings" onClick={closeMobileMenu} className="hover:text-white hover:underline">
+              <Link
+                to="/settings"
+                onClick={closeMobileMenu}
+                className="hover:text-white hover:underline"
+              >
                 Settings
               </Link>
             </li>
             <li>
-              <button onClick={handleLogout} className="hover:text-white hover:underline">
+              <button
+                onClick={handleLogout}
+                className="hover:text-white hover:underline"
+              >
                 Logout
               </button>
             </li>
@@ -130,4 +152,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
