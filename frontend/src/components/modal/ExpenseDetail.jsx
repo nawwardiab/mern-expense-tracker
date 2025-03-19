@@ -14,7 +14,7 @@ const ExpenseDetails = ({ expense, onClose }) => {
     console.log("ExpenseDetails received: null");
     return <p className="text-center text-red-500">Expense not found.</p>;
   }
-  console.log("ExpenseDetails received:", expense);
+ 
 
   const toggleEdit = (field) => {
     setIsEditing((prev) => ({ ...prev, [field]: !prev[field] }));

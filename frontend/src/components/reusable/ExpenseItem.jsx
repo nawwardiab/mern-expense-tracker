@@ -23,7 +23,7 @@ const ExpenseItem = ({ expense, onClick }) => {
     <div
       className="flex justify-between items-center p-4 bg-white rounded-lg shadow-md cursor-pointer hover:bg-gray-100 transition"
       onClick={() => {
-        console.log("ExpenseItem clicked:", expense); // ✅ Debugging log
+       
         if (onClick) onClick(); // ✅ Ensure onClick is called
       }}
     >
@@ -36,7 +36,7 @@ const ExpenseItem = ({ expense, onClick }) => {
       </div>
 
       <span className={`text-lg font-bold ${expense.amount < 0 ? "text-red-500" : "text-green-500"}`}>
-        {expense.amount < 0 ? `-$${Math.abs(expense.amount)}` : `$${expense.amount}`}
+        {expense.amount < 0 ? `-€${Math.abs(expense.amount)}` : `€${expense.amount}`}
       </span>
     </div>
   );

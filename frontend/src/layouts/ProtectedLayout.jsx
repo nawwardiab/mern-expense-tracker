@@ -15,9 +15,9 @@ const ProtectedLayout = () => {
         </div>
 
         {/* Content Area */}
-        <div className="flex flex-col flex-1 w-full">
+        <div className="flex flex-col flex-1 w-full min-h-screen">
           <Navbar />
-          <main className="flex-1 p-4 overflow-auto">
+          <main className="flex-1 p-4 overflow-auto m-6 rounded-md">
             <Outlet />
           </main>
         </div>
