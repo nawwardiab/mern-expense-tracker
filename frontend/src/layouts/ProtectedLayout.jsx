@@ -6,24 +6,30 @@ import Aside from "../components/reusable/Aside";
 
 const ProtectedLayout = () => {
   return (
-    <div className="flex h-screen">
-      {/* Sidebar */}
-       {/* Sidebar - Hidden on Small Screens, Visible on Medium and Larger */}
-       <div className="hidden md:block">
-        <Aside />
+    <div className="flex flex-col h-screen">
+      {/* Main Content Container */}
+      <div className="flex flex-1">
+        {/* Sidebar - Visible on Medium Screens and Larger */}
+        <div className="hidden md:flex w-64 flex-shrink-0">
+          <Aside />
+        </div>
+
+        {/* Content Area */}
+        <div className="flex flex-col flex-1 w-full">
+          <Navbar />
+          <main className="flex-1 p-4 overflow-auto">
+            <Outlet />
+          </main>
+        </div>
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 md:ml-64 w-full">
-        <Navbar />
-        <main className="p-4">
-          <Outlet />
-        </main>
-        <Footer />
-      </div>
+      {/* Footer (Spanning Full Width) */}
+      <Footer />
     </div>
   );
 };
 
 export default ProtectedLayout;
+
+
 

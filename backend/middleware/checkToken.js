@@ -6,6 +6,8 @@ import "dotenv/config";
 const checkToken = async (req, res, next) => {
   try {
     // Check if cookies exist
+    console.log("To see if its working", process.env.JWT_SECRET);
+
     if (!req.cookies) {
       throw createError(401, "No cookies found in request");
     }

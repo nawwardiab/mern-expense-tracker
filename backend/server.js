@@ -37,7 +37,7 @@ app.use(globalErrorHandler);
 app.listen(PORT, () => {
   console.log(
     `🚀 Server is up and running!\n` +
-      `🌐 Listening on http://localhost:${PORT}\n` +
-      `📅 Started at: ${new Date().toLocaleString()}\n`
+    `🌐 Listening on http://localhost:${PORT}\n` +
+    `📅 Started at: ${new Date().toLocaleString()}\n`
   );
 });
