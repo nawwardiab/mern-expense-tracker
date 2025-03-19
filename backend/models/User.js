@@ -7,9 +7,10 @@ const userSchema = new Schema(
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     profilePicture: { type: String, default: "" },
-    createdAt: { type: Date, default: Date.now },
-    income: { type: String, default: 0 },
+    location: { type: String, default: "" },
+    currency: { type: String, default: "" },
     paymentMethod: { type: String, default: "" },
+    username: { type: String, unique: true, sparse: true },
     isOnboarded: { type: Boolean, default: false },
   },
   { timestamp: true }
