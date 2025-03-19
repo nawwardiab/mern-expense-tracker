@@ -9,6 +9,7 @@ const userSchema = new Schema(
     profilePicture: { type: String, default: "" },
     location: { type: String, default: "" },
     currency: { type: String, default: "" },
+    income: { type: String, default: "" },
     paymentMethod: { type: String, default: "" },
     username: { type: String, unique: true, sparse: true },
     isOnboarded: { type: Boolean, default: false },

@@ -1,9 +1,13 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import ExpenseItem from "../components/reusable/ExpenseItem.jsx";
 import ExpenseDetails from "../components/modal/ExpenseDetail.jsx";
+import { AuthContext } from "../contexts/AuthContext.jsx";
 
 const HomePage = () => {
+
+  const { user } = useContext(AuthContext);
+
   const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -32,6 +36,15 @@ const HomePage = () => {
     fetchExpenses();
   };
 
+  const getCurrencySymbol = (currencyCode) => {
+    const symbols = {
+      USD: "$",
+      EUR: "€",
+      GBP: "£",
+    };
+    return symbols[currencyCode] || currencyCode; 
+  }
+
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Expense Tracker</h1>
@@ -48,6 +61,7 @@ const HomePage = () => {
           <ExpenseItem 
             key={expense._id} 
             expense={expense} 
+            currencySymbol={getCurrencySymbol(user?.currency)}
             onClick={() => {
               console.log("Clicked:", expense); // ✅ Debugging log
               setSelectedExpense(expense); // ✅ Fix: Pass the entire expense object

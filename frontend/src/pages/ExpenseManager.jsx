@@ -1,14 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import ExpenseList from "../components/ExpenseList";
 import { FaFilter, FaWallet } from "react-icons/fa";
 import { TbListSearch } from "react-icons/tb";
 import { setAxiosDefaults } from "../utils/axiosConfig";
+import { AuthContext } from "../contexts/AuthContext";
 
 // Apply Axios default settings
 setAxiosDefaults();
 
 const ExpenseManager = () => {
+
+  const { user } = useContext(AuthContext);
+
   const [expenses, setExpenses] = useState([]);
   const [filteredExpenses, setFilteredExpenses] = useState([]);
   const [totalFilteredExpenses, setTotalFilteredExpenses] = useState(0);
@@ -17,6 +21,7 @@ const ExpenseManager = () => {
   const [occurrence, setOccurrence] = useState("");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
+
 
   useEffect(() => {
     fetchExpenses();
@@ -55,6 +60,19 @@ const ExpenseManager = () => {
     setTotalFilteredExpenses(total);
   };
 
+
+  const getCurrencySymbol = (currencyCode) => {
+    const symbols = {
+      USD: "$",
+      EUR: "€",
+      GBP: "£",
+    };
+    return symbols[currencyCode] || currencyCode; // Default: return the currency code if not found
+  };
+
+
+ 
+
   return (
     <div className="p-4 md:p-8 max-w-6xl mx-auto">
       <h1 className="text-2xl md:text-4xl font-bold text-center mb-6">
@@ -72,6 +90,7 @@ const ExpenseManager = () => {
         />
         <TbListSearch className="absolute right-4 text-gray-500 text-3xl sm:text-4xl" />
       </div>
+    
 
       {/* Filters Section */}
       <div className="my-6">
@@ -121,12 +140,12 @@ const ExpenseManager = () => {
           <div className="p-5 bg-blue-50 rounded-xl shadow-lg flex flex-col items-center text-center w-full max-w-md">
             <FaWallet className="text-blue-600 text-4xl sm:text-5xl mb-3 mt-6 sm:mt-10" />
             <h2 className="text-lg sm:text-xl font-semibold mt-4">Total Spent</h2>
-            <p className="text-2xl sm:text-3xl font-bold text-gray-800 mt-2">
-              €{totalFilteredExpenses.toFixed(2)}
+
+             {/* Show correct currency symbol dynamically */}
+              <p className="text-2xl sm:text-3xl font-bold text-gray-800 mt-2">
+              {getCurrencySymbol(user?.currency)}{totalFilteredExpenses.toFixed(2)}
             </p>
-            <p className="text-xs sm:text-sm text-gray-600 mt-2">
-              Filtered expenses total
-            </p>
+            <p className="text-xs sm:text-sm text-gray-600 mt-2">Filtered expenses total</p>
           </div>
         </div>
       </div>

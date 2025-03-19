@@ -8,6 +8,7 @@ import {
   FaDollarSign,
   FaCheckCircle,
   FaCamera,
+  FaMoneyBillWave,
 } from "react-icons/fa";
 import { AuthContext } from "../contexts/AuthContext";
 
@@ -20,6 +21,7 @@ const Onboarding = () => {
     email: "",
     username: "",
     location: "",
+    income: "",
     currency: "",
     profilePicture: "",
   });
@@ -56,6 +58,7 @@ const Onboarding = () => {
           email: userData.email || "",
           username: userData.username || "",
           location: userData.location || "",
+          income: userData.income || "",
           currency: userData.currency || "",
           profilePicture: userData.profilePicture || "",
         }));
@@ -124,6 +127,7 @@ const Onboarding = () => {
       email: formData.email || "",
       username: formData.username || "",
       location: formData.location || "",
+      income: formData.income || "",
       currency: formData.currency || "",
       profilePicture: formData.profilePicture || "",
       isOnboarded: true,
@@ -302,7 +306,19 @@ const Onboarding = () => {
                   <option value="EUR">EUR (€)</option>
                   <option value="GBP">GBP (£)</option>
                 </select>
-              </div>
+              </div>xs
+
+              <div className="flex items-center border p-3 rounded-md bg-gray-100">
+                <FaMoneyBillWave className="text-gray-500 mr-3" />
+                <input
+                  type="text"
+                  name="income"
+                  value={formData.income}
+                  onChange={handleChange}
+                  placeholder="Insert your income"
+                  className="w-full bg-transparent outline-none"
+                />
+                </div>
             </>
           )}
 
