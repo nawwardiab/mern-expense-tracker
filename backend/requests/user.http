@@ -1,0 +1,33 @@
+### Register
+POST http://localhost:8000/users/register
+Content-Type: application/json
+
+{
+  "fullName": "ira niko",
+  "email": "ira@gmail.com",
+  "password": "1234"
+}
+
+###
+
+### Login
+POST http://localhost:8000/users/login
+Content-Type: application/json
+
+{
+  "email": "ira@gmail.com",
+  "password": "1234"
+}
+
+### Get Profile
+GET http://localhost:8000/users/profile
+
+
+
+### update profile
+PATCH http://localhost:8000/users/profile
+Content-Type: application/json
+
+{
+  "password": "1234"
+}

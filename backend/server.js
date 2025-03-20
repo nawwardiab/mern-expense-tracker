@@ -1,26 +1,38 @@
 import express from "express";
+import cookieParser from "cookie-parser";
 import cors from "cors";
 import "dotenv/config";
 
 import connectDB from "./utils/database.js";
-// import usersRouter from "./routes/usersRouter.js";
-// import {
-//   globalErrorHandler,
-//   routeNotFound,
-// } from "./middleware/errorHandlers.js";
+import usersRouter from "./routes/usersRouter.js";
+import expensesRouter from "./routes/expensesRouter.js";
+import {
+  globalErrorHandler,
+  routeNotFound,
+} from "./middleware/errorHandler.js";
 
-await connectDB();
+await connectDB(); // Top level await module
 const app = express();
 
 const PORT = process.env.PORT || 6000;
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
+
+app.use(cookieParser());
 app.use(express.json());
 
-// app.use("/users", usersRouter);
+//? Routers
+app.use("/users", usersRouter);
+app.use("/expenses", expensesRouter);
 
-// app.use(routeNotFound);
-// app.use(globalErrorHandler);
+//! Error Handlers
+app.use(routeNotFound);
+app.use(globalErrorHandler);
 
 app.listen(PORT, () => {
   console.log(
