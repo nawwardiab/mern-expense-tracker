@@ -6,6 +6,7 @@ import "dotenv/config";
 import connectDB from "./utils/database.js";
 import usersRouter from "./routes/usersRouter.js";
 import expensesRouter from "./routes/expensesRouter.js";
+import groupsRouter from "./routes/groupsRouter.js";
 import {
   globalErrorHandler,
   routeNotFound,
@@ -29,6 +30,7 @@ app.use(express.json());
 //? Routers
 app.use("/users", usersRouter);
 app.use("/expenses", expensesRouter);
+app.use("/groups", groupsRouter);
 
 //! Error Handlers
 app.use(routeNotFound);
