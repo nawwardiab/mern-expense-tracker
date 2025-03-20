@@ -17,7 +17,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZDk3M2JkY
 
 
 ### Edit Group Name/Description
-PATCH http://localhost:8000/groups/67dbe52998e193da0a69f83d
+PATCH http://localhost:8000/groups/67dc1741d077963094175085
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZDk3M2JkYjA1ZjFkZmIzM2JkMmIwYiIsImlhdCI6MTc0MjQ2NDcwNSwiZXhwIjoxNzQyNTUxMTA1fQ.uV9qnc3C8UEKbOqO1bDkaOdBL-c5j5zFUOKj55G7oEM
 
@@ -28,12 +28,12 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZDk3M2JkY
 
 
 ### Delete a Group (Only by Creator)
-DELETE http://localhost:8000/groups/67dbe52998e193da0a69f83d
+DELETE http://localhost:8000/groups/67dc1741d077963094175085
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZDk3M2JkYjA1ZjFkZmIzM2JkMmIwYiIsImlhdCI6MTc0MjQ2NDcwNSwiZXhwIjoxNzQyNTUxMTA1fQ.uV9qnc3C8UEKbOqO1bDkaOdBL-c5j5zFUOKj55G7oEM
 
 
 ### Add a Member to a Group
-POST http://localhost:8000/groups/67dbe52998e193da0a69f83d/add
+POST http://localhost:8000/groups/67dc1741d077963094175085/add
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZDk3M2JkYjA1ZjFkZmIzM2JkMmIwYiIsImlhdCI6MTc0MjQ2NDcwNSwiZXhwIjoxNzQyNTUxMTA1fQ.uV9qnc3C8UEKbOqO1bDkaOdBL-c5j5zFUOKj55G7oEM
 

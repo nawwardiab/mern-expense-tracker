@@ -4,6 +4,25 @@ import ExpenseDetail from "../components/modal/ExpenseDetail.jsx";
 const ExpenseList = ({ expenses }) => {
   const [selectedExpense, setSelectedExpense] = useState(null);
 
+  const formatDate = (dateString, isRecurring, recurringFrequency) => {
+    if (isRecurring && recurringFrequency) {
+      return `${
+        recurringFrequency.charAt(0).toUpperCase() + recurringFrequency.slice(1)
+      }`;
+    }
+
+    const date = new Date(dateString);
+
+    if (isNaN(date)) return "Invalid Date";
+
+    // Format as dd/mm/yyyy
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are zero-based
+    const year = date.getFullYear();
+
+    return `${day}/${month}/${year}`;
+  };
+
   return (
     <div className="mt-10 w-full max-w-5xl mx-auto px-2 sm:px-4">
       <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6">
@@ -46,7 +65,11 @@ const ExpenseList = ({ expenses }) => {
                     </span>
                   </td>
                   <td className="px-4 sm:px-6 py-4 text-right">
-                    {new Date(expense.transactionDate).toLocaleDateString()}
+                    {formatDate(
+                      expense.transactionDate,
+                      expense.isRecurring,
+                      expense.recurringFrequency
+                    )}
                   </td>
                 </tr>
               ))
@@ -81,7 +104,13 @@ const ExpenseList = ({ expenses }) => {
                   <span className="text-xs bg-gray-200 px-2 py-1 rounded-full">
                     {expense.category}
                   </span>
-                  <span>{new Date(expense.transactionDate).toLocaleDateString()}</span>
+                  <span>
+                    {formatDate(
+                      expense.transactionDate,
+                      expense.isRecurring,
+                      expense.recurringFrequency
+                    )}
+                  </span>
                 </div>
               </div>
             ))
@@ -103,4 +132,3 @@ const ExpenseList = ({ expenses }) => {
 };
 
 export default ExpenseList;
-
