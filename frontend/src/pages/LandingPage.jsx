@@ -40,9 +40,11 @@ const LandingPage = () => {
     <div className="flex flex-col min-h-screen w-full overflow-hidden m-0 p-0">
       {/* Navbar */}
       <nav className="bg-white shadow-md fixed w-full z-10 top-0 flex justify-between items-center px-6 py-4 md:px-10">
-        <h1 className="text-2xl font-bold">TRACK$</h1>
+        <h1 
+        onClick={() => scrollToSection("hero")}
+        className="text-2xl font-bold cursor-pointer">TRACK$</h1>
         <button
-          className="text-2xl md:hidden"
+          className="text-2xl md:hidden cursor-pointer"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
           {isMenuOpen ? <FaTimes /> : <FaBars />}
@@ -51,7 +53,7 @@ const LandingPage = () => {
           <li>
             <button
               onClick={() => scrollToSection("services")}
-              className="hover:text-gray-500"
+              className="hover:text-gray-500 cursor-pointer"
             >
               Services
             </button>
@@ -59,7 +61,7 @@ const LandingPage = () => {
           <li>
             <button
               onClick={() => scrollToSection("pricing")}
-              className="hover:text-gray-500"
+              className="hover:text-gray-500 cursor-pointer"
             >
               Pricing
             </button>
@@ -67,7 +69,7 @@ const LandingPage = () => {
           <li>
             <button
               onClick={() => scrollToSection("contact")}
-              className="hover:text-gray-500"
+              className="hover:text-gray-500 cursor-pointer"
             >
               Contact
             </button>
@@ -75,38 +77,38 @@ const LandingPage = () => {
         </ul>
       </nav>
 
-      {/* Mobile Dropdown Menu */}
-      {isMenuOpen && (
-        <ul className="md:hidden absolute top-16 left-0 w-full bg-white shadow-md flex flex-col items-center space-y-4 py-4">
-          <li>
-            <button
-              onClick={() => scrollToSection("services")}
-              className="hover:text-gray-500"
-            >
-              Services
-            </button>
-          </li>
-          <li>
-            <button
-              onClick={() => scrollToSection("pricing")}
-              className="hover:text-gray-500"
-            >
-              Pricing
-            </button>
-          </li>
-          <li>
-            <button
-              onClick={() => scrollToSection("contact")}
-              className="hover:text-gray-500"
-            >
-              Contact
-            </button>
-          </li>
-        </ul>
-      )}
+      {/* Mobile Dropdown Menu (Appears Below Navbar) */}
+{isMenuOpen && (
+   <ul className="md:hidden fixed top-[60px] left-1/2 transform -translate-x-1/2 w-3/4 max-w-sm bg-white shadow-lg flex flex-col items-center space-y-4 py-4 z-50 rounded-[8px]">
+    <li>
+      <button
+        onClick={() => scrollToSection("services")}
+        className="hover:text-gray-500 text-lg py-2 cursor-pointer"
+      >
+        Services
+      </button>
+    </li>
+    <li>
+      <button
+        onClick={() => scrollToSection("pricing")}
+        className="hover:text-gray-500 text-lg py-2 cursor-pointer"
+      >
+        Pricing
+      </button>
+    </li>
+    <li>
+      <button
+        onClick={() => scrollToSection("contact")}
+        className="hover:text-gray-500 text-lg py-2 cursor-pointer"
+      >
+        Contact
+      </button>
+    </li>
+  </ul>
+)}
 
       {/* Hero Section */}
-      <header className="relative flex flex-col items-center justify-center text-center h-screen w-full overflow-hidden m-0 p-0">
+      <header id="hero" className="relative flex flex-col items-center justify-center text-center h-screen w-full overflow-hidden m-0 p-0">
         <video
           className="absolute top-0 left-0 w-full h-full object-cover m-0 p-0"
           autoPlay
@@ -126,13 +128,13 @@ const LandingPage = () => {
           <div className="flex space-x-10 absolute bottom-20">
             <button
               onClick={handleGoToSignUp}
-              className="px-6 py-3 bg-white text-black font-semibold rounded-lg shadow-lg hover:bg-gray-400 transition duration-300"
+              className="px-6 py-3 bg-white text-black font-semibold rounded-lg shadow-lg hover:bg-gray-400 transition duration-300 cursor-pointer"
             >
               Sign Up
             </button>
             <button
               onClick={handleGoToLogin}
-              className="px-6 py-3 bg-white text-black font-semibold rounded-lg shadow-lg hover:bg-gray-400 transition duration-300"
+              className="px-6 py-3 bg-white text-black font-semibold rounded-lg shadow-lg hover:bg-gray-400 transition duration-300 cursor-pointer"
             >
               Log In
             </button>
@@ -141,7 +143,7 @@ const LandingPage = () => {
       </header>
 
       {/* Services Section */}
-      <section className="py-24 bg-white text-center">
+      <section id="services" className="py-24 bg-white text-center">
         <h2 className="text-4xl font-extrabold mb-12 text-gray-900 tracking-wide">
           Our Core Services
         </h2>
@@ -154,7 +156,7 @@ const LandingPage = () => {
                 "Gain full control over your spending with real-time insights and smart categorization.",
               icon: (
                 <FaMoneyBillWave className="text-6xl text-green-500 mb-6 mx-auto" />
-              ), // Centered Icon
+              ), 
               bgColor: "bg-green-50",
             },
             {
@@ -163,7 +165,7 @@ const LandingPage = () => {
                 "Set clear financial goals, monitor your cash flow, and optimize your monthly budget.",
               icon: (
                 <FaChartPie className="text-6xl text-blue-500 mb-6 mx-auto" />
-              ), // Centered Icon
+              ), 
               bgColor: "bg-blue-50",
             },
             {
@@ -172,7 +174,7 @@ const LandingPage = () => {
                 "Make informed financial decisions with AI-powered analytics and visual reports.",
               icon: (
                 <FaClipboardList className="text-6xl text-purple-500 mb-6 mx-auto" />
-              ), // Centered Icon
+              ), 
               bgColor: "bg-purple-50",
             },
           ].map((service, index) => (
@@ -193,7 +195,7 @@ const LandingPage = () => {
       </section>
 
       {/* Pricing Section */}
-      <section className="py-10 bg-gray-50 text-center">
+      <section id="pricing" className="py-10 bg-gray-50 text-center">
         <h2 className="text-4xl font-extrabold mb-12 text-gray-900 tracking-wide">
           Pricing Plans
         </h2>
@@ -260,7 +262,7 @@ const LandingPage = () => {
       </section>
 
       {/* Contact Form */}
-      <section className="py-16 bg-gray-50 text-center">
+      <section id="contact" className="py-16 bg-gray-50 text-center">
         <h2 className="text-3xl font-bold mb-6">Get in Touch</h2>
 
         {/* State to track form submission */}

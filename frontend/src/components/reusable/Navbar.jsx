@@ -44,7 +44,7 @@ const Navbar = () => {
     <>
       <nav className="h-16 flex justify-between gap-20 items-center p-4 bg-gray-100 text-white shadow-md">
         {/* App logo */}
-        <h1 className="text-2xl text-black font-bold">Track$</h1>
+        <h1 onClick={() => navigate("/")} className="text-2xl text-black font-bold cursor-pointer">Track$</h1>
 
         {/* Search Bar */}
         <form className="hidden md:flex grow items-center space-x-2 bg-white rounded-lg px-3 py-1 text-black">
