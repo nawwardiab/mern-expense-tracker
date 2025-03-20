@@ -14,7 +14,6 @@ const ExpenseDetails = ({ expense, onClose }) => {
     console.log("ExpenseDetails received: null");
     return <p className="text-center text-red-500">Expense not found.</p>;
   }
- 
 
   const toggleEdit = (field) => {
     setIsEditing((prev) => ({ ...prev, [field]: !prev[field] }));
@@ -165,20 +164,33 @@ const ExpenseDetails = ({ expense, onClose }) => {
         </div>
 
         {/* Regularity */}
+        {/* Regularity Selection */}
         <div className="mt-4">
           <label className="block text-sm font-semibold mb-1">Regularity</label>
           <div className="flex items-center">
-            <input
-              type="text"
-              name="regularity"
-              value={editedExpense.recurringFrequency || ""}
-              onChange={handleChange}
-              className=" w-48 bg-black text-white px-3 py-1 rounded-lg"
-              readOnly={!isEditing.recurringFrequency}
-            />
+            {isEditing.recurringFrequency ? (
+              // Dropdown when editing
+              <select
+                name="recurringFrequency"
+                value={editedExpense.recurringFrequency || "one-time"}
+                onChange={handleChange}
+                className="w-48 bg-black text-white px-3 py-1 rounded-lg"
+              >
+                <option value="one-time">One-Time</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+                <option value="yearly">Yearly</option>
+              </select>
+            ) : (
+              // Display text when not editing
+              <span className="w-48 bg-black text-white px-3 py-1 rounded-lg">
+                {editedExpense.recurringFrequency}
+              </span>
+            )}
+
             <MdEdit
-          className="ml-2 cursor-pointer text-2xl text-gray-600 hover:border gray-300 hover:text-black"
-              onClick={() => toggleEdit("regularity")}
+              className="ml-2 cursor-pointer text-2xl text-gray-600 hover:border gray-300 hover:text-black"
+              onClick={() => toggleEdit("recurringFrequency")}
             />
           </div>
         </div>
@@ -190,41 +202,50 @@ const ExpenseDetails = ({ expense, onClose }) => {
           </label>
           {editedExpense.recurringFrequency !== "one-time" ? (
             <div className="flex items-center gap-4">
+              {/* Start Date */}
               <div className="flex items-center">
                 <label className="block text-xs mr-2">Start Date</label>
                 <input
                   type="date"
                   name="startDate"
-                  value={editedExpense.transactionDate ? editedExpense.transactionDate.split("T")[0] : ""}
-
+                  value={
+                    editedExpense.startDate
+                      ? editedExpense.startDate.split("T")[0]
+                      : ""
+                  }
                   onChange={handleChange}
                   className="w-full p-2 rounded-xl border border-gray-400 bg-gray-100"
-                  readOnly={!isEditing.transactionDate}
+                  readOnly={!isEditing.startDate} // Ensure it gets toggled properly
                 />
                 <MdEdit
-                className="ml-2 cursor-pointer text-2xl text-gray-600 hover:border gray-300 hover:text-black"
+                  className="ml-2 cursor-pointer text-2xl text-gray-600 hover:border gray-300 hover:text-black"
                   onClick={() => toggleEdit("startDate")}
                 />
               </div>
 
+              {/* End Date */}
               <div className="flex items-center">
                 <label className="block text-xs mr-2">End Date</label>
                 <input
                   type="date"
                   name="endDate"
-                  value={editedExpense.endDate ? editedExpense.endDate.split("T")[0] : ""}
-
+                  value={
+                    editedExpense.endDate
+                      ? editedExpense.endDate.split("T")[0]
+                      : ""
+                  }
                   onChange={handleChange}
                   className="w-full p-2 rounded-xl border border-gray-400 bg-gray-100"
                   readOnly={!isEditing.endDate}
                 />
                 <MdEdit
-                 className="ml-2 cursor-pointer text-2xl text-gray-600 hover:border gray-300 hover:text-black"
+                  className="ml-2 cursor-pointer text-2xl text-gray-600 hover:border gray-300 hover:text-black"
                   onClick={() => toggleEdit("endDate")}
                 />
               </div>
             </div>
           ) : (
+            // One-time expense: transaction date
             <div className="flex items-center">
               <input
                 type="date"
@@ -235,7 +256,7 @@ const ExpenseDetails = ({ expense, onClose }) => {
                 readOnly={!isEditing.transactionDate}
               />
               <MdEdit
-               className="ml-2 cursor-pointer text-2xl text-gray-600 hover:border gray-300 hover:text-black"
+                className="ml-2 cursor-pointer text-2xl text-gray-600 hover:border gray-300 hover:text-black"
                 onClick={() => toggleEdit("transactionDate")}
               />
             </div>

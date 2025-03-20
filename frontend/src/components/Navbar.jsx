@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { FaBars, FaTimes } from "react-icons/fa";
 
 const Navbar = () => {
@@ -16,7 +16,7 @@ const Navbar = () => {
   return (
     <nav className="bg-white shadow-md py-4 px-6 flex justify-between items-center">
       {/* Logo */}
-      <h1 className="text-2xl font-bold">Track$</h1>
+      <h1 className="text-2xl font-bold cursor-pointer">Track$</h1>
 
       {/* Mobile Menu Button */}
       <button
