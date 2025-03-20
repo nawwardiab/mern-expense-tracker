@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import ExpenseDetail from "../components/modal/ExpenseDetail.jsx";
 
-const ExpenseList = ({ expenses }) => {
+const ExpenseList = ({ expenses, updateExpense }) => {
   const [selectedExpense, setSelectedExpense] = useState(null);
 
   const formatDate = (dateString, isRecurring, recurringFrequency) => {
@@ -125,6 +125,7 @@ const ExpenseList = ({ expenses }) => {
         <ExpenseDetail
           expense={selectedExpense}
           onClose={() => setSelectedExpense(null)}
+          updateExpense={updateExpense}
         />
       )}
     </div>
