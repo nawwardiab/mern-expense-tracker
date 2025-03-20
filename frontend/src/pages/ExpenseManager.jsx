@@ -71,7 +71,7 @@ const ExpenseManager = () => {
   };
 
 
- 
+
 
   return (
     <div className="p-4 md:p-8 max-w-6xl mx-auto">
@@ -90,7 +90,7 @@ const ExpenseManager = () => {
         />
         <TbListSearch className="absolute right-4 text-gray-500 text-3xl sm:text-4xl" />
       </div>
-    
+
 
       {/* Filters Section */}
       <div className="my-6">
@@ -99,9 +99,8 @@ const ExpenseManager = () => {
           {["Fixed", "Group Expenses", "Food&Drinks", "Entertainment", "Subscriptions", "Others"].map((cat) => (
             <button
               key={cat}
-              className={`px-3 sm:px-4 py-2 rounded-lg shadow-md text-sm sm:text-base ${
-                category === cat ? "bg-black text-white" : "border"
-              }`}
+              className={`px-3 sm:px-4 py-2 rounded-lg shadow-md text-sm sm:text-base ${category === cat ? "bg-black text-white" : "border"
+                }`}
               onClick={() => setCategory(category === cat ? "" : cat)}
             >
               {cat}
@@ -117,9 +116,8 @@ const ExpenseManager = () => {
           {["Weekly", "Monthly", "Yearly", "One-Time"].map((occ) => (
             <button
               key={occ}
-              className={`px-3 sm:px-4 py-2 rounded-lg shadow-md text-sm sm:text-base ${
-                occurrence === occ ? "bg-black text-white" : "border"
-              }`}
+              className={`px-3 sm:px-4 py-2 rounded-lg shadow-md text-sm sm:text-base ${occurrence === occ ? "bg-black text-white" : "border"
+                }`}
               onClick={() => setOccurrence(occurrence === occ ? "" : occ)}
             >
               {occ}
@@ -141,8 +139,8 @@ const ExpenseManager = () => {
             <FaWallet className="text-blue-600 text-4xl sm:text-5xl mb-3 mt-6 sm:mt-10" />
             <h2 className="text-lg sm:text-xl font-semibold mt-4">Total Spent</h2>
 
-             {/* Show correct currency symbol dynamically */}
-              <p className="text-2xl sm:text-3xl font-bold text-gray-800 mt-2">
+            {/* Show correct currency symbol dynamically */}
+            <p className="text-2xl sm:text-3xl font-bold text-gray-800 mt-2">
               {getCurrencySymbol(user?.currency)}{totalFilteredExpenses.toFixed(2)}
             </p>
             <p className="text-xs sm:text-sm text-gray-600 mt-2">Filtered expenses total</p>
@@ -154,4 +152,3 @@ const ExpenseManager = () => {
 };
 
 export default ExpenseManager;
-
