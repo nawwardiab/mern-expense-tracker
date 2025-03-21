@@ -46,13 +46,7 @@ const GroupDetail = ({ group }) => {
         </button>
       </div>
 
-      {/* Summary Section */}
-      <div className="mt-6 flex justify-between border-b pb-4">
-        <h2 className="text-lg font-semibold">Total Cost</h2>
-        <h2 className="text-lg font-semibold">Members</h2>
-      </div>
-
-      {/* Expenses Section */}
+      {/* Expenses Section . if you are allowing users to log multiple expenses within a group.*/}
       <div className="mt-6">
         <h2 className="text-lg font-semibold mb-2">Expenses</h2>
         {expenses.length > 0 ? (
@@ -60,6 +54,28 @@ const GroupDetail = ({ group }) => {
         ) : (
           <p className="text-gray-500 text-center py-4">No expenses recorded yet.</p>
         )}
+      </div>
+
+      {/* Summary Section */}
+      <div className="mt-6 grid grid-cols-3 gap-4 border-b pb-4 text-center">
+        <div>
+          <h2 className="text-sm font-semibold text-gray-600">Total Cost</h2>
+          <p className="text-xl font-bold text-gray-900">
+            {group?.totalAmount || 0} €
+          </p>
+        </div>
+        <div>
+          <h2 className="text-sm font-semibold text-gray-600">Members</h2>
+          <p className="text-xl font-bold text-gray-900">{group?.members?.length || "—"}</p>
+        </div>
+        {/* <div>
+          <h2 className="text-sm font-semibold text-gray-600">Split Per Person</h2>
+          <p className="text-xl font-bold text-gray-900">
+            {group?.members?.length > 0
+              ? `${(expenses.reduce((sum, exp) => sum + Number(exp.amount || 0), 0) / group.members.length).toFixed(2)} €`
+              : "—"}
+          </p>
+        </div>*/}
       </div>
 
       {/* Add Expense Modal */}
