@@ -17,8 +17,10 @@ export const getUserGroups = async (req, res) => {
 //Create a new group
 export const createGroup = async (req, res) => {
   try {
-    const { name, description, members } = req.body;
-    const userId = req.user.id; 
+    // Added members = [], totalAmount = 0
+    const { name, description, members = [], totalAmount = 0 } = req.body;
+    console.log("🟢 Received Payload:", req.body);
+    const userId = req.user.id;
 
     if (!name || members.length === 0) {
       return res.status(400).json({ message: "Group name and members are required." });
@@ -29,25 +31,30 @@ export const createGroup = async (req, res) => {
       return res.status(400).json({ message: "Group name already exists." });
     }
 
-    const formattedMembers = members.map(memberId => ({
-      userId: memberId,
-      role: "member",
+    // Formatted Members
+    const formattedMembers = members.map(member => ({
+      userId: member.userId || member,
+      role: member.role || "member",
     }));
+    console.log("🟢 Formatted Members:", formattedMembers);
 
-    formattedMembers.push({ userId, role: "admin" });
+    // Ensure creator is admin
+    formattedMembers.push({ userId: req.user.id, role: "admin" });
 
+    // Create the group
     const group = new Group({
       name,
       description,
       members: formattedMembers,
-      totalAmount: 0,
-      createdBy: userId,
+      totalAmount,
+      createdBy: req.user.id,
     });
 
     await group.save();
     res.status(201).json({ message: "Group created successfully.", group });
 
   } catch (error) {
+    console.error("❌ Error creating group:", error);
     res.status(500).json({ message: "Server error", error });
   }
 };

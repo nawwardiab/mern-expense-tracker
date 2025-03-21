@@ -1,6 +1,7 @@
 import express from "express";
 import checkToken from "../middleware/checkToken.js";
 import {
+  getUsers,
   login,
   register,
   logout,
@@ -12,6 +13,7 @@ import {
 const router = express.Router();
 
 router
+  .get("/", getUsers)
   .post("/register", register)
   .post("/login", login)
   .get("/logout", logout)
