@@ -2,15 +2,22 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import ExpenseTable from "./ExpenseTable";
 import AddGroupExpense from "./modal/AddGroupExpense";
+import EditGroupModal from "./modal/EditGroupModal";
 
 const GroupDetail = ({ group }) => {
   const [expenses, setExpenses] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [groupInfo, setGroupInfo] = useState(group);
 
   useEffect(() => {
     if (group?._id) {
       fetchExpenses();
     }
+  }, [group]);
+
+  useEffect(() => {
+    setGroupInfo(group);
   }, [group]);
 
   const fetchExpenses = async () => {
@@ -24,29 +31,43 @@ const GroupDetail = ({ group }) => {
     }
   };
 
-  const handleExpenseAdded = (newExpense) => {
-    setExpenses((prevExpenses) => [...prevExpenses, newExpense]); // Update list
+  const fetchUpdatedGroup = async () => {
+    try {
+      const { data } = await axios.get(`/groups/${group._id}`, {
+        withCredentials: true,
+      });
+      setGroupInfo(data); // ✅ update UI
+    } catch (error) {
+      console.error("❌ Failed to fetch updated group:", error);
+    }
   };
+
+  const handleExpenseAdded = (newExpense) => {
+    setExpenses((prevExpenses) => [...prevExpenses, newExpense]);
+  };
+
+  const uniqueMemberCount = new Set(groupInfo?.members?.map(m => m.userId)).size;
 
   return (
     <div className="p-6 bg-white rounded-lg shadow-lg w-full">
-      {/* Group Name & Description */}
+
+      {/* Group Name & Edit Button */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">{group?.name || "Select a Group"}</h1>
-          <p className="text-gray-600 mt-2">{group?.description || "No description available."}</p>
+          <h1 className="text-3xl font-bold text-gray-900">{groupInfo?.name}</h1>
+          <p className="text-gray-600 mt-2">{groupInfo?.description}</p>
         </div>
-
-        {/* Add Expense Button */}
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="bg-black text-white px-6 py-3 rounded-lg shadow-md hover:bg-gray-900 transition-all"
-        >
-          + Add Expense
-        </button>
+        <div className="flex gap-3">
+          <button
+            className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300"
+            onClick={() => setEditModalOpen(true)}
+          >
+            ✏️ Edit Group
+          </button>
+        </div>
       </div>
 
-      {/* Expenses Section . if you are allowing users to log multiple expenses within a group.*/}
+      {/* Expenses */}
       <div className="mt-6">
         <h2 className="text-lg font-semibold mb-2">Expenses</h2>
         {expenses.length > 0 ? (
@@ -56,26 +77,20 @@ const GroupDetail = ({ group }) => {
         )}
       </div>
 
-      {/* Summary Section */}
+      {/* Summary */}
       <div className="mt-6 grid grid-cols-3 gap-4 border-b pb-4 text-center">
         <div>
           <h2 className="text-sm font-semibold text-gray-600">Total Cost</h2>
           <p className="text-xl font-bold text-gray-900">
-            {group?.totalAmount || 0} €
+            {groupInfo?.totalAmount || 0} €
           </p>
         </div>
         <div>
           <h2 className="text-sm font-semibold text-gray-600">Members</h2>
-          <p className="text-xl font-bold text-gray-900">{group?.members?.length || "—"}</p>
-        </div>
-        {/* <div>
-          <h2 className="text-sm font-semibold text-gray-600">Split Per Person</h2>
           <p className="text-xl font-bold text-gray-900">
-            {group?.members?.length > 0
-              ? `${(expenses.reduce((sum, exp) => sum + Number(exp.amount || 0), 0) / group.members.length).toFixed(2)} €`
-              : "—"}
+            {uniqueMemberCount || "—"}
           </p>
-        </div>*/}
+        </div>
       </div>
 
       {/* Add Expense Modal */}
@@ -83,8 +98,17 @@ const GroupDetail = ({ group }) => {
         <AddGroupExpense
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
-          groupId={group._id}
-          onExpenseAdded={handleExpenseAdded} // Update list when added
+          groupId={groupInfo._id}
+          onExpenseAdded={handleExpenseAdded}
+        />
+      )}
+
+      {/* Edit Group Modal */}
+      {editModalOpen && (
+        <EditGroupModal
+          group={groupInfo}
+          onClose={() => setEditModalOpen(false)}
+          onGroupUpdated={fetchUpdatedGroup}
         />
       )}
     </div>

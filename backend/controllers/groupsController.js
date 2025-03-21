@@ -64,7 +64,8 @@ export const createGroup = async (req, res) => {
 export const updateGroup = async (req, res) => {
   try {
     const { groupId } = req.params;
-    const { name, description } = req.body;
+    // Added totalAmount, members to be able to edit it
+    const { name, description, totalAmount, members } = req.body;
     const userId = req.user.id;
 
     const group = await Group.findById(groupId);
@@ -79,11 +80,15 @@ export const updateGroup = async (req, res) => {
 
     if (name) group.name = name;
     if (description) group.description = description;
+    // Added totalAmount and members
+    if (totalAmount !== undefined) group.totalAmount = totalAmount;
+    if (Array.isArray(members)) group.members = members;
 
     await group.save();
     res.json({ message: "Group updated successfully.", group });
 
   } catch (error) {
+    console.error("Failed to update group:", err);
     res.status(500).json({ message: "Server error", error });
   }
 };
