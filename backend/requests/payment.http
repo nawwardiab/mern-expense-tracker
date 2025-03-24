@@ -1,0 +1,30 @@
+### 1️⃣ Get All Payments (Requires Auth)
+GET http://localhost:5000/payments
+Content-Type: application/json
+Cookie:  jwtToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZDdkYzdkNmM5YTc5YWExNzA2OTg1MyIsImlhdCI6MTc0MjQ2MjQ3MywiZXhwIjoxNzQyNTQ4ODczfQ.Uz96_XXKy4d6IKfHPTm6YZjU3V-WBAqRqbWXA9lwrpU; Max-Age=86400; Path=/; Expires=Fri, 21 Mar 2025 09:21:13 GMT; HttpOnly
+
+### 2️⃣ Create a New Payment
+POST http://localhost:8000/payments/create
+Content-Type: application/json
+Cookie:  jwtToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZDdkYzdkNmM5YTc5YWExNzA2OTg1MyIsImlhdCI6MTc0MjQ2MjQ3MywiZXhwIjoxNzQyNTQ4ODczfQ.Uz96_XXKy4d6IKfHPTm6YZjU3V-WBAqRqbWXA9lwrpU; Max-Age=86400; Path=/; Expires=Fri, 21 Mar 2025 09:21:13 GMT; HttpOnly
+
+{
+    "groupId": "65f2aab1d12345f7bcd89ef3",
+    "payer": "67d7dc7d6c9a79aa17069853",
+    "payee": "67d7dc7d6c9a79aa17069853",
+    "amount": 50,
+    "paymentMethod": "stripe"
+}
+
+### 3️⃣ Get a Specific Payment by ID
+GET http://localhost:8000/payments/67dbde65970ba5fb39bda295
+Content-Type: application/json
+Cookie:  jwtToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZDdkYzdkNmM5YTc5YWExNzA2OTg1MyIsImlhdCI6MTc0MjQ2MjQ3MywiZXhwIjoxNzQyNTQ4ODczfQ.Uz96_XXKy4d6IKfHPTm6YZjU3V-WBAqRqbWXA9lwrpU; Max-Age=86400; Path=/; Expires=Fri, 21 Mar 2025 09:21:13 GMT; HttpOnly
+
+### 4️⃣ Update Payment Status to "completed"
+PATCH http://localhost:5000/payments/65f2aab1d12345f7bcd89ef6
+Content-Type: application/json
+Cookie: jwtToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZDdkYzdkNmM5YTc5YWExNzA2OTg1MyIsImlhdCI6MTc0MjQ2MjQ3MywiZXhwIjoxNzQyNTQ4ODczfQ.Uz96_XXKy4d6IKfHPTm6YZjU3V-WBAqRqbWXA9lwrpU; Max-Age=86400; Path=/; Expires=Fri, 21 Mar 2025 09:21:13 GMT; HttpOnly
+{
+    "status": "completed"
+}
