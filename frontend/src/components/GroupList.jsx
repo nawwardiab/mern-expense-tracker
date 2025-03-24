@@ -1,3 +1,4 @@
+// GroupList should fetch and show all groups from the backend, and when a new group is added, show it at the top — without duplicating or managing groups manually inside GroupList.
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
@@ -19,7 +20,7 @@ const GroupList = ({ selectedGroup, setSelectedGroup, onGroupAdded, currentUser 
 
     // Update the group list when a new group is added
     const handleGroupAdded = (newGroup) => {
-        setGroups((prevGroups) => [...prevGroups, newGroup]);
+        setGroups((prevGroups) => [newGroup, ...prevGroups]);
     };
 
     return (

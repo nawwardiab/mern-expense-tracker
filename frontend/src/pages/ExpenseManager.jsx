@@ -78,16 +78,12 @@ const ExpenseManager = () => {
       return;
     }
 
-<<<<<<< HEAD
-
-=======
     setExpenses((prevExpenses) =>
       prevExpenses.map((expense) =>
         expense._id === updatedExpense._id ? updatedExpense : expense
       )
     );
   };
->>>>>>> main
 
   return (
     <div className="p-4 md:p-8 max-w-6xl mx-auto">
@@ -106,10 +102,6 @@ const ExpenseManager = () => {
         />
         <TbListSearch className="absolute right-4 text-gray-500 text-3xl sm:text-4xl" />
       </div>
-<<<<<<< HEAD
-
-=======
->>>>>>> main
 
       {/* Filters Section */}
       <div className="my-6">
@@ -172,15 +164,11 @@ const ExpenseManager = () => {
 
             {/* Show correct currency symbol dynamically */}
             <p className="text-2xl sm:text-3xl font-bold text-gray-800 mt-2">
-<<<<<<< HEAD
-              {getCurrencySymbol(user?.currency)}{totalFilteredExpenses.toFixed(2)}
-=======
               {getCurrencySymbol(user?.currency)}
               {totalFilteredExpenses.toFixed(2)}
             </p>
             <p className="text-xs sm:text-sm text-gray-600 mt-2">
               Filtered expenses total
->>>>>>> main
             </p>
           </div>
         </div>
@@ -189,8 +177,4 @@ const ExpenseManager = () => {
   );
 };
 
-<<<<<<< HEAD
 export default ExpenseManager;
-=======
-export default ExpenseManager;
->>>>>>> main
