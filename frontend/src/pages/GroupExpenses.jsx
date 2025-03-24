@@ -1,14 +1,23 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useContext } from "react";
+
 import GroupList from "../components/GroupList";
 import GroupDetail from "../components/GroupDetail";
 import ExpenseTable from "../components/ExpenseTable";
 import AddGroupExpense from "../components/modal/AddGroupExpense";
+import { AuthContext } from "../contexts/AuthContext";
+
 
 const GroupExpenses = () => {
   const [groups, setGroups] = useState([]);
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { user: currentUser } = useContext(AuthContext);
+
+  //if (loading) {
+  //  return <div className="text-center p-6">Loading...</div>;
+  //}
 
   useEffect(() => {
     fetchGroups();
@@ -48,7 +57,11 @@ const GroupExpenses = () => {
         {/* Sidebar - Group List */}
         <aside className="w-1/4 bg-white border-r shadow-md p-4 overflow-auto">
           <h2 className="text-lg font-semibold mb-4">Groups</h2>
-          <GroupList groups={groups} selectedGroup={selectedGroup} setSelectedGroup={setSelectedGroup} />
+          <GroupList
+            selectedGroup={selectedGroup}
+            setSelectedGroup={setSelectedGroup}
+            currentUser={currentUser}
+          />
         </aside>
 
         {/* Main Content */}

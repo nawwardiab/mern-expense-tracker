@@ -1,16 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-const GroupList = ({ selectedGroup, setSelectedGroup, onGroupAdded }) => {
+const GroupList = ({ selectedGroup, setSelectedGroup, onGroupAdded, currentUser }) => {
     const [groups, setGroups] = useState([]);
 
     useEffect(() => {
         fetchGroups();
     }, []);
-
-    useEffect(() => {
-        fetchGroups();
-    }, [groups]); // Runs when a new group is added
 
     const fetchGroups = async () => {
         try {
@@ -29,16 +25,25 @@ const GroupList = ({ selectedGroup, setSelectedGroup, onGroupAdded }) => {
     return (
         <div className="w-full bg-gray-100 p-6 h-screen">
             <ul className="space-y-2">
-                {groups.map((group) => (
-                    <li
-                        key={group._id}
-                        className={`p-4 rounded-lg cursor-pointer text-lg text-center 
-                        ${selectedGroup?._id === group._id ? "bg-gray-300 font-bold" : "hover:bg-gray-200"}`}
-                        onClick={() => setSelectedGroup(group)}
-                    >
-                        {group.name}
-                    </li>
-                ))}
+                {groups.map((group) => {
+
+                    const isCreator = currentUser?._id && group.creator === currentUser._id;
+
+                    return (
+                        <li
+                            key={group._id}
+                            className={`p-4 rounded-lg cursor-pointer text-lg text-center 
+                ${selectedGroup?._id === group._id ? "bg-gray-300 font-bold" : "hover:bg-gray-200"}`}
+                            onClick={() => {
+                                if (!currentUser?._id) return;
+                                const isCreator = group.creator === currentUser._id;
+                                setSelectedGroup({ ...group, isCreator });
+                            }}
+                        >
+                            {group.name}
+                        </li>
+                    );
+                })}
             </ul>
         </div>
     );

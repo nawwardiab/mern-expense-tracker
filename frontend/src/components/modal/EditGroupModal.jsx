@@ -47,17 +47,6 @@ const EditGroupModal = ({ group, onClose, onGroupUpdated }) => {
             members,
         };
 
-        const fetchUpdatedGroup = async () => {
-            try {
-                const { data } = await axios.get(`http://localhost:8000/groups/${group._id}`, {
-                    withCredentials: true,
-                });
-                setGroupInfo(data); // ✅ update UI immediately
-            } catch (error) {
-                console.error("Failed to fetch updated group:", error);
-            }
-        };
-
         try {
             await axios.patch(`http://localhost:8000/groups/${group._id}`, editedGroup, {
                 withCredentials: true,
@@ -69,6 +58,20 @@ const EditGroupModal = ({ group, onClose, onGroupUpdated }) => {
             console.error("Failed to update group:", error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleDeleteGroup = async () => {
+        if (!window.confirm("Are you sure you want to delete this group?")) return;
+
+        try {
+            await axios.delete(`http://localhost:8000/groups/${group._id}`, {
+                withCredentials: true,
+            });
+            if (onGroupUpdated) onGroupUpdated(); // refresh list
+            onClose();
+        } catch (error) {
+            console.error("Failed to delete group:", error);
         }
     };
 
@@ -132,6 +135,16 @@ const EditGroupModal = ({ group, onClose, onGroupUpdated }) => {
                     >
                         {loading ? "Saving..." : "Save Changes"}
                     </button>
+
+                    {group.isCreator && (
+                        <button
+                            type="button"
+                            className="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700 mt-2"
+                            onClick={handleDeleteGroup}
+                        >
+                            Delete Group
+                        </button>
+                    )}
                 </form>
             </div>
         </div>

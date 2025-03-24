@@ -152,6 +152,13 @@ const AddGroupExpense = ({ isOpen, onClose, onGroupAdded }) => {
       totalAmount: expense.amount,
     });
 
+    // Add validation to ensure at least 2 members are selected before creating the group
+    if (selectedMembers.length < 2) {
+      setMessage({ type: "error", text: "A group must have at least 2 members." });
+      setLoading(false);
+      return;
+    }
+
     const payload = {
       name: group.name,
       description: group.description,
@@ -356,7 +363,10 @@ const AddGroupExpense = ({ isOpen, onClose, onGroupAdded }) => {
           </div>
 
           {/* Submit Button */}
-          <button type="submit" disabled={loading} className="w-full bg-black text-white py-3 rounded-lg text-lg hover:bg-gray-800 transition">
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-black text-white py-3 rounded-lg text-lg hover:bg-gray-800 transition">
             {loading ? "Saving..." : "Create Group & Expense"}
           </button>
         </form>

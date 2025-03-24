@@ -9,15 +9,14 @@ const GroupDetail = ({ group }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [groupInfo, setGroupInfo] = useState(group);
+  const [loading, setLoading] = useState(true);
 
+  //Only update groupInfo if the group object exists and has a valid _id
   useEffect(() => {
     if (group?._id) {
+      setGroupInfo(group);
       fetchExpenses();
     }
-  }, [group]);
-
-  useEffect(() => {
-    setGroupInfo(group);
   }, [group]);
 
   const fetchExpenses = async () => {
@@ -28,6 +27,8 @@ const GroupDetail = ({ group }) => {
       setExpenses(data);
     } catch (error) {
       console.error("Error fetching expenses:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -70,7 +71,9 @@ const GroupDetail = ({ group }) => {
       {/* Expenses */}
       <div className="mt-6">
         <h2 className="text-lg font-semibold mb-2">Expenses</h2>
-        {expenses.length > 0 ? (
+        {loading ? (
+          <p className="text-center text-gray-500 py-4">Loading expenses...</p>
+        ) : expenses.length > 0 ? (
           <ExpenseTable expenses={expenses} />
         ) : (
           <p className="text-gray-500 text-center py-4">No expenses recorded yet.</p>
