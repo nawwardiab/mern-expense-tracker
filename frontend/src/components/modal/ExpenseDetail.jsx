@@ -3,7 +3,7 @@ import { FaTimes } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
 import axios from "axios";
 
-const ExpenseDetails = ({ expense, onClose }) => {
+const ExpenseDetails = ({ expense, onClose, updateExpense }) => {
   const [editedExpense, setEditedExpense] = useState(expense);
   const [isEditing, setIsEditing] = useState({});
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
@@ -36,8 +36,13 @@ const ExpenseDetails = ({ expense, onClose }) => {
           headers: { "Content-Type": "application/json" },
         }
       );
+      //console.log("API Response:", response.data);
 
       setMessage({ type: "success", text: "Expense updated successfully!" });
+
+      if (response.data) {
+        updateExpense(response.data);
+      }
     } catch (error) {
       console.error("Failed to update expense:", error);
       setMessage({

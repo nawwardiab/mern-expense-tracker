@@ -10,7 +10,6 @@ import { AuthContext } from "../contexts/AuthContext";
 setAxiosDefaults();
 
 const ExpenseManager = () => {
-
   const { user } = useContext(AuthContext);
 
   const [expenses, setExpenses] = useState([]);
@@ -21,7 +20,6 @@ const ExpenseManager = () => {
   const [occurrence, setOccurrence] = useState("");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
-
 
   useEffect(() => {
     fetchExpenses();
@@ -49,17 +47,21 @@ const ExpenseManager = () => {
       filtered = filtered.filter((expense) => expense.category === category);
     }
     if (occurrence) {
-      filtered = filtered.filter((expense) => expense.recurringFrequency === occurrence.toLowerCase());
+      filtered = filtered.filter(
+        (expense) => expense.recurringFrequency === occurrence.toLowerCase()
+      );
     }
     setFilteredExpenses(filtered);
     updateTotalSpent(filtered);
   }, [search, category, occurrence, expenses]);
 
   const updateTotalSpent = (filteredData) => {
-    const total = filteredData.reduce((sum, expense) => sum + expense.amount, 0);
+    const total = filteredData.reduce(
+      (sum, expense) => sum + expense.amount,
+      0
+    );
     setTotalFilteredExpenses(total);
   };
-
 
   const getCurrencySymbol = (currencyCode) => {
     const symbols = {
@@ -70,8 +72,22 @@ const ExpenseManager = () => {
     return symbols[currencyCode] || currencyCode; // Default: return the currency code if not found
   };
 
+  const updateExpense = (updatedExpense) => {
+    if (!updatedExpense || !updatedExpense._id) {
+      console.error("Invalid updated expense:", updatedExpense);
+      return;
+    }
 
+<<<<<<< HEAD
 
+=======
+    setExpenses((prevExpenses) =>
+      prevExpenses.map((expense) =>
+        expense._id === updatedExpense._id ? updatedExpense : expense
+      )
+    );
+  };
+>>>>>>> main
 
   return (
     <div className="p-4 md:p-8 max-w-6xl mx-auto">
@@ -90,13 +106,23 @@ const ExpenseManager = () => {
         />
         <TbListSearch className="absolute right-4 text-gray-500 text-3xl sm:text-4xl" />
       </div>
+<<<<<<< HEAD
 
+=======
+>>>>>>> main
 
       {/* Filters Section */}
       <div className="my-6">
         <h2 className="font-semibold text-lg">Popular Categories</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 sm:gap-4 mt-3">
-          {["Fixed", "Group Expenses", "Food&Drinks", "Entertainment", "Subscriptions", "Others"].map((cat) => (
+          {[
+            "Fixed",
+            "Group Expenses",
+            "Food&Drinks",
+            "Entertainment",
+            "Subscriptions",
+            "Others",
+          ].map((cat) => (
             <button
               key={cat}
               className={`px-3 sm:px-4 py-2 rounded-lg shadow-md text-sm sm:text-base ${category === cat ? "bg-black text-white" : "border"
@@ -130,20 +156,32 @@ const ExpenseManager = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Expense List (Takes full width on mobile, 2/3 on larger screens) */}
         <div className="lg:col-span-2">
-          <ExpenseList expenses={filteredExpenses} />
+          <ExpenseList
+            expenses={filteredExpenses}
+            updateExpense={updateExpense}
+          />
         </div>
 
         {/* Total Spent Summary (Takes full width on mobile, 1/3 on larger screens) */}
         <div className="flex justify-center w-full">
           <div className="p-5 bg-blue-50 rounded-xl shadow-lg flex flex-col items-center text-center w-full max-w-md">
             <FaWallet className="text-blue-600 text-4xl sm:text-5xl mb-3 mt-6 sm:mt-10" />
-            <h2 className="text-lg sm:text-xl font-semibold mt-4">Total Spent</h2>
+            <h2 className="text-lg sm:text-xl font-semibold mt-4">
+              Total Spent
+            </h2>
 
             {/* Show correct currency symbol dynamically */}
             <p className="text-2xl sm:text-3xl font-bold text-gray-800 mt-2">
+<<<<<<< HEAD
               {getCurrencySymbol(user?.currency)}{totalFilteredExpenses.toFixed(2)}
+=======
+              {getCurrencySymbol(user?.currency)}
+              {totalFilteredExpenses.toFixed(2)}
             </p>
-            <p className="text-xs sm:text-sm text-gray-600 mt-2">Filtered expenses total</p>
+            <p className="text-xs sm:text-sm text-gray-600 mt-2">
+              Filtered expenses total
+>>>>>>> main
+            </p>
           </div>
         </div>
       </div>
@@ -151,4 +189,8 @@ const ExpenseManager = () => {
   );
 };
 
+<<<<<<< HEAD
 export default ExpenseManager;
+=======
+export default ExpenseManager;
+>>>>>>> main
