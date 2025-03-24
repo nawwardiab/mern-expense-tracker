@@ -1,39 +1,41 @@
 ### Get All Groups for User
 GET http://localhost:8000/groups/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZDk3M2JkYjA1ZjFkZmIzM2JkMmIwYiIsImlhdCI6MTc0MjQ2NDcwNSwiZXhwIjoxNzQyNTUxMTA1fQ.uV9qnc3C8UEKbOqO1bDkaOdBL-c5j5zFUOKj55G7oEM
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZDk2ZTQyN2I1OWFkNDMwZWQ4MWE1ZSIsImlhdCI6MTc0MjgzNDI3NCwiZXhwIjoxNzQyOTIwNjc0fQ.ykEUaUU5mNf6-WD4EudcVVe9CwUi5vOLliip7i9RHB4
+
 
 
 ### Create a New Group
 POST http://localhost:8000/groups/create
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZDk3M2JkYjA1ZjFkZmIzM2JkMmIwYiIsImlhdCI6MTc0MjQ2NDcwNSwiZXhwIjoxNzQyNTUxMTA1fQ.uV9qnc3C8UEKbOqO1bDkaOdBL-c5j5zFUOKj55G7oEM
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZDk2ZTQyN2I1OWFkNDMwZWQ4MWE1ZSIsImlhdCI6MTc0MjgzNDI3NCwiZXhwIjoxNzQyOTIwNjc0fQ.ykEUaUU5mNf6-WD4EudcVVe9CwUi5vOLliip7i9RHB4
+
 
 {
-  "name": "Trip to Greece",
-  "description": "Group for organizing our summer trip.",
+  "name": "Trip to London 2025!",
+  "description": "Let's go to London! Hotel, flight and activities.",
   "members": ["67d7dc7d6c9a79aa17069853", "67d96e427b59ad430ed81a5e",
   "67d97514b05f1dfb33bd2b27", "67d973bdb05f1dfb33bd2b0b"]
 }
 
 
 ### Edit Group Name/Description
-PATCH http://localhost:8000/groups/67dc1741d077963094175085
+PATCH http://localhost:8000/groups/67e18f6307dedc60e7ba8bc9
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZDk3M2JkYjA1ZjFkZmIzM2JkMmIwYiIsImlhdCI6MTc0MjQ2NDcwNSwiZXhwIjoxNzQyNTUxMTA1fQ.uV9qnc3C8UEKbOqO1bDkaOdBL-c5j5zFUOKj55G7oEM
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZDk2ZTQyN2I1OWFkNDMwZWQ4MWE1ZSIsImlhdCI6MTc0MjgzNDI3NCwiZXhwIjoxNzQyOTIwNjc0fQ.ykEUaUU5mNf6-WD4EudcVVe9CwUi5vOLliip7i9RHB4
 
 {
-  "name": "Greece Trip 2025",
-  "description": "Trip to Kefalos."
+  "name": "Trip to London 2025!",
+  "description": "Let's go to London! Hotel, flight, transport and activities."
 }
 
 
 ### Delete a Group (Only by Creator)
 DELETE http://localhost:8000/groups/67dc1741d077963094175085
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZDk3M2JkYjA1ZjFkZmIzM2JkMmIwYiIsImlhdCI6MTc0MjQ2NDcwNSwiZXhwIjoxNzQyNTUxMTA1fQ.uV9qnc3C8UEKbOqO1bDkaOdBL-c5j5zFUOKj55G7oEM
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZDk3M2JkYjA1ZjFkZmIzM2JkMmIwYiIsImlhdCI6MTc0MjgzNTA5NywiZXhwIjoxNzQyOTIxNDk3fQ.zkG-uDZz29ebhg7AUYEXFDp8YN5yVpMmen4DK9Ta-EE
 
 
 ### Add a Member to a Group
-POST http://localhost:8000/groups/67dc1741d077963094175085/add
+POST http://localhost:8000/groups/67dc176cd0779630941750a3/add
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZDk3M2JkYjA1ZjFkZmIzM2JkMmIwYiIsImlhdCI6MTc0MjQ2NDcwNSwiZXhwIjoxNzQyNTUxMTA1fQ.uV9qnc3C8UEKbOqO1bDkaOdBL-c5j5zFUOKj55G7oEM
 
@@ -43,7 +45,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZDk3M2JkY
 
 
 ### Remove a Member from a Group
-DELETE http://localhost:8000/groups/67dbe52998e193da0a69f83d/remove
+DELETE http://localhost:8000/groups/67dc176cd0779630941750a3/remove
 Content-Type: application/json
 Authorization: Bearer 
 
@@ -54,5 +56,40 @@ Authorization: Bearer
 
 
 ### Get All Expenses for a Group
-GET http://localhost:8000/groups/67dbe52998e193da0a69f83d/expenses
+GET http://localhost:8000/groups/67dc176cd0779630941750a3/expenses
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZDk3M2JkYjA1ZjFkZmIzM2JkMmIwYiIsImlhdCI6MTc0MjQ2NDcwNSwiZXhwIjoxNzQyNTUxMTA1fQ.uV9qnc3C8UEKbOqO1bDkaOdBL-c5j5zFUOKj55G7oEM
+
+
+### Add an Expense to a Group (by Creator)
+POST http://localhost:8000/groups/67dc176cd0779630941750a3/add-expense
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZDk3M2JkYjA1ZjFkZmIzM2JkMmIwYiIsImlhdCI6MTc0MjQ2NDcwNSwiZXhwIjoxNzQyNTUxMTA1fQ.uV9qnc3C8UEKbOqO1bDkaOdBL-c5j5zFUOKj55G7oEM
+
+{
+  "title": "Hilton Hotel",
+  "amount": 500,
+  "category": "Group Expenses",
+  "transactionDate": "2025-06-10T00:00:00.000Z",
+  "notes": "4-night stay",
+  "isRecurring": false
+}
+
+
+### Edit an Expense (by Creator)
+PATCH http://localhost:8000/groups/67dc176cd0779630941750a3/edit-expense/67e1932dbe6b749ca0c03d82
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZDk3M2JkYjA1ZjFkZmIzM2JkMmIwYiIsImlhdCI6MTc0MjQ2NDcwNSwiZXhwIjoxNzQyNTUxMTA1fQ.uV9qnc3C8UEKbOqO1bDkaOdBL-c5j5zFUOKj55G7oEM
+
+
+{
+  "title": "LondonPeak Hotel",
+  "amount": 380,
+  "notes": "It is cheaper than Hilton"
+}
+
+
+### Delete a group expense if all payments are completed (by Creator)
+DELETE http://localhost:8000/groups/67dc176cd0779630941750a3/delete-expense/67e1915007dedc60e7ba8c9c
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZDk3M2JkYjA1ZjFkZmIzM2JkMmIwYiIsImlhdCI6MTc0MjQ2NDcwNSwiZXhwIjoxNzQyNTUxMTA1fQ.uV9qnc3C8UEKbOqO1bDkaOdBL-c5j5zFUOKj55G7oEM
+
+
