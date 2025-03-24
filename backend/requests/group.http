@@ -1,16 +1,16 @@
 ### Get All Groups for User
 GET http://localhost:8000/groups/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZDk3M2JkYjA1ZjFkZmIzM2JkMmIwYiIsImlhdCI6MTc0MjQ2NDcwNSwiZXhwIjoxNzQyNTUxMTA1fQ.uV9qnc3C8UEKbOqO1bDkaOdBL-c5j5zFUOKj55G7oEM
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZDk3M2JkYjA1ZjFkZmIzM2JkMmIwYiIsImlhdCI6MTc0MjY1Mzk4OCwiZXhwIjoxNzQyNzQwMzg4fQ.Njh0eFeGied0a0yKsG9XCxBPAWELo__E8Wt26cDdcis
 
 
 ### Create a New Group
 POST http://localhost:8000/groups/create
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZDk3M2JkYjA1ZjFkZmIzM2JkMmIwYiIsImlhdCI6MTc0MjQ2NDcwNSwiZXhwIjoxNzQyNTUxMTA1fQ.uV9qnc3C8UEKbOqO1bDkaOdBL-c5j5zFUOKj55G7oEM
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZDk3M2JkYjA1ZjFkZmIzM2JkMmIwYiIsImlhdCI6MTc0MjY1Mzk4OCwiZXhwIjoxNzQyNzQwMzg4fQ.Njh0eFeGied0a0yKsG9XCxBPAWELo__E8Wt26cDdcis
 
 {
-  "name": "Trip to Greece",
-  "description": "Group for organizing our summer trip.",
+  "name": "Trip to Rome",
+  "description": "Group for organizing our spring trip.",
   "members": ["67d7dc7d6c9a79aa17069853", "67d96e427b59ad430ed81a5e",
   "67d97514b05f1dfb33bd2b27", "67d973bdb05f1dfb33bd2b0b"]
 }
@@ -28,8 +28,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZDk3M2JkY
 
 
 ### Delete a Group (Only by Creator)
-DELETE http://localhost:8000/groups/67dc1741d077963094175085
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZDk3M2JkYjA1ZjFkZmIzM2JkMmIwYiIsImlhdCI6MTc0MjQ2NDcwNSwiZXhwIjoxNzQyNTUxMTA1fQ.uV9qnc3C8UEKbOqO1bDkaOdBL-c5j5zFUOKj55G7oEM
+DELETE http://localhost:8000/groups/67decafc4697e46c0871573b
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZDk3M2JkYjA1ZjFkZmIzM2JkMmIwYiIsImlhdCI6MTc0MjY1Mzk4OCwiZXhwIjoxNzQyNzQwMzg4fQ.Njh0eFeGied0a0yKsG9XCxBPAWELo__E8Wt26cDdcis
 
 
 ### Add a Member to a Group

@@ -6,7 +6,9 @@ import {
   deleteGroup, 
   addMember, 
   removeMemberFromGroup, 
-  getGroupExpenses 
+  getGroupExpenses,
+  addGroupExpense,
+  deleteGroupExpense
 } from "../controllers/groupsController.js";
 import checkToken from "../middleware/checkToken.js";
 
@@ -21,7 +23,9 @@ router
 .delete("/:groupId", checkToken, deleteGroup) // delete a group (only by the creator)
 .post("/:groupId/add", checkToken, addMember)
 .delete("/:groupId/remove", checkToken, removeMemberFromGroup)
-.get("/:groupId/expenses", checkToken, getGroupExpenses);
+.get("/:groupId/expenses", checkToken, getGroupExpenses)
+.post("/:groupId/add-expense", checkToken, addGroupExpense)
+.delete("/:groupId/delete-expense", checkToken, deleteGroupExpense);
 
 export default router;
 
