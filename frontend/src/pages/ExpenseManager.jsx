@@ -1,77 +1,74 @@
-import React, { useState, useEffect, useContext } from "react";
+// src/pages/ExpenseManager.jsx (example path)
+import React, { useEffect, useContext, useState } from "react";
 import axios from "axios";
+import { ExpenseContext } from "../contexts/ExpenseContext";
 import ExpenseList from "../components/ExpenseList";
-import { FaFilter, FaWallet } from "react-icons/fa";
+import { FaWallet } from "react-icons/fa";
 import { TbListSearch } from "react-icons/tb";
-import { setAxiosDefaults } from "../utils/axiosConfig";
-import { AuthContext } from "../contexts/AuthContext";
-
-// Apply Axios default settings
-setAxiosDefaults();
 
 const ExpenseManager = () => {
+  // 1) Get the global “expenses” and a way to set them
+  const { expenseState, expenseDispatch } = useContext(ExpenseContext);
+  const { expenses } = expenseState;
+  // Reducer to set expenses
+  const setExpenses = (expenses) => {
+    expenseDispatch({ type: "GET_EXPENSES", payload: expenses });
+  };
 
-  const { user } = useContext(AuthContext);
-
-  const [expenses, setExpenses] = useState([]);
-  const [filteredExpenses, setFilteredExpenses] = useState([]);
-  const [totalFilteredExpenses, setTotalFilteredExpenses] = useState(0);
+  // 2) Local states for filtering
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
   const [occurrence, setOccurrence] = useState("");
-  const [dateFrom, setDateFrom] = useState("");
-  const [dateTo, setDateTo] = useState("");
 
+  // 3) Local derived states: “filteredExpenses,” “totalFiltered”
+  const [filteredExpenses, setFilteredExpenses] = useState([]);
+  const [totalFilteredExpenses, setTotalFilteredExpenses] = useState(0);
 
+  // 4) Fetch expenses from the server once
   useEffect(() => {
+    const fetchExpenses = async () => {
+      try {
+        const { data } = await axios.get("http://localhost:8000/expenses", {
+          withCredentials: true,
+        });
+        // Save the array in global state
+        setExpenses(data.data);
+      } catch (error) {
+        console.error("Error fetching expenses:", error);
+      }
+    };
     fetchExpenses();
-  }, []);
+  }, [setExpenses]);
 
-  const fetchExpenses = async () => {
-    try {
-      const { data } = await axios.get("/expenses", { withCredentials: true });
-      setExpenses(data.data);
-      setFilteredExpenses(data.data);
-      updateTotalSpent(data.data);
-    } catch (error) {
-      console.error("Error fetching expenses:", error.response?.data || error);
-    }
-  };
-
+  // 5) Whenever “expenses” or filter states change, compute the filtered array
   useEffect(() => {
     let filtered = expenses;
+
+    // Search by title
     if (search) {
       filtered = filtered.filter((expense) =>
         expense.title.toLowerCase().includes(search.toLowerCase())
       );
     }
+
+    // Category filter
     if (category) {
       filtered = filtered.filter((expense) => expense.category === category);
     }
+
+    // Occurrence filter
     if (occurrence) {
-      filtered = filtered.filter((expense) => expense.recurringFrequency === occurrence.toLowerCase());
+      filtered = filtered.filter(
+        (expense) => expense.recurringFrequency === occurrence.toLowerCase()
+      );
     }
+
     setFilteredExpenses(filtered);
-    updateTotalSpent(filtered);
-  }, [search, category, occurrence, expenses]);
 
-  const updateTotalSpent = (filteredData) => {
-    const total = filteredData.reduce((sum, expense) => sum + expense.amount, 0);
+    // Calculate total of the filtered list
+    const total = filtered.reduce((sum, exp) => sum + exp.amount, 0);
     setTotalFilteredExpenses(total);
-  };
-
-
-  const getCurrencySymbol = (currencyCode) => {
-    const symbols = {
-      USD: "$",
-      EUR: "€",
-      GBP: "£",
-    };
-    return symbols[currencyCode] || currencyCode; // Default: return the currency code if not found
-  };
-
-
- 
+  }, [expenses, search, category, occurrence]);
 
   return (
     <div className="p-4 md:p-8 max-w-6xl mx-auto">
@@ -79,7 +76,7 @@ const ExpenseManager = () => {
         Manage your expenses
       </h1>
 
-      {/* Search Input */}
+      {/* =========== Search Input (Local) =========== */}
       <div className="relative flex flex-col sm:flex-row gap-4 items-center">
         <input
           type="text"
@@ -90,13 +87,19 @@ const ExpenseManager = () => {
         />
         <TbListSearch className="absolute right-4 text-gray-500 text-3xl sm:text-4xl" />
       </div>
-    
 
-      {/* Filters Section */}
+      {/* =========== Categories (Local) =========== */}
       <div className="my-6">
         <h2 className="font-semibold text-lg">Popular Categories</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 sm:gap-4 mt-3">
-          {["Fixed", "Group Expenses", "Food&Drinks", "Entertainment", "Subscriptions", "Others"].map((cat) => (
+          {[
+            "Fixed",
+            "Group Expenses",
+            "Food&Drinks",
+            "Entertainment",
+            "Subscriptions",
+            "Others",
+          ].map((cat) => (
             <button
               key={cat}
               className={`px-3 sm:px-4 py-2 rounded-lg shadow-md text-sm sm:text-base ${
@@ -110,7 +113,7 @@ const ExpenseManager = () => {
         </div>
       </div>
 
-      {/* Occurrence Filters */}
+      {/* =========== Occurrence Filters (Local) =========== */}
       <div className="my-6">
         <h2 className="font-semibold text-lg">Occurrence</h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 mt-3">
@@ -128,24 +131,27 @@ const ExpenseManager = () => {
         </div>
       </div>
 
-      {/* Expenses & Total Summary Layout */}
+      {/* =========== Expense List + Summary =========== */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Expense List (Takes full width on mobile, 2/3 on larger screens) */}
+        {/* Left: Expense List */}
         <div className="lg:col-span-2">
           <ExpenseList expenses={filteredExpenses} />
         </div>
 
-        {/* Total Spent Summary (Takes full width on mobile, 1/3 on larger screens) */}
+        {/* Right: Summary */}
         <div className="flex justify-center w-full">
           <div className="p-5 bg-blue-50 rounded-xl shadow-lg flex flex-col items-center text-center w-full max-w-md">
             <FaWallet className="text-blue-600 text-4xl sm:text-5xl mb-3 mt-6 sm:mt-10" />
-            <h2 className="text-lg sm:text-xl font-semibold mt-4">Total Spent</h2>
+            <h2 className="text-lg sm:text-xl font-semibold mt-4">
+              Total Spent
+            </h2>
 
-             {/* Show correct currency symbol dynamically */}
-              <p className="text-2xl sm:text-3xl font-bold text-gray-800 mt-2">
-              {getCurrencySymbol(user?.currency)}{totalFilteredExpenses.toFixed(2)}
+            <p className="text-2xl sm:text-3xl font-bold text-gray-800 mt-2">
+              €{totalFilteredExpenses.toFixed(2)}
             </p>
-            <p className="text-xs sm:text-sm text-gray-600 mt-2">Filtered expenses total</p>
+            <p className="text-xs sm:text-sm text-gray-600 mt-2">
+              Filtered expenses total
+            </p>
           </div>
         </div>
       </div>
@@ -154,4 +160,3 @@ const ExpenseManager = () => {
 };
 
 export default ExpenseManager;
-

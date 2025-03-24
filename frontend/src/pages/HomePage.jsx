@@ -5,8 +5,7 @@ import ExpenseDetails from "../components/modal/ExpenseDetail.jsx";
 import { AuthContext } from "../contexts/AuthContext.jsx";
 
 const HomePage = () => {
-
-  const { user } = useContext(AuthContext);
+  const { userState } = useContext(AuthContext);
 
   const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -17,7 +16,9 @@ const HomePage = () => {
   const fetchExpenses = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("/expenses", { withCredentials: true });
+      const response = await axios.get("http://localhost:8000/expenses", {
+        withCredentials: true,
+      });
       setExpenses(response.data.data || []);
     } catch (err) {
       setError(err.response?.data?.message || "Failed to fetch expenses");
@@ -36,20 +37,13 @@ const HomePage = () => {
     fetchExpenses();
   };
 
-  const getCurrencySymbol = (currencyCode) => {
-    const symbols = {
-      USD: "$",
-      EUR: "€",
-      GBP: "£",
-    };
-    return symbols[currencyCode] || currencyCode; 
-  }
-
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Expense Tracker</h1>
 
-      {loading && <p className="text-center text-gray-500">Loading expenses...</p>}
+      {loading && (
+        <p className="text-center text-gray-500">Loading expenses...</p>
+      )}
       {error && <p className="text-center text-red-500">{error}</p>}
 
       {!loading && !error && expenses.length === 0 && (
@@ -58,27 +52,26 @@ const HomePage = () => {
 
       <div className="space-y-4">
         {expenses.map((expense) => (
-          <ExpenseItem 
-            key={expense._id} 
-            expense={expense} 
-            currencySymbol={getCurrencySymbol(user?.currency)}
+          <ExpenseItem
+            key={expense._id}
+            expense={expense}
             onClick={() => {
               console.log("Clicked:", expense); // ✅ Debugging log
               setSelectedExpense(expense); // ✅ Fix: Pass the entire expense object
-            }} 
+            }}
           />
         ))}
       </div>
 
       {/* Expense Details Modal */}
       {selectedExpense && (
-        <ExpenseDetails 
-          expense={selectedExpense} 
+        <ExpenseDetails
+          expense={selectedExpense}
           onClose={() => {
             console.log("Closing modal");
             setSelectedExpense(null);
-          }} 
-          onRefresh={handleRefresh}  // Pass the refresh function to the modal
+          }}
+          onRefresh={handleRefresh} // Pass the refresh function to the modal
         />
       )}
     </div>
@@ -86,11 +79,3 @@ const HomePage = () => {
 };
 
 export default HomePage;
-
-
-
-
-
-
-
-

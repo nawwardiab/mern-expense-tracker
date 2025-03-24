@@ -1,6 +1,8 @@
+//! This file is not used in the app
+
+/*
 import { createContext, useReducer, useContext } from "react";
 import userReducer, { initialUserState } from "../reducers/userReducer";
-
 
 const GlobalContext = createContext();
 
@@ -11,14 +13,17 @@ const initialState = {
 };
 
 export const GlobalProvider = ({ children }) => {
-  const [userState, userDispatch] = useReducer(userReducer, initialState.userState);
- 
+  const [userState, userDispatch] = useReducer(
+    userReducer,
+    initialState.userState
+  );
 
   return (
-    <GlobalContext.Provider value={{ userState, userDispatch}}>
+    <GlobalContext.Provider value={{ userState, userDispatch }}>
       {children}
     </GlobalContext.Provider>
   );
 };
 
 export const useGlobalContext = () => useContext(GlobalContext);
+*/

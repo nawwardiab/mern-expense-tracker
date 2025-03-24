@@ -67,12 +67,10 @@ export const getUserProfile = async (req, res, next) => {
       success: true,
       user,
     });
-
   } catch (error) {
     next(error);
   }
 };
-
 
 //!   Update user profile
 //!   PATCH /users/profile
@@ -100,30 +98,41 @@ export const updateUserProfile = async (req, res, next) => {
   }
 };
 
-
 // Onboarding completion
 export const onboarding = async (req, res, next) => {
   try {
     const userId = req.user.id; // Ensure middleware sets req.user
     const updatedData = req.body;
 
-
     const updatedUser = await UserModel.findByIdAndUpdate(
       userId,
-      { 
-        $set: updatedData // Properly update all fields, including `isOnboarded`
+      {
+        $set: updatedData, // Properly update all fields, including `isOnboarded`
       },
-      { new: true, runValidators: true } 
+      { new: true, runValidators: true }
     );
 
     if (!updatedUser) {
-      return res.status(404).json({ success: false, message: "User not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
 
     res.json({ success: true, user: updatedUser });
-
   } catch (error) {
     console.error("Server Error:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
+};
+
+export const getMe = (req, res, next) => {
+  const { user, isAuthenticated } = req;
+
+  user.password = undefined;
+
+  res.status(200).json({
+    success: true,
+    user,
+    isAuthenticated,
+  });
 };

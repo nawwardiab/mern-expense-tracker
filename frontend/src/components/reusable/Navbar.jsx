@@ -6,9 +6,10 @@ import { FaUserGroup } from "react-icons/fa6";
 import { IoIosNotifications, IoIosAddCircle } from "react-icons/io";
 import { RxAvatar } from "react-icons/rx";
 import AddExpense from "../modal/AddExpense";
+import { logout } from "../../api/authApi.js";
 
 const Navbar = () => {
-  const { user, logout } = useContext(AuthContext);
+  const { userState } = useContext(AuthContext);
   const [searchQuery, setSearchQuery] = useState("");
   const [notifications, setNotifications] = useState([]);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -71,9 +72,9 @@ const Navbar = () => {
           <IoIosNotifications className="text-2xl text-gray-700 hover:text-black cursor-pointer" />
           {/* User Profile */}
           <div className="hidden md:block">
-            {user?.profilePicture ? (
+            {userState.user?.profilePicture ? (
               <img
-                src={user.profilePicture}
+                src={userState.user.profilePicture}
                 alt="User profile"
                 className="w-10 h-10 rounded-full border-2 border-gray-900"
               />

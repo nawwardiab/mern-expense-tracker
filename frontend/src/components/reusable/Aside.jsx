@@ -1,10 +1,14 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { FaHome, FaUserFriends, FaCog, FaDonate } from "react-icons/fa";
 import { MdLogout } from "react-icons/md";
 
+import { logout } from "../../api/authApi";
+import { AuthContext } from "../../contexts/AuthContext";
+
 const Aside = () => {
   const location = useLocation();
+  const { userDispatch } = useContext(AuthContext);
 
   // Function to format the current page name
   const getPageName = () => {
@@ -54,6 +58,7 @@ const Aside = () => {
           <Link
             to="/"
             className="flex items-center gap-3 p-2 hover:underline underline-offset-4 rounded text-sm font-semibold"
+            onClick={() => logout(userDispatch)}
           >
             <MdLogout className="text-lg" /> Logout
           </Link>

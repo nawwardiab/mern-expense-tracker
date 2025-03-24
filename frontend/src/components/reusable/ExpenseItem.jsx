@@ -4,7 +4,7 @@ import { MdRestaurant } from "react-icons/md";
 import { TbContract, TbDeviceUnknownFilled } from "react-icons/tb";
 import { GiTiedScroll } from "react-icons/gi";
 
-const ExpenseItem = ({ expense, currencySymbol, onClick }) => {
+const ExpenseItem = ({ expense, onClick }) => {
   // Define the icons for each category
   const categoryIcons = {
     Fixed: <GiTiedScroll />,
@@ -18,21 +18,10 @@ const ExpenseItem = ({ expense, currencySymbol, onClick }) => {
   // Set the icon based on the expense category
   const categoryIcon = categoryIcons[expense.category] || "🔍"; // Default to 🔍 if the category is not recognized
 
-  // Function to map currency codes to symbols
-  const getCurrencySymbol = (currencyCode) => {
-    const symbols = {
-      USD: "$",
-      EUR: "€",
-      GBP: "£",
-    };
-    return symbols[currencyCode] || currencyCode; // Default: show currency code if not found
-  };
-
   return (
     <div
       className="flex justify-between items-center p-4 bg-white rounded-lg shadow-md cursor-pointer hover:bg-gray-100 transition"
       onClick={() => {
-       
         if (onClick) onClick(); // ✅ Ensure onClick is called
       }}
     >
@@ -46,15 +35,14 @@ const ExpenseItem = ({ expense, currencySymbol, onClick }) => {
         </div>
       </div>
 
-
       <span
         className={`text-lg font-bold ${
           expense.amount < 0 ? "text-red-500" : "text-green-500"
         }`}
       >
         {expense.amount < 0
-          ? `-${currencySymbol}${Math.abs(expense.amount)}`
-          : `${currencySymbol}${expense.amount}`}
+          ? `-€${Math.abs(expense.amount)}`
+          : `€${expense.amount}`}
       </span>
     </div>
   );
