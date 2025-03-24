@@ -1,12 +1,18 @@
 import Group from "../models/Group.js";
 import Expense from "../models/Expense.js";
+import Payment from "../models/Payment.js";
+
 
 
 //Get all groups for a user
 export const getUserGroups = async (req, res) => {
   try {
     const userId = req.user.id;
-    const groups = await Group.find({ "members.userId": userId });
+    const groups = await Group.find({ "members.userId": userId })
+    .populate({
+      path: "members.userId",
+      select: "fullName"
+    })
     res.json(groups);
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
@@ -20,7 +26,7 @@ export const createGroup = async (req, res) => {
     const { name, description, members } = req.body;
     const userId = req.user.id;
 
-    if (!name || !Array.isArray(members) || members.length === 0) {
+    if (!name || !Array.isArray(members)) {
       return res.status(400).json({ message: "Group name and members are required." });
     }
 
@@ -29,23 +35,18 @@ export const createGroup = async (req, res) => {
       return res.status(400).json({ message: "Group name already exists." });
     }
 
-    const formattedMembers = [];
+    const uniqueMemberIds = [...new Set(members.map(String))];
 
-    const uniqueMemberIds = [...new Set(members.map(String))]; // remove duplicates if any
+    // Filter out the creator (admin) from members list
+    const filteredMemberIds = uniqueMemberIds.filter(memberId => memberId !== userId);
 
-    uniqueMemberIds.forEach(memberId => {
-      if (memberId === userId) {
-        // If creator is in the list, make them admin
-        formattedMembers.push({ userId: memberId, role: "admin" });
-      } else {
-        formattedMembers.push({ userId: memberId, role: "member" });
-      }
-    });
+    const formattedMembers = filteredMemberIds.map(memberId => ({
+      userId: memberId,
+      role: "member"
+    }));
 
-    // If creator is not in the members list, add them as admin
-    if (!uniqueMemberIds.includes(userId)) {
-      formattedMembers.push({ userId, role: "admin" });
-    }
+    // Add the creator as admin
+    formattedMembers.push({ userId, role: "admin" });
 
     const group = new Group({
       name,
@@ -62,6 +63,7 @@ export const createGroup = async (req, res) => {
     res.status(500).json({ message: "Server error", error });
   }
 };
+
 
 
 
@@ -253,44 +255,111 @@ export const addGroupExpense = async (req, res) => {
 };
 
 
+
 /// delete an expense from a group only if the payments are completed
 export const deleteGroupExpense = async (req, res) => {
   try {
     const { groupId, expenseId } = req.params;
     const userId = req.user.id;
 
-    const expense = await Expense.findOne({
-      _id: expenseId,
-      groupId,
-      userId,
-    });
-
-    if (!expense) {
-      return res.status(404).json({ success: false, message: "Expense not found or access denied." });
+    // Fetch the group
+    const group = await Group.findById(groupId);
+    if (!group) {
+      return res.status(404).json({ success: false, message: "Group not found." });
     }
 
-    // Check if all payments are completed
-    const hasIncompletePayments = expense.payments?.some(p => p.status !== "completed");
+    // Check if user is an admin
+    const isAdmin = group.members.some(
+      member => member.userId.toString() === userId && member.role === "admin"
+    );
 
-    if (hasIncompletePayments) {
-      return res.status(400).json({
+    if (!isAdmin) {
+      return res.status(403).json({
         success: false,
-        message: "This expense cannot be deleted until all payments are marked as completed.",
+        message: "Only admins can delete group expenses.",
       });
     }
 
-    // Proceed with deletion
+    // Find the expense
+    const expense = await Expense.findOne({ _id: expenseId, groupId });
+    if (!expense) {
+      return res.status(404).json({ success: false, message: "Expense not found." });
+    }
+
+    // Check if all related payments are completed
+    const relatedPayments = await Payment.find({ groupId, expenseId });
+    const hasIncomplete = relatedPayments.some(p => p.status !== "completed");
+
+    if (hasIncomplete) {
+      return res.status(400).json({
+        success: false,
+        message: "Cannot delete this expense. Some payments are still pending.",
+      });
+    }
+
+    // Delete the expense
     await expense.deleteOne();
 
-    // Remove from group and update total
+    // Update the group (remove expense ref & update total)
+    group.expenses = group.expenses.filter(id => id.toString() !== expenseId);
+    group.totalAmount -= expense.amount;
+    await group.save();
+
+    res.status(200).json({ success: true, message: "Expense deleted successfully." });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+};
+
+
+// Edit an expense in a group
+
+export const editGroupExpense = async (req, res) => {
+  try {
+    const { groupId, expenseId } = req.params;
+    const userId = req.user.id;
+
+    // Find the group
     const group = await Group.findById(groupId);
-    if (group) {
-      group.expenses = group.expenses.filter(id => id.toString() !== expenseId);
-      group.totalAmount -= expense.amount;
+    if (!group) {
+      return res.status(404).json({ success: false, message: "Group not found." });
+    }
+
+    // Check if the user is an admin
+    const isAdmin = group.members.some(
+      member => member.userId.toString() === userId && member.role === "admin"
+    );
+
+    if (!isAdmin) {
+      return res.status(403).json({
+        success: false,
+        message: "Only admins can edit group expenses.",
+      });
+    }
+
+    // Find the expense
+    const expense = await Expense.findOne({ _id: expenseId, groupId });
+    if (!expense) {
+      return res.status(404).json({ success: false, message: "Expense not found." });
+    }
+
+    const originalAmount = expense.amount;
+
+    // Update the expense
+    const updatedExpense = await Expense.findByIdAndUpdate(
+      expenseId,
+      req.body,
+      { new: true, runValidators: true }
+    );
+
+    // Update group's totalAmount if amount changed
+    if (req.body.amount !== undefined && req.body.amount !== originalAmount) {
+      const diff = req.body.amount - originalAmount;
+      group.totalAmount += diff;
       await group.save();
     }
 
-    res.status(200).json({ success: true, message: "Expense deleted." });
+    res.status(200).json({ success: true, data: updatedExpense });
 
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });

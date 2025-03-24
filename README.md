@@ -170,7 +170,8 @@ Before coding, we designed a wireframe to visualize the application's layout and
 | DELETE | `/:groupId/remove`   | Remove a member from a group | Yes            |
 | GET    | `/:groupId/expenses` | Get all expenses in a group  | Yes            |
 | POST   | `/:groupId/add-expense`| Add a new expense in a group  | Yes            |
-| DELETE | `/:groupId/delete-expense`| Delete an expense in a group if all payments are completed  | Yes            |
+| PATCH  | `/:groupId/edit-expense/:expenseId`| Modify an expense in a group  | Yes            |
+| DELETE | `/:groupId/delete-expense/:expenseId`| Delete an expense in a group if all payments are completed  | Yes            |
 
 
 

@@ -6,6 +6,7 @@ const paymentSchema = new Schema(
         payer: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
         payee: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
         amount: { type: Number, required: true, min: 0.01 }, // Prevents zero payments
+        expenseId: { type: mongoose.Schema.Types.ObjectId, ref: "Expense", required: true },
         currency: { type: String, default: "EUR" }, // Supports multiple currencies
         paymentMethod: { 
             type: String, 
