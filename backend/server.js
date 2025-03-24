@@ -32,6 +32,7 @@ app.use(express.json());
 app.use("/users", usersRouter);
 app.use("/expenses", expensesRouter);
 app.use("/groups", groupsRouter);
+app.use("/payments",paymentRouter)
 
 //! Error Handlers
 app.use(routeNotFound);
