@@ -18,6 +18,10 @@ Discuss this:
 - remove Navbar and add a scroll to top button.
 - add a down-arrow to indicate the page has more.
 
+_Add Expense_
+
+- recurring expense
+
 _Expenses Feature_
 
 - we need Expense Context
