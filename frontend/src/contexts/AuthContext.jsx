@@ -47,7 +47,7 @@ export const AuthProvider = ({ children }) => {
   // Only call checkAuth once when component mounts
   useEffect(() => {
     checkAuth();
-  }, []); 
+  }, []);
 
   // Login function
   const login = async (email, password) => {

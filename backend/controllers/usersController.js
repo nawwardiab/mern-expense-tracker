@@ -3,6 +3,15 @@ import createError from "http-errors";
 import { createSendToken } from "../utils/jwt.js";
 import UserModel from "../models/User.js";
 
+export const getUsers = async (req, res, next) => {
+  try {
+    const users = await UserModel.find({});
+    res.send(users);
+  } catch (error) {
+    next({ status: 500, message: error.message });
+  }
+};
+
 export const register = async (req, res, next) => {
   try {
     const user = await UserModel.create(req.body);
@@ -110,10 +119,10 @@ export const onboarding = async (req, res, next) => {
 
     const updatedUser = await UserModel.findByIdAndUpdate(
       userId,
-      { 
+      {
         $set: updatedData // Properly update all fields, including `isOnboarded`
       },
-      { new: true, runValidators: true } 
+      { new: true, runValidators: true }
     );
 
     if (!updatedUser) {

@@ -9,10 +9,10 @@ export const getUserGroups = async (req, res) => {
   try {
     const userId = req.user.id;
     const groups = await Group.find({ "members.userId": userId })
-    .populate({
-      path: "members.userId",
-      select: "fullName"
-    })
+      .populate({
+        path: "members.userId",
+        select: "fullName"
+      })
     res.json(groups);
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
@@ -23,7 +23,8 @@ export const getUserGroups = async (req, res) => {
 //Create a new group
 export const createGroup = async (req, res) => {
   try {
-    const { name, description, members } = req.body;
+    // Added members = [], totalAmount = 0
+    const { name, description, members = [], totalAmount = 0 } = req.body;
     const userId = req.user.id;
 
     if (!name || !Array.isArray(members)) {
@@ -44,15 +45,17 @@ export const createGroup = async (req, res) => {
       userId: memberId,
       role: "member"
     }));
+    console.log("🟢 Formatted Members:", formattedMembers);
 
     // Add the creator as admin
     formattedMembers.push({ userId, role: "admin" });
 
+    // Create the group
     const group = new Group({
       name,
       description,
       members: formattedMembers,
-      totalAmount: 0,
+      totalAmount,
       createdBy: userId,
     });
 
@@ -60,6 +63,7 @@ export const createGroup = async (req, res) => {
     res.status(201).json({ message: "Group created successfully.", group });
 
   } catch (error) {
+    console.error("❌ Error creating group:", error);
     res.status(500).json({ message: "Server error", error });
   }
 };
@@ -71,7 +75,8 @@ export const createGroup = async (req, res) => {
 export const updateGroup = async (req, res) => {
   try {
     const { groupId } = req.params;
-    const { name, description } = req.body;
+    // Added totalAmount, members to be able to edit it
+    const { name, description, totalAmount, members } = req.body;
     const userId = req.user.id;
 
     const group = await Group.findById(groupId);
@@ -86,11 +91,15 @@ export const updateGroup = async (req, res) => {
 
     if (name) group.name = name;
     if (description) group.description = description;
+    // Added totalAmount and members
+    if (totalAmount !== undefined) group.totalAmount = totalAmount;
+    if (Array.isArray(members)) group.members = members;
 
     await group.save();
     res.json({ message: "Group updated successfully.", group });
 
   } catch (error) {
+    console.error("Failed to update group:", err);
     res.status(500).json({ message: "Server error", error });
   }
 };
@@ -109,7 +118,7 @@ export const deleteGroup = async (req, res) => {
 
     const expenseExists = await Expense.exists({ group: groupId });
     if (expenseExists) {
-     return res.status(400).json({ message: "Group cannot be deleted because it has expenses." });
+      return res.status(400).json({ message: "Group cannot be deleted because it has expenses." });
     }
 
 
@@ -179,7 +188,7 @@ export const removeMemberFromGroup = async (req, res) => {
 
     const owesExpenses = await Expense.exists({ group: groupId, "owedBy.userId": memberId });
     if (owesExpenses) {
-    return res.status(400).json({ message: "Member cannot be removed because they still owe expenses." });
+      return res.status(400).json({ message: "Member cannot be removed because they still owe expenses." });
     }
 
 

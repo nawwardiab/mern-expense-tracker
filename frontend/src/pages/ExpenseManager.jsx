@@ -117,9 +117,8 @@ const ExpenseManager = () => {
           ].map((cat) => (
             <button
               key={cat}
-              className={`px-3 sm:px-4 py-2 rounded-lg shadow-md text-sm sm:text-base ${
-                category === cat ? "bg-black text-white" : "border"
-              }`}
+              className={`px-3 sm:px-4 py-2 rounded-lg shadow-md text-sm sm:text-base ${category === cat ? "bg-black text-white" : "border"
+                }`}
               onClick={() => setCategory(category === cat ? "" : cat)}
             >
               {cat}
@@ -135,9 +134,8 @@ const ExpenseManager = () => {
           {["Weekly", "Monthly", "Yearly", "One-Time"].map((occ) => (
             <button
               key={occ}
-              className={`px-3 sm:px-4 py-2 rounded-lg shadow-md text-sm sm:text-base ${
-                occurrence === occ ? "bg-black text-white" : "border"
-              }`}
+              className={`px-3 sm:px-4 py-2 rounded-lg shadow-md text-sm sm:text-base ${occurrence === occ ? "bg-black text-white" : "border"
+                }`}
               onClick={() => setOccurrence(occurrence === occ ? "" : occ)}
             >
               {occ}
