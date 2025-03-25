@@ -51,13 +51,13 @@ const LandingPage = () => {
           <div className="flex space-x-10 absolute bottom-20">
             <button
               onClick={handleGoToSignUp}
-              className="px-6 py-3 bg-white text-black font-semibold rounded-lg shadow-lg hover:bg-gray-400 transition duration-300"
+              className="px-6 py-3 bg-white text-black font-semibold rounded-lg shadow-lg hover:bg-gray-400 transition duration-300 cursor-pointer"
             >
               Sign Up
             </button>
             <button
               onClick={handleGoToLogin}
-              className="px-6 py-3 bg-white text-black font-semibold rounded-lg shadow-lg hover:bg-gray-400 transition duration-300"
+              className="px-6 py-3 bg-white text-black font-semibold rounded-lg shadow-lg hover:bg-gray-400 transition duration-300 cursor-pointer"
             >
               Log In
             </button>

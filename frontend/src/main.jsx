@@ -6,13 +6,16 @@ import App from "./App.jsx";
 import { AuthProvider } from "./contexts/AuthContext"; // Auth context provider
 import "./index.css";
 import { ExpenseProvider } from "./contexts/ExpenseContext.jsx";
+import { PaymentProvider } from "./contexts/PaymentContext.jsx";
 
 createRoot(document.getElementById("root")).render(
   <AuthProvider>
     <ExpenseProvider>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
+      <PaymentProvider>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </PaymentProvider>
     </ExpenseProvider>
   </AuthProvider>
 );

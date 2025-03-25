@@ -194,7 +194,7 @@ const AddExpense = ({ isOpen, onClose }) => {
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Expense Name */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700">
+            <label className="block text-sm font-semibold">
               Expense Name
             </label>
             <input
@@ -210,7 +210,7 @@ const AddExpense = ({ isOpen, onClose }) => {
 
           {/* Total Amount */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700">
+            <label className="block text-sm font-semibold">
               Total Amount
             </label>
 
@@ -230,7 +230,7 @@ const AddExpense = ({ isOpen, onClose }) => {
 
           {/* Category */}
           <div className="relative">
-            <label className="block text-sm font-semibold text-gray-700">
+            <label className="block text-sm font-semibold">
               Category
             </label>
 
@@ -287,7 +287,7 @@ const AddExpense = ({ isOpen, onClose }) => {
 
           {/* Recurring Expense Toggle */}
           <div className="flex justify-between items-center mt-4">
-            <span className="text-sm font-semibold text-gray-700">
+            <span className="text-sm font-semibold">
               Recurring Expense
             </span>
             <label className="relative inline-flex items-center cursor-pointer">
@@ -305,7 +305,7 @@ const AddExpense = ({ isOpen, onClose }) => {
           {expense.isRecurring ? (
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold text-gray-700">
+                <label className="block text-sm font-semibold">
                   Recurrence Frequency
                 </label>
                 <div className="flex gap-4 mt-2">
@@ -334,7 +334,7 @@ const AddExpense = ({ isOpen, onClose }) => {
               {/* Start & End Dates */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700">
+                  <label className="block text-sm font-semibold">
                     Start Date
                   </label>
                   <input
@@ -347,7 +347,7 @@ const AddExpense = ({ isOpen, onClose }) => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700">
+                  <label className="block text-sm font-semibold">
                     End Date
                   </label>
                   <input

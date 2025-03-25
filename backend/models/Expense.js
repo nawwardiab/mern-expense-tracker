@@ -13,6 +13,7 @@ const expenseSchema = new Schema(
       default: null,
     }, // Optional, for shared expenses
     title: { type: String, required: true },
+    description: { type: String, default: "" },
     amount: { type: Number, required: true },
     category: {
       type: String,

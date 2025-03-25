@@ -1,46 +1,42 @@
-// src/pages/ExpenseManager.jsx (example path)
+// src/pages/ExpenseManager.jsx
 import React, { useEffect, useContext, useState } from "react";
 import axios from "axios";
 import { ExpenseContext } from "../contexts/ExpenseContext";
-import ExpenseList from "../components/ExpenseList";
+import ExpenseList from "../components/ExpenseList"; // or correct path if needed
 import { FaWallet } from "react-icons/fa";
 import { TbListSearch } from "react-icons/tb";
 
 const ExpenseManager = () => {
-  // 1) Get the global “expenses” and a way to set them
+  // 1) Global expense state & dispatch from context
   const { expenseState, expenseDispatch } = useContext(ExpenseContext);
   const { expenses } = expenseState;
-  // Reducer to set expenses
-  const setExpenses = (expenses) => {
-    expenseDispatch({ type: "GET_EXPENSES", payload: expenses });
-  };
 
-  // 2) Local states for filtering
+  // 2) Local filter states
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
   const [occurrence, setOccurrence] = useState("");
 
-  // 3) Local derived states: “filteredExpenses,” “totalFiltered”
+  // 3) Derived states: filtered array and total
   const [filteredExpenses, setFilteredExpenses] = useState([]);
   const [totalFilteredExpenses, setTotalFilteredExpenses] = useState(0);
 
-  // 4) Fetch expenses from the server once
+  // 4) Fetch expenses on mount
   useEffect(() => {
     const fetchExpenses = async () => {
       try {
         const { data } = await axios.get("http://localhost:8000/expenses", {
           withCredentials: true,
         });
-        // Save the array in global state
-        setExpenses(data.data);
+        // Put them in global state
+        expenseDispatch({ type: "GET_EXPENSES", payload: data.data });
       } catch (error) {
         console.error("Error fetching expenses:", error);
       }
     };
     fetchExpenses();
-  }, [setExpenses]);
+  }, [expenseDispatch]);
 
-  // 5) Whenever “expenses” or filter states change, compute the filtered array
+  // 5) Filter logic whenever `expenses` or filter states change
   useEffect(() => {
     let filtered = expenses;
 
@@ -65,7 +61,7 @@ const ExpenseManager = () => {
 
     setFilteredExpenses(filtered);
 
-    // Calculate total of the filtered list
+    // Calculate total of filtered list
     const total = filtered.reduce((sum, exp) => sum + exp.amount, 0);
     setTotalFilteredExpenses(total);
   }, [expenses, search, category, occurrence]);
@@ -76,7 +72,7 @@ const ExpenseManager = () => {
         Manage your expenses
       </h1>
 
-      {/* =========== Search Input (Local) =========== */}
+      {/* =========== Search Input =========== */}
       <div className="relative flex flex-col sm:flex-row gap-4 items-center">
         <input
           type="text"
@@ -88,7 +84,7 @@ const ExpenseManager = () => {
         <TbListSearch className="absolute right-4 text-gray-500 text-3xl sm:text-4xl" />
       </div>
 
-      {/* =========== Categories (Local) =========== */}
+      {/* =========== Categories Filter =========== */}
       <div className="my-6">
         <h2 className="font-semibold text-lg">Popular Categories</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 sm:gap-4 mt-3">
@@ -113,7 +109,7 @@ const ExpenseManager = () => {
         </div>
       </div>
 
-      {/* =========== Occurrence Filters (Local) =========== */}
+      {/* =========== Occurrence Filter =========== */}
       <div className="my-6">
         <h2 className="font-semibold text-lg">Occurrence</h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 mt-3">
@@ -145,7 +141,6 @@ const ExpenseManager = () => {
             <h2 className="text-lg sm:text-xl font-semibold mt-4">
               Total Spent
             </h2>
-
             <p className="text-2xl sm:text-3xl font-bold text-gray-800 mt-2">
               €{totalFilteredExpenses.toFixed(2)}
             </p>
