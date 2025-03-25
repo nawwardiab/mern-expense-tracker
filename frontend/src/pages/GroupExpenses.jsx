@@ -6,6 +6,7 @@ import GroupList from "../components/GroupList";
 import GroupDetail from "../components/GroupDetail";
 import ExpenseTable from "../components/ExpenseTable";
 import AddGroupExpense from "../components/modal/AddGroupExpense";
+import GroupMembersTable from "../components/GroupMembersTable";
 import { AuthContext } from "../contexts/AuthContext";
 
 
@@ -72,6 +73,7 @@ const GroupExpenses = () => {
               <>
                 <GroupDetail group={selectedGroup} />
                 <ExpenseTable groupId={selectedGroup._id} />
+                <GroupMembersTable members={selectedGroup.members} totalAmount={selectedGroup.totalAmount} />
               </>
             ) : (
               <p className="text-center text-gray-500">No group selected.</p>

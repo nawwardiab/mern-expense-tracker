@@ -162,7 +162,7 @@ const AddGroupExpense = ({ isOpen, onClose, onGroupAdded }) => {
     const payload = {
       name: group.name,
       description: group.description,
-      members: selectedMembers.map((memberId) => ({ userId: memberId, role: "member" })),
+      members: selectedMembers,
       totalAmount: expense.amount || 0, // Ensure a default value
     };
 

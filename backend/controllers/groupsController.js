@@ -9,10 +9,10 @@ export const getUserGroups = async (req, res) => {
   try {
     const userId = req.user.id;
     const groups = await Group.find({ "members.userId": userId })
-    .populate({
-      path: "members.userId",
-      select: "fullName"
-    })
+      .populate({
+        path: "members.userId",
+        select: "fullName"
+      })
     res.json(groups);
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
@@ -23,13 +23,8 @@ export const getUserGroups = async (req, res) => {
 //Create a new group
 export const createGroup = async (req, res) => {
   try {
-<<<<<<< HEAD
     // Added members = [], totalAmount = 0
     const { name, description, members = [], totalAmount = 0 } = req.body;
-    console.log("🟢 Received Payload:", req.body);
-=======
-    const { name, description, members } = req.body;
->>>>>>> main
     const userId = req.user.id;
 
     if (!name || !Array.isArray(members)) {
@@ -41,12 +36,6 @@ export const createGroup = async (req, res) => {
       return res.status(400).json({ message: "Group name already exists." });
     }
 
-<<<<<<< HEAD
-    // Formatted Members
-    const formattedMembers = members.map(member => ({
-      userId: member.userId || member,
-      role: member.role || "member",
-=======
     const uniqueMemberIds = [...new Set(members.map(String))];
 
     // Filter out the creator (admin) from members list
@@ -55,17 +44,11 @@ export const createGroup = async (req, res) => {
     const formattedMembers = filteredMemberIds.map(memberId => ({
       userId: memberId,
       role: "member"
->>>>>>> main
     }));
     console.log("🟢 Formatted Members:", formattedMembers);
 
-<<<<<<< HEAD
-    // Ensure creator is admin
-    formattedMembers.push({ userId: req.user.id, role: "admin" });
-=======
     // Add the creator as admin
     formattedMembers.push({ userId, role: "admin" });
->>>>>>> main
 
     // Create the group
     const group = new Group({
@@ -73,7 +56,7 @@ export const createGroup = async (req, res) => {
       description,
       members: formattedMembers,
       totalAmount,
-      createdBy: req.user.id,
+      createdBy: userId,
     });
 
     await group.save();
@@ -135,7 +118,7 @@ export const deleteGroup = async (req, res) => {
 
     const expenseExists = await Expense.exists({ group: groupId });
     if (expenseExists) {
-     return res.status(400).json({ message: "Group cannot be deleted because it has expenses." });
+      return res.status(400).json({ message: "Group cannot be deleted because it has expenses." });
     }
 
 
@@ -205,7 +188,7 @@ export const removeMemberFromGroup = async (req, res) => {
 
     const owesExpenses = await Expense.exists({ group: groupId, "owedBy.userId": memberId });
     if (owesExpenses) {
-    return res.status(400).json({ message: "Member cannot be removed because they still owe expenses." });
+      return res.status(400).json({ message: "Member cannot be removed because they still owe expenses." });
     }
 
 

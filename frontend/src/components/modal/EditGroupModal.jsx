@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { FaTimes } from "react-icons/fa";
 
-
 const EditGroupModal = ({ group, onClose, onGroupUpdated }) => {
     const [name, setName] = useState(group.name || "");
     const [totalAmount, setTotalAmount] = useState(group.totalAmount || 0);
@@ -17,7 +16,9 @@ const EditGroupModal = ({ group, onClose, onGroupUpdated }) => {
 
     const fetchAllUsers = async () => {
         try {
-            const { data } = await axios.get("http://localhost:8000/users", { withCredentials: true });
+            const { data } = await axios.get("http://localhost:8000/users", {
+                withCredentials: true,
+            });
             setAllUsers(data);
         } catch (err) {
             console.error("Failed to fetch users:", err);
@@ -25,9 +26,18 @@ const EditGroupModal = ({ group, onClose, onGroupUpdated }) => {
     };
 
     const handleMemberToggle = (userId) => {
-        const isMember = members.some((m) => m.userId === userId);
+        const isMember = members.some((m) => {
+            const id = typeof m.userId === "object" ? m.userId._id : m.userId;
+            return id === userId;
+        });
+
         if (isMember) {
-            setMembers((prev) => prev.filter((m) => m.userId !== userId));
+            setMembers((prev) =>
+                prev.filter((m) => {
+                    const id = typeof m.userId === "object" ? m.userId._id : m.userId;
+                    return id !== userId;
+                })
+            );
         } else {
             setMembers((prev) => [...prev, { userId, role: "member" }]);
         }
@@ -54,8 +64,19 @@ const EditGroupModal = ({ group, onClose, onGroupUpdated }) => {
 
             if (onGroupUpdated) onGroupUpdated();
             onClose();
+
+            setTimeout(() => {
+                onClose(); // gives time for parent to catch the update
+            }, 100);
         } catch (error) {
-            console.error("Failed to update group:", error);
+            const msg = error.response?.data?.message;
+
+            if (error.response?.status === 403) {
+                alert(msg || "You are not authorized to edit this group.");
+            } else {
+                console.error("Failed to update group:", msg || error.message);
+                alert("Something went wrong while updating the group.");
+            }
         } finally {
             setLoading(false);
         }
@@ -68,10 +89,17 @@ const EditGroupModal = ({ group, onClose, onGroupUpdated }) => {
             await axios.delete(`http://localhost:8000/groups/${group._id}`, {
                 withCredentials: true,
             });
+
             if (onGroupUpdated) onGroupUpdated(); // refresh list
             onClose();
+
+            setTimeout(() => {
+                onClose();
+            }, 100);
         } catch (error) {
-            console.error("Failed to delete group:", error);
+            const msg = error.response?.data?.message || "Failed to delete group.";
+            alert(msg); // You can replace this with a toast or custom modal if preferred
+            console.error("Delete group failed:", msg);
         }
     };
 
@@ -110,21 +138,25 @@ const EditGroupModal = ({ group, onClose, onGroupUpdated }) => {
                     <div>
                         <label className="block text-sm font-semibold">Members</label>
                         <div className="max-h-40 overflow-y-auto border rounded p-2">
-                            {allUsers.map((user) => (
-                                <div key={user._id} className="flex justify-between items-center p-1">
-                                    <span>{user.fullName || user.email}</span>
-                                    <button
-                                        type="button"
-                                        className={`px-3 py-1 rounded text-white ${members.some((m) => m.userId === user._id)
-                                            ? "bg-red-500"
-                                            : "bg-green-500"
-                                            }`}
-                                        onClick={() => handleMemberToggle(user._id)}
-                                    >
-                                        {members.some((m) => m.userId === user._id) ? "Remove" : "Add"}
-                                    </button>
-                                </div>
-                            ))}
+                            {allUsers.map((user) => {
+                                const isMember = members.some((m) => {
+                                    const id = typeof m.userId === "object" ? m.userId._id : m.userId;
+                                    return id === user._id;
+                                });
+
+                                return (
+                                    <div key={user._id} className="flex justify-between items-center p-1">
+                                        <span>{user.fullName || user.email}</span>
+                                        <button
+                                            type="button"
+                                            className={`px-3 py-1 rounded text-white ${isMember ? "bg-red-500" : "bg-green-500"}`}
+                                            onClick={() => handleMemberToggle(user._id)}
+                                        >
+                                            {isMember ? "Remove" : "Add"}
+                                        </button>
+                                    </div>
+                                );
+                            })}
                         </div>
                     </div>
 
@@ -136,15 +168,13 @@ const EditGroupModal = ({ group, onClose, onGroupUpdated }) => {
                         {loading ? "Saving..." : "Save Changes"}
                     </button>
 
-                    {group.isCreator && (
-                        <button
-                            type="button"
-                            className="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700 mt-2"
-                            onClick={handleDeleteGroup}
-                        >
-                            Delete Group
-                        </button>
-                    )}
+                    <button
+                        type="button"
+                        className="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700 mt-2"
+                        onClick={handleDeleteGroup}
+                    >
+                        Delete Group
+                    </button>
                 </form>
             </div>
         </div>
