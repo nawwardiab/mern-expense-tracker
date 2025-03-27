@@ -5,7 +5,7 @@ import { AuthContext } from "../contexts/AuthContext.jsx";
 import { FaGoogle, FaApple, FaEnvelope, FaHome } from "react-icons/fa";
 
 const Login = () => {
-  const { userDispatch, userState } = useContext(AuthContext);
+  const { userDispatch } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({ email: "", password: "" });

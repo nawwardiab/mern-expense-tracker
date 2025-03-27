@@ -7,15 +7,18 @@ import { AuthProvider } from "./contexts/AuthContext"; // Auth context provider
 import "./index.css";
 import { ExpenseProvider } from "./contexts/ExpenseContext.jsx";
 import { PaymentProvider } from "./contexts/PaymentContext.jsx";
+import { GroupProvider } from "./contexts/GroupContext.jsx";
 
 createRoot(document.getElementById("root")).render(
   <AuthProvider>
     <ExpenseProvider>
-      <PaymentProvider>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-      </PaymentProvider>
+      <GroupProvider>
+        <PaymentProvider>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </PaymentProvider>
+      </GroupProvider>
     </ExpenseProvider>
   </AuthProvider>
 );

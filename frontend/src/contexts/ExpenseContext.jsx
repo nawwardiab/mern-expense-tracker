@@ -1,3 +1,4 @@
+// src/contexts/ExpenseContext.jsx
 import React, { createContext, useReducer } from "react";
 import expenseReducer, {
   initialExpenseState,
@@ -12,7 +13,12 @@ export const ExpenseProvider = ({ children }) => {
   );
 
   return (
-    <ExpenseContext.Provider value={{ expenseState, expenseDispatch }}>
+    <ExpenseContext.Provider
+      value={{
+        expenseState,
+        expenseDispatch,
+      }}
+    >
       {children}
     </ExpenseContext.Provider>
   );

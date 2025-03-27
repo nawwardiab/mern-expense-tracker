@@ -1,28 +1,49 @@
+/**
+ * ExpenseDetail.jsx
+ *
+ * Renders a modal with details for a single expense.
+ * Allows editing fields and saving changes (updateExpense),
+ * or deleting the expense (deleteExpense).
+ * After each successful operation, it dispatches an action
+ * to the ExpenseContext reducer, keeping the store in sync.
+ */
+
 import React, { useContext, useState } from "react";
-import axios from "axios";
 import { FaTimes } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
+
+// We import the context just to get expenseDispatch.
+// We also import the API functions for updating & deleting expenses.
 import { ExpenseContext } from "../../contexts/ExpenseContext";
+import { updateExpense, deleteExpense } from "../../api/expenseApi";
 
 const ExpenseDetail = ({ expense, onClose }) => {
+  // We only need dispatch from the context to update global state after an API call.
   const { expenseDispatch } = useContext(ExpenseContext);
 
-  // Local states
+  // Local states for editing logic, form data, and UI feedback.
   const [editedExpense, setEditedExpense] = useState(expense);
   const [isEditing, setIsEditing] = useState({});
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
 
-  // If no expense is passed in, bail out
+  // If no expense object is given, don't render anything.
   if (!expense) return null;
 
-  // Toggle editing for a specific field
+  /**
+   * Toggles whether a specific field is editable (readOnly = false).
+   * We track "edit" states in an object where each field is a boolean.
+   */
   const toggleEdit = (field) => {
     setIsEditing((prev) => ({ ...prev, [field]: !prev[field] }));
   };
 
-  // Handle input changes for the editedExpense object
+  /**
+   * Handles changes to the local editedExpense object.
+   * This only modifies local state, not the backend or context
+   * until the user clicks "Save Expense."
+   */
   const handleChange = (e) => {
     setEditedExpense({
       ...editedExpense,
@@ -30,29 +51,33 @@ const ExpenseDetail = ({ expense, onClose }) => {
     });
   };
 
-  // Example for changing category
-  const handleCategoryChange = (newCat) => {
-    setEditedExpense((prev) => ({ ...prev, category: newCat }));
+  /**
+   * Example function to update the category to a new value
+   * (could be triggered by a button in the UI).
+   */
+  const handleCategoryChange = (newCategory) => {
+    setEditedExpense((prev) => ({ ...prev, category: newCategory }));
   };
 
-  // Save changes to the server
+  /**
+   * Saves the edited expense data to the server,
+   * then dispatches an UPDATE_EXPENSE action to the context.
+   */
   const handleSave = async () => {
     setLoading(true);
     setMessage(null);
 
     try {
-      const response = await axios.patch(
-        `http://localhost:8000/expenses/${expense._id}`,
-        editedExpense,
-        {
-          withCredentials: true,
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      // 1) Call the API to update the expense
+      //    (the function is imported from expenseApi.js)
+      const response = await updateExpense(expense._id, editedExpense);
 
+      // 2) On success, show a success message
       setMessage({ type: "success", text: "Expense updated successfully!" });
 
-      // Update the expense in global context
+      // 3) Update the expense in global context
+      //    Our backend might return { success, data }
+      //    so we access response.data for the updated doc
       if (response?.data) {
         expenseDispatch({ type: "UPDATE_EXPENSE", payload: response.data });
       }
@@ -67,13 +92,18 @@ const ExpenseDetail = ({ expense, onClose }) => {
     setLoading(false);
   };
 
-  // Delete the expense
+  /**
+   * Deletes the expense from the server,
+   * then dispatches a DELETE_EXPENSE action to the context.
+   */
   const handleDelete = async () => {
+    // Validate we have an expense ID to delete
     if (!expense?._id) {
       setMessage({ type: "error", text: "Invalid expense ID" });
       return;
     }
 
+    // Confirm with the user to avoid accidental deletions
     if (!window.confirm("Are you sure you want to delete this expense?")) {
       return;
     }
@@ -82,16 +112,17 @@ const ExpenseDetail = ({ expense, onClose }) => {
     setMessage(null);
 
     try {
-      await axios.delete(`http://localhost:8000/expenses/${expense._id}`, {
-        withCredentials: true,
-      });
+      // 1) Call the API to delete the expense
+      await deleteExpense(expense._id);
+
+      // 2) Show a success message
       setMessage({ type: "success", text: "Expense deleted successfully!" });
 
-      // Optionally close the modal after a short delay
-      setTimeout(() => onClose(), 1000);
-
-      // Remove expense from context if needed
+      // 3) Remove the expense from global context
       expenseDispatch({ type: "DELETE_EXPENSE", payload: expense._id });
+
+      // 4) Optionally close the modal after a short delay
+      setTimeout(() => onClose(), 1000);
     } catch (error) {
       console.error("Failed to delete expense:", error);
       setMessage({
@@ -106,7 +137,7 @@ const ExpenseDetail = ({ expense, onClose }) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-opacity-80 backdrop-blur-lg z-[100]">
       <div className="bg-gray-200 p-6 rounded-lg w-full max-w-md shadow-lg mt-16">
-        {/* Header */}
+        {/* Modal Header */}
         <div className="flex justify-between items-center pb-3">
           <h2 className="text-xl font-bold">{expense.title} Details</h2>
           <FaTimes
@@ -186,7 +217,7 @@ const ExpenseDetail = ({ expense, onClose }) => {
           </div>
         </div>
 
-        {/* Recurring Frequency */}
+        {/* Recurring Frequency Editing */}
         <div className="mt-4">
           <label className="block text-sm font-semibold mb-1">Regularity</label>
           <div className="flex items-center">
@@ -221,7 +252,7 @@ const ExpenseDetail = ({ expense, onClose }) => {
           </label>
 
           {editedExpense.recurringFrequency !== "one-time" ? (
-            // If recurring, show start/end
+            // If recurring, we show start/end date fields
             <div className="flex items-center gap-4">
               {/* Start Date */}
               <div className="flex items-center">
@@ -266,7 +297,7 @@ const ExpenseDetail = ({ expense, onClose }) => {
               </div>
             </div>
           ) : (
-            // One-time expense
+            // One-time expense: just a single transactionDate
             <div className="flex items-center">
               <input
                 type="date"

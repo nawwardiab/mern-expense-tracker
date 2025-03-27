@@ -1,3 +1,8 @@
+### All Users
+GET http://localhost:8000/users
+Content-Type: application/json
+
+
 ### Register
 POST http://localhost:8000/users/register
 Content-Type: application/json
@@ -8,14 +13,13 @@ Content-Type: application/json
   "password": "1234"
 }
 
-###
 
 ### Login
 POST http://localhost:8000/users/login
 Content-Type: application/json
 
 {
-  "email": "carlito@test.com",
+  "email": "ira@gmail.com",
   "password": "1234"
 }
 

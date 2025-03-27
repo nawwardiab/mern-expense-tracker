@@ -18,7 +18,6 @@ import SettingPage from "../pages/SettingPage";
 export default function AppRoutes() {
   const { userState } = useContext(AuthContext);
   const { user } = userState;
-  console.log("🚀 ~ AppRoutes ~ user:", user);
 
   return (
     <Routes>

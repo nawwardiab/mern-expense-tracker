@@ -1,5 +1,7 @@
 import React, { createContext, useReducer } from "react";
-import paymentReducer, { initialState } from "../reducers/paymentReducer";
+import paymentReducer, {
+  initialPaymentState,
+} from "../reducers/paymentReducer";
 import { fetchPayments, createPayment, updatePayment } from "../api/paymentApi";
 
 export const PaymentContext = createContext();
@@ -7,7 +9,7 @@ export const PaymentContext = createContext();
 export function PaymentProvider({ children }) {
   const [paymentState, paymentDispatch] = useReducer(
     paymentReducer,
-    initialState
+    initialPaymentState
   );
 
   // Example action to load all payments

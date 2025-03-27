@@ -1,4 +1,3 @@
-// /src/utils/date.js
 export function formatDate(dateString, isRecurring, recurringFrequency) {
   // If recurring, display the frequency in a capitalized form
   if (isRecurring && recurringFrequency) {

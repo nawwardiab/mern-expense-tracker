@@ -58,54 +58,40 @@ _from modal ExpenseDetail.jsx:_
 - loading
 - message
 
-**Expenses Reducers**
+---
 
-```js
-export const initialExpenseState = {
-  expenses: [], // Master list fetched from the server
-  selectedExpense: null, // If you want a global “currently selected expense”
-};
+**25.03.2025**
 
-export default function expenseReducer(state, action) {
-  switch (action.type) {
-    case "SET_EXPENSES":
-      // Replace the entire expenses array
-      return {
-        ...state,
-        expenses: action.payload,
-      };
+_1. Refactoring:_
 
-    case "ADD_EXPENSE":
-      // Insert a single new expense
-      return {
-        ...state,
-        expenses: [...state.expenses, action.payload],
-      };
+**high priority**
 
-    case "UPDATE_EXPENSE":
-      // Example structure: action.payload = { _id, ...updatedFields }
-      return {
-        ...state,
-        expenses: state.expenses.map((exp) =>
-          exp._id === action.payload._id ? action.payload : exp
-        ),
-      };
+_Pages:_
 
-    case "DELETE_EXPENSE":
-      // action.payload = ID of the expense to remove
-      return {
-        ...state,
-        expenses: state.expenses.filter((exp) => exp._id !== action.payload),
-      };
+- Onboarding: move api calls to userApi.js
+- HomePage: move api calls to expenseApi calls, integrate ExpenseContext and expenseReducer.js (where needed)
+- GroupExpenses: move api calls to groupApi.js, implement and integrate GroupContext
+- ForgotPassword: move api calls to userApi.js
 
-    case "SET_SELECTED_EXPENSE":
-      return {
-        ...state,
-        selectedExpense: action.payload,
-      };
+_Contexts:_
 
-    default:
-      return state;
-  }
-}
-```
+- PaymentContext: take actions out of the context for a clean context component
+- Create GroupContext.
+
+_Components:_
+
+- PaymentList & PaymentForm: refactor and beware of the actions after taking them out of the context
+- GroupList: refactor after creating GroupContext, move api calls to groupApi.js
+- GroupDetail: refactor after creating GroupContext, move api calls to groupApi.js
+- ExpenseTable(in the`GroupExpenses`): refactor and integrate needed Contexts (`ExpenseContext, PaymentContext, GroupContext`), move api calls to groupApi.js, compare integrated table with the ExpenseTable component.
+
+_Modals:_
+
+- AddExpense & ExpenseDetail: are still very big components. analyze refactoring possibilities
+- AddGroupExpense & EditGroupModal: refactor after creating the Context, move api calls to groupApi.js, analyze refactoring possibility
+- SplitExpenseModal: check necessity.
+
+**medium & low priority**
+
+- Forms
+- rendered elements

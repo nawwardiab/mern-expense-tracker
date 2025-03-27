@@ -11,6 +11,7 @@ export const login = async (email, password, dispatch) => {
       },
       { withCredentials: true }
     );
+    console.log("🚀 ~ login ~ response:", response);
 
     const user = response.data.data;
 

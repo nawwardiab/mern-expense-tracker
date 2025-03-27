@@ -1,67 +1,89 @@
-// src/pages/ExpenseManager.jsx
+/**
+ * ExpenseManager.jsx
+ *
+ * A page component that displays and manages a list of expenses.
+ * It fetches all expenses from the server on mount using a dedicated API function
+ * (getAllExpenses) and then dispatches the results to the ExpenseContext.
+ * The user can filter by search, category, or occurrence.
+ * The filtered list is rendered in ExpenseList, and a summary (total) is shown.
+ */
+
 import React, { useEffect, useContext, useState } from "react";
-import axios from "axios";
-import { ExpenseContext } from "../contexts/ExpenseContext";
-import ExpenseList from "../components/ExpenseList"; // or correct path if needed
 import { FaWallet } from "react-icons/fa";
 import { TbListSearch } from "react-icons/tb";
 
+import { ExpenseContext } from "../contexts/ExpenseContext";
+import { getAllExpenses } from "../api/expenseApi"; // <-- new import
+import ExpenseList from "../components/ExpenseList";
+
 const ExpenseManager = () => {
-  // 1) Global expense state & dispatch from context
+  // 1) Pull global expense state & dispatch from context
   const { expenseState, expenseDispatch } = useContext(ExpenseContext);
   const { expenses } = expenseState;
 
-  // 2) Local filter states
+  // 2) Local filters for the UI
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
   const [occurrence, setOccurrence] = useState("");
 
-  // 3) Derived states: filtered array and total
+  // 3) Derived states: the filtered list and the total
   const [filteredExpenses, setFilteredExpenses] = useState([]);
   const [totalFilteredExpenses, setTotalFilteredExpenses] = useState(0);
 
-  // 4) Fetch expenses on mount
+  /**
+   * 4) On mount, fetch all expenses from the server.
+   * We call the `getAllExpenses` API function and dispatch
+   * a GET_EXPENSES action to the context.
+   */
   useEffect(() => {
-    const fetchExpenses = async () => {
+    async function fetchExpenses() {
       try {
-        const { data } = await axios.get("http://localhost:8000/expenses", {
-          withCredentials: true,
-        });
-        // Put them in global state
-        expenseDispatch({ type: "GET_EXPENSES", payload: data.data });
+        const response = await getAllExpenses(expenseDispatch);
+        // Typically: response = { success: true, data: [...] }
+
+        if (response?.data) {
+          expenseDispatch({
+            type: "GET_EXPENSES",
+            payload: response.data,
+          });
+        }
       } catch (error) {
         console.error("Error fetching expenses:", error);
       }
-    };
+    }
     fetchExpenses();
   }, [expenseDispatch]);
 
-  // 5) Filter logic whenever `expenses` or filter states change
+  /**
+   * 5) Whenever expenses or our filter states change,
+   * we derive a filtered list and calculate the total cost of those filtered items.
+   */
   useEffect(() => {
     let filtered = expenses;
 
     // Search by title
     if (search) {
-      filtered = filtered.filter((expense) =>
-        expense.title.toLowerCase().includes(search.toLowerCase())
+      filtered = filtered.filter((exp) =>
+        exp.title.toLowerCase().includes(search.toLowerCase())
       );
     }
 
     // Category filter
     if (category) {
-      filtered = filtered.filter((expense) => expense.category === category);
+      filtered = filtered.filter((exp) => exp.category === category);
     }
 
-    // Occurrence filter
+    // Occurrence filter (note: we compare to .toLowerCase())
     if (occurrence) {
       filtered = filtered.filter(
-        (expense) => expense.recurringFrequency === occurrence.toLowerCase()
+        (exp) => exp.recurringFrequency === occurrence.toLowerCase()
       );
     }
 
+    // Update local state
     setFilteredExpenses(filtered);
 
-    // Calculate total of filtered list
+    // Calculate the total for the filtered list
     const total = filtered.reduce((sum, exp) => sum + exp.amount, 0);
     setTotalFilteredExpenses(total);
   }, [expenses, search, category, occurrence]);
@@ -81,6 +103,7 @@ const ExpenseManager = () => {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
+        {/* Search icon displayed on the right */}
         <TbListSearch className="absolute right-4 text-gray-500 text-3xl sm:text-4xl" />
       </div>
 
@@ -134,7 +157,7 @@ const ExpenseManager = () => {
           <ExpenseList expenses={filteredExpenses} />
         </div>
 
-        {/* Right: Summary */}
+        {/* Right: Summary of the filtered list */}
         <div className="flex justify-center w-full">
           <div className="p-5 bg-blue-50 rounded-xl shadow-lg flex flex-col items-center text-center w-full max-w-md">
             <FaWallet className="text-blue-600 text-4xl sm:text-5xl mb-3 mt-6 sm:mt-10" />
