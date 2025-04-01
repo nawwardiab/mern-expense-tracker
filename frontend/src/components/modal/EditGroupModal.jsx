@@ -3,64 +3,73 @@ import axios from "axios";
 import { FaTimes } from "react-icons/fa";
 
 import { GroupContext } from "../../contexts/GroupContext";
-import { fetchUserGroups, updateGroup, deleteGroup } from "../../api/groupApi";
+import {
+  fetchUserGroups,
+  deleteGroup,
+  updateGroupInformation,
+} from "../../api/groupApi";
 
-const EditGroupModal = ({ group, onClose, onGroupUpdated }) => {
+const EditGroupModal = ({ onClose }) => {
   const { groupState, groupDispatch } = useContext(GroupContext);
   const { selectedGroup } = groupState;
 
-  const [name, setName] = useState(group.name || "");
-  const [totalAmount, setTotalAmount] = useState(group.totalAmount || 0);
-  const [members, setMembers] = useState(group.members || []);
-  const [allUsers, setAllUsers] = useState([]);
-  const [isEditing, setIsEditing] = useState({});
+  // const [name, setName] = useState(selectedGroup.name);
+  // const [totalAmount, setTotalAmount] = useState(group.totalAmount || 0);
+  // const [members, setMembers] = useState(group.members || []);
+  // const [allUsers, setAllUsers] = useState([]);
+  // const [isEditing, setIsEditing] = useState({});
+
+  const formData = {
+    name: selectedGroup.name,
+    description: selectedGroup.description,
+    members: selectedGroup.members,
+  };
+
+  const [updatedGroup, setUpdatedGroup] = useState(formData);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    fetchUserGroups();
+    fetchUserGroups(groupDispatch);
   }, []);
 
-  const handleMemberToggle = (userId) => {
-    const isMember = members.some((m) => {
-      const id = typeof m.userId === "object" ? m.userId._id : m.userId;
-      return id === userId;
-    });
+  // const handleMemberToggle = (userId) => {
+  //   const isMember = members.some((m) => {
+  //     const id = typeof m.userId === "object" ? m.userId._id : m.userId;
+  //     return id === userId;
+  //   });
 
-    if (isMember) {
-      setMembers((prev) =>
-        prev.filter((m) => {
-          const id = typeof m.userId === "object" ? m.userId._id : m.userId;
-          return id !== userId;
-        })
-      );
-    } else {
-      setMembers((prev) => [...prev, { userId, role: "member" }]);
-    }
-  };
+  //   if (isMember) {
+  //     setMembers((prev) =>
+  //       prev.filter((m) => {
+  //         const id = typeof m.userId === "object" ? m.userId._id : m.userId;
+  //         return id !== userId;
+  //       })
+  //     );
+  //   } else {
+  //     setMembers((prev) => [...prev, { userId, role: "member" }]);
+  //   }
+  // };
 
-  const toggleEdit = (field) => {
-    setIsEditing((prev) => ({ ...prev, [field]: !prev[field] }));
-  };
+  // const toggleEdit = (field) => {
+  //   setIsEditing((prev) => ({ ...prev, [field]: !prev[field] }));
+  // };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    const editedGroup = {
-      name,
-      totalAmount,
-      members,
-    };
-
     try {
-      await updateGroup(selectedGroup._id, groupDispatch);
-
-      if (onGroupUpdated) onGroupUpdated();
-      onClose();
+      await updateGroupInformation(
+        selectedGroup._id,
+        updatedGroup,
+        groupDispatch
+      );
 
       setTimeout(() => {
         onClose(); // gives time for parent to catch the update
       }, 100);
+
+      await fetchUserGroups(groupDispatch);
     } catch (error) {
       const msg = error.response?.data?.message;
 
@@ -79,20 +88,13 @@ const EditGroupModal = ({ group, onClose, onGroupUpdated }) => {
     if (!window.confirm("Are you sure you want to delete this group?")) return;
 
     try {
-      await axios.delete(`http://localhost:8000/groups/${group._id}`, {
-        withCredentials: true,
-      });
-
-      if (onGroupUpdated) onGroupUpdated(); // refresh list
-      onClose();
+      await deleteGroup(selectedGroup._id, groupDispatch);
 
       setTimeout(() => {
         onClose();
       }, 100);
     } catch (error) {
-      const msg = error.response?.data?.message || "Failed to delete group.";
-      alert(msg); // You can replace this with a toast or custom modal if preferred
-      console.error("Delete group failed:", msg);
+      console.error("Delete group failed:", error.message);
     }
   };
 
@@ -114,19 +116,26 @@ const EditGroupModal = ({ group, onClose, onGroupUpdated }) => {
             <input
               type="text"
               className="w-full border p-2 rounded"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              value={updatedGroup.name}
+              onChange={(e) =>
+                setUpdatedGroup({ ...updatedGroup, name: e.target.value })
+              }
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-semibold">Total Amount</label>
+            <label className="block text-sm font-semibold">Description</label>
             <input
-              type="number"
+              type="text"
               className="w-full border p-2 rounded"
-              value={totalAmount}
-              onChange={(e) => setTotalAmount(Number(e.target.value))}
+              value={updatedGroup.description}
+              onChange={(e) =>
+                setUpdatedGroup({
+                  ...updatedGroup,
+                  description: e.target.value,
+                })
+              }
               required
             />
           </div>
@@ -134,27 +143,21 @@ const EditGroupModal = ({ group, onClose, onGroupUpdated }) => {
           <div>
             <label className="block text-sm font-semibold">Members</label>
             <div className="max-h-40 overflow-y-auto border rounded p-2">
-              {allUsers.map((user) => {
-                const isMember = members.some((m) => {
-                  const id =
-                    typeof m.userId === "object" ? m.userId._id : m.userId;
-                  return id === user._id;
-                });
-
+              {updatedGroup.members.map((user) => {
                 return (
                   <div
-                    key={user._id}
+                    key={user.userId._id}
                     className="flex justify-between items-center p-1"
                   >
-                    <span>{user.fullName || user.email}</span>
+                    <span>{user.userId.fullName}</span>
                     <button
                       type="button"
                       className={`px-3 py-1 rounded text-white ${
-                        isMember ? "bg-red-500" : "bg-green-500"
+                        user ? "bg-red-500" : "bg-green-500"
                       }`}
-                      onClick={() => handleMemberToggle(user._id)}
+                      // onClick={() => handleMemberToggle(user._id)}
                     >
-                      {isMember ? "Remove" : "Add"}
+                      {user ? "Remove" : "Add"}
                     </button>
                   </div>
                 );

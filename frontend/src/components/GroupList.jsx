@@ -17,12 +17,17 @@ const GroupList = () => {
     fetchUserGroups(groupDispatch);
   }, []);
 
+  const handleSelectGroup = (group) => {
+    groupDispatch({
+      type: "SET_SELECTED_GROUP",
+      payload: group,
+    });
+  };
+
   return (
     <div className="w-full bg-gray-100 p-6 h-screen">
       <ul className="space-y-2">
         {groups.map((group) => {
-          const isCreator = user?._id && group.creator === user._id;
-
           return (
             <li
               key={group._id}
@@ -32,12 +37,7 @@ const GroupList = () => {
                     ? "bg-gray-300 font-bold"
                     : "hover:bg-gray-200"
                 }`}
-              onClick={() => {
-                groupDispatch({
-                  type: "SET_SELECTED_GROUP",
-                  payload: { ...group, isCreator },
-                });
-              }}
+              onClick={() => handleSelectGroup(group)}
             >
               {group.name}
             </li>

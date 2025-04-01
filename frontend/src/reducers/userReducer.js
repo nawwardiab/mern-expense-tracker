@@ -1,6 +1,7 @@
 export const initialUserState = {
   user: null,
   isUserLoggedin: false,
+  error: null,
 };
 
 const userReducer = (state, action) => {
@@ -14,6 +15,17 @@ const userReducer = (state, action) => {
 
     case "LOGOUT":
       return initialUserState;
+
+    case "RESET_PASSWORD":
+      return {
+        ...state,
+        user: action.payload,
+      };
+    case "ERROR":
+      return {
+        ...state,
+        error: action.payload,
+      };
 
     default:
       return state;

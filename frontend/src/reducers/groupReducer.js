@@ -5,7 +5,6 @@ export const initialGroupState = {
 };
 
 export default function groupReducer(state, action) {
-  console.log("action payload:", action.payload);
   switch (action.type) {
     // Fetch user groups
 
@@ -20,7 +19,7 @@ export default function groupReducer(state, action) {
 
     // Create a new group
     case "ADD_GROUP":
-      return { ...state, groups: [action.payload, ...state.groups] };
+      return { ...state, groups: [...state.groups, action.payload] };
 
     // Update group details
     case "UPDATE_GROUP":

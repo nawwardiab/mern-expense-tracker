@@ -8,7 +8,6 @@ import { AuthContext } from "../contexts/AuthContext";
 const Layout = () => {
   const { userState } = useContext(AuthContext);
   const { isUserLoggedin } = userState;
-  console.log("🚀 ~ Layout ~ isUserLoggedIn:", isUserLoggedin);
 
   return (
     <div className="flex flex-col h-screen">

@@ -3,38 +3,29 @@ import axios from "axios";
 import ExpenseItem from "../components/reusable/ExpenseItem.jsx";
 import ExpenseDetails from "../components/modal/ExpenseDetail.jsx";
 import { AuthContext } from "../contexts/AuthContext.jsx";
+import { ExpenseContext } from "../contexts/ExpenseContext.jsx";
+import { getAllExpenses } from "../api/expenseApi.js";
 
 const HomePage = () => {
   const { userState } = useContext(AuthContext);
 
-  const [expenses, setExpenses] = useState([]);
+  const { expenseDispatch, expenseState } = useContext(ExpenseContext);
+  const { expenses } = expenseState;
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedExpense, setSelectedExpense] = useState(null); // ✅ Ensure we store the full expense object
 
   // Function to fetch expenses from the server
-  const fetchExpenses = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.get("http://localhost:8000/expenses", {
-        withCredentials: true,
-      });
-      setExpenses(response.data.data || []);
-    } catch (err) {
-      setError(err.response?.data?.message || "Failed to fetch expenses");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // Fetch expenses when the component mounts
   useEffect(() => {
-    fetchExpenses();
+    getAllExpenses(expenseDispatch);
   }, []);
 
   // Refresh the expenses list after modal actions (update/delete)
   const handleRefresh = () => {
-    fetchExpenses();
+    getAllExpenses(expenseDispatch);
   };
 
   return (
@@ -56,7 +47,6 @@ const HomePage = () => {
             key={expense._id}
             expense={expense}
             onClick={() => {
-              console.log("Clicked:", expense); // ✅ Debugging log
               setSelectedExpense(expense); // ✅ Fix: Pass the entire expense object
             }}
           />
@@ -68,7 +58,6 @@ const HomePage = () => {
         <ExpenseDetails
           expense={selectedExpense}
           onClose={() => {
-            console.log("Closing modal");
             setSelectedExpense(null);
           }}
           onRefresh={handleRefresh} // Pass the refresh function to the modal

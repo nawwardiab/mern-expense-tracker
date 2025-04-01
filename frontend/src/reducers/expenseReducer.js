@@ -1,6 +1,7 @@
 export const initialExpenseState = {
   expenses: [], // Master list fetched from the server
   selectedExpense: null, // If you want a global “currently selected expense”
+  totalFilteredExpenses: 0,
 };
 
 export default function expenseReducer(state, action) {
@@ -39,6 +40,11 @@ export default function expenseReducer(state, action) {
       return {
         ...state,
         selectedExpense: action.payload,
+      };
+    case "SET_TOTAL_FILTERED_EXPENSES":
+      return {
+        ...state,
+        totalFilteredExpenses: action.payload,
       };
 
     default:

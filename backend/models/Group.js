@@ -1,28 +1,25 @@
 import mongoose, { Schema, model } from "mongoose";
 
-
 const groupSchema = new Schema(
   {
-    name: { type: String, required: true, unique: true, trim: true },
+    name: { type: String, required: true, trim: true },
     description: { type: String, default: "" },
 
     members: [
       {
-        userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-        //userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
-        role: { type: String, enum: ["admin", "member"], default: "member" }
-      }
+        userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+      },
     ],
 
-    totalAmount: { type: Number, required: true, default: 0 },
+    totalAmount: { type: Number, default: 0 },
 
-    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
 
     expenses: [{ type: mongoose.Schema.Types.ObjectId, ref: "Expense" }],
-
-    //createdBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
-
-    //expenses: [{ type: Schema.Types.ObjectId, ref: "Expense" }], // Linking expenses to the group
 
     isDeleted: { type: Boolean, default: false },
   },

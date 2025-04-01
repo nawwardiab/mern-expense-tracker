@@ -5,7 +5,6 @@ import {
   login,
   register,
   logout,
-  getUserProfile,
   updateUserProfile,
   onboarding,
   getMe,
@@ -18,7 +17,6 @@ router
   .post("/register", register)
   .post("/login", login)
   .get("/logout", checkToken, logout)
-  .get("/profile", checkToken, getUserProfile)
   .patch("/profile", checkToken, updateUserProfile)
   .patch("/onboarding", checkToken, onboarding)
   .get("/me", checkToken, getMe);

@@ -5,7 +5,7 @@ import AddGroupExpense from "./modal/AddGroupModal";
 import EditGroupModal from "./modal/EditGroupModal";
 import { ExpenseContext } from "../contexts/ExpenseContext";
 import { GroupContext } from "../contexts/GroupContext";
-import { fetchGroupExpenses, updateGroup } from "../api/groupApi";
+import { fetchGroupExpenses } from "../api/groupApi";
 
 const GroupDetail = () => {
   const { expenseState, expenseDispatch } = useContext(ExpenseContext);
@@ -23,20 +23,11 @@ const GroupDetail = () => {
       fetchGroupExpenses(selectedGroup._id, groupDispatch);
     }
   }, []);
-  console.log("Selected Group from GroupDetail", selectedGroup);
   // fetchGroupExpenses(selectedGroup._id, groupDispatch);
   // updateGroup(selectedGroup._id, groupDispatch);
   // // updateGroup(selectedGroup._id);
   // const fetchUpdatedGroup = async () => {
-  //   try {
-  //     const { data } = await axios.get(`/groups/${selectedGroup._id}`, {
-  //       withCredentials: true,
-  //     });
-  //     console.log("🚀 ~ fetchUpdatedGroup ~ data:", data);
-  //     setGroupInfo(data); // ✅ update UI
-  //   } catch (error) {
-  //     console.error("❌ Failed to fetch updated group:", error);
-  //   }
+  //
   // };
 
   // const handleExpenseAdded = (newExpense) => {
@@ -68,7 +59,7 @@ const GroupDetail = () => {
       </div>
 
       {/* Expenses */}
-      <div className="mt-6">
+      {/* <div className="mt-6">
         <h2 className="text-lg font-semibold mb-2">Expenses</h2>
         {loading ? (
           <p className="text-center text-gray-500 py-4">Loading expenses...</p>
@@ -79,7 +70,7 @@ const GroupDetail = () => {
             No expenses recorded yet.
           </p>
         )}
-      </div>
+      </div> */}
 
       {/* Summary */}
       <div className="mt-6 grid grid-cols-3 gap-4 border-b pb-4 text-center">
@@ -112,7 +103,6 @@ const GroupDetail = () => {
         <EditGroupModal
           group={selectedGroup}
           onClose={() => setEditModalOpen(false)}
-          onGroupUpdated={fetchUpdatedGroup}
         />
       )}
     </div>

@@ -3,92 +3,61 @@ import Expense from "../models/Expense.js";
 import Payment from "../models/Payment.js";
 
 //Get all groups for a user
-export const getUserGroups = async (req, res) => {
+export const fetchUserGroups = async (req, res) => {
   try {
-    const userId = req.user.id;
-    const groups = await Group.find({ "members.userId": userId }).populate({
-      path: "members.userId",
-      select: "fullName",
-    });
+    const groups = await Group.find()
+      .populate("members.userId")
+      .populate("expenses");
     res.json(groups);
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
   }
 };
 
-//Create a new group
 export const createGroup = async (req, res) => {
   try {
-    // Added members = [], totalAmount = 0
-    const { name, description, members = [], totalAmount = 0 } = req.body;
-    console.log("🚀 ~ createGroup ~ members:", members);
+    const { name, description, createdBy, members } = req.body;
 
-    const userId = req.user.id;
-    console.log("🚀 ~ createGroup ~ userId:", userId);
-
-    if (!name || !Array.isArray(members)) {
-      return res
-        .status(400)
-        .json({ message: "Group name and members are required." });
-    }
-
-    const existingGroup = await Group.findOne({ name });
-    if (existingGroup) {
-      return res.status(400).json({ message: "Group name already exists." });
-    }
-
-    const uniqueMemberIds = [...new Set(members)];
-    console.log("🚀 ~ createGroup ~ uniqueMemberIds:", uniqueMemberIds);
-
-    // Filter out the creator (admin) from members list
-    const filteredMemberIds = uniqueMemberIds.filter(
-      (memberId) => memberId !== userId
-    );
-    console.log("🚀 ~ createGroup ~ filteredMemberIds:", filteredMemberIds);
-
-    // Create the group
-    const group = new Group({
+    // Step 1: Create the group using Mongoose's create method
+    const group = await Group.create({
       name,
       description,
+      createdBy,
       members,
-      totalAmount,
-      createdBy: userId,
     });
 
-    await group.save();
-    res.status(201).json({ message: "Group created successfully.", group });
+    // Step 2: Populate the members.userId and (optional) createdBy
+    const populatedGroup = await Group.findById(group._id)
+      .populate("members.userId") // consider renaming "userId" to "groupMember" wherever it is used (Backend and Frontend)
+      .populate("createdBy")
+      .populate("expenses");
+
+    res
+      .status(201)
+      .json({ message: "Group created successfully.", group: populatedGroup });
   } catch (error) {
-    console.error("❌ Error creating group:", error);
+    console.error("❌ Error creating group:", error.message, error.stack);
     res.status(500).json({ message: "Server error", error });
   }
 };
 
 //Edit group name or description (can be done also by a member)
-export const updateGroup = async (req, res) => {
+export const updateGroupInformation = async (req, res) => {
   try {
     const { groupId } = req.params;
     // Added totalAmount, members to be able to edit it
-    const { name, description, totalAmount, members } = req.body;
-    const userId = req.user.id;
+    const { name, description, members } = req.body;
 
-    const group = await Group.findById(groupId);
+    const group = await Group.findById(groupId)
+      .populate("members.userId") // consider renaming "userId" to "groupMember" wherever it is used (Backend and Frontend)
+      .populate("createdBy")
+      .populate("expenses");
     if (!group) {
       return res.status(404).json({ message: "Group not found." });
     }
 
-    const isAdmin = group.members.some(
-      (member) => member.userId.toString() === userId && member.role === "admin"
-    );
-    if (!isAdmin) {
-      return res
-        .status(403)
-        .json({ message: "Only admins can edit group details." });
-    }
-
     if (name) group.name = name;
     if (description) group.description = description;
-    // Added totalAmount and members
-    if (totalAmount !== undefined) group.totalAmount = totalAmount;
     if (Array.isArray(members)) group.members = members;
 
     await group.save();
@@ -230,7 +199,7 @@ export const getGroupExpenses = async (req, res) => {
 export const addGroupExpense = async (req, res) => {
   try {
     const { groupId } = req.params;
-    const { title, description, amount, category, transactionDate } = req.body;
+    const { title, amount, category, transactionDate } = req.body;
 
     const userId = req.user.id;
 
@@ -241,22 +210,11 @@ export const addGroupExpense = async (req, res) => {
         .json({ success: false, message: "Group not found" });
     }
 
-    // Check if the user is part of the group
-    const isMember = group.members.some(
-      (member) => member.userId.toString() === userId
-    );
-    if (!isMember) {
-      return res
-        .status(403)
-        .json({ success: false, message: "You're not a member of this group" });
-    }
-
     // Create the expense
     const newExpense = new Expense({
       userId, // Who paid
       groupId,
       title,
-      description,
       amount,
       category,
       transactionDate,
@@ -266,7 +224,7 @@ export const addGroupExpense = async (req, res) => {
 
     // Update group's expense list and totalAmount
     group.expenses.push(newExpense._id);
-    group.totalAmount += amount;
+    group.totalAmount += +amount;
     await group.save();
 
     res.status(201).json({ success: true, data: newExpense });

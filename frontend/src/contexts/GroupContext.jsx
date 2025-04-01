@@ -11,7 +11,6 @@ export const GroupProvider = ({ children }) => {
     groupReducer,
     initialGroupState
   );
-  console.log("selceted Group", groupState.selectedGroup);
 
   // Expose state & actions
   return (

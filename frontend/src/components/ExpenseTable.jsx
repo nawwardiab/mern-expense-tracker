@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { GroupContext } from "../contexts/GroupContext";
 import AddGroupExpenseModal from "./modal/AddGroupExpenseModal";
-import { fetchGroupExpenses } from "../api/groupApi";
+import { addGroupExpense } from "../api/groupApi";
 
 const ExpenseTable = () => {
   const { groupState, groupDispatch } = useContext(GroupContext);
@@ -12,15 +12,16 @@ const ExpenseTable = () => {
   const [error, setError] = useState(null);
 
   // Fetch group expenses on load
-  useEffect(() => {
-    fetchGroupExpenses(selectedGroup._id, groupDispatch); // This should update GroupContext
-  }, []);
+  //   useEffect(() => {
+  //     fetchGroupExpenses(selectedGroup._id, groupDispatch); // This should update GroupContext
+  //   }, []);
 
-  console.log("Selected Group:", selectedGroup);
   const expenses = selectedGroup?.expenses || [];
+  console.log("🚀 ~ ExpenseTable ~ selectedGroup:", selectedGroup);
+  //   console.log("🚀 ~ ExpenseTable ~ expenses:", expenses);
 
-  if (loading)
-    return <p className="text-center text-gray-500">Loading expenses...</p>;
+  //   if (loading)
+  //     return <p className="text-center text-gray-500">Loading expenses...</p>;
   if (error) return <p className="text-center text-red-500">{error}</p>;
 
   return (

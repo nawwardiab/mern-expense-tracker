@@ -23,7 +23,6 @@ const Navbar = () => {
 
   const handleSearch = async (e) => {
     e.preventDefault();
-    console.log("Search Query:", searchQuery);
     // TODO: Make an API call to search expenses
   };
 

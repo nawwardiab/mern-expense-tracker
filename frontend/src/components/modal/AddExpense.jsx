@@ -203,11 +203,7 @@ const AddExpense = ({ isOpen, onClose }) => {
 
     try {
       // 1) Call the API
-      const response = await createExpense(formattedExpense);
-
-      // 2) Dispatch the new expense to our context store
-      //    The response typically has shape: { success: true, data: { ...expense } }
-      expenseDispatch({ type: "ADD_EXPENSE", payload: response.data });
+      await createExpense(formattedExpense, expenseDispatch);
 
       // 3) Show success message
       setMessage({ type: "success", text: "Expense added successfully!" });

@@ -4,7 +4,7 @@ import { FaTimes } from "react-icons/fa";
 import { AuthContext } from "../../contexts/AuthContext";
 import { GroupContext } from "../../contexts/GroupContext";
 import { ExpenseContext } from "../../contexts/ExpenseContext";
-import { addGroupExpense, updateGroup } from "../../api/groupApi";
+import { addGroupExpense, fetchGroupExpenses } from "../../api/groupApi";
 
 const AddGroupExpenseModal = ({ isOpen, onClose, groupId }) => {
   const { userState } = useContext(AuthContext);
@@ -17,7 +17,7 @@ const AddGroupExpenseModal = ({ isOpen, onClose, groupId }) => {
     title: "",
     amount: "",
     transactionDate: "",
-    category: "Group Expense",
+    category: "Group Expenses",
   });
 
   const [loading, setLoading] = useState(false);
@@ -33,24 +33,25 @@ const AddGroupExpenseModal = ({ isOpen, onClose, groupId }) => {
 
     const expenseData = {
       ...form,
-      userId: user.user._id,
+      userId: user._id,
       groupId: selectedGroup._id,
     };
 
     try {
-      await updateGroup(selectedGroup._id, expenseData, groupDispatch);
+      await addGroupExpense(selectedGroup._id, expenseData, groupDispatch);
       setMessage({ type: "success", text: "Expense added to group!" });
       setTimeout(() => {
         setForm({
           title: "",
           amount: "",
           transactionDate: "",
-          category: "Group Expense",
+          category: "Group Expenses",
         });
         setMessage(null);
         onClose();
         setLoading(false);
       }, 1500);
+      await fetchGroupExpenses(selectedGroup._id, groupDispatch);
     } catch (err) {
       console.error("Failed to add group expense:", err);
       setMessage({ type: "error", text: "Error adding expense." });

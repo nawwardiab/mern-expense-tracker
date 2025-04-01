@@ -9,51 +9,39 @@ export async function fetchUserGroups(dispatch) {
 
 // Create a new group only
 export async function createGroup(groupData, dispatch) {
-  const res = await axios.post("/groups/create", groupData, {
-    withCredentials: true,
-    headers: { "Content-Type": "application/json" },
-  });
+  try {
+    const response = await axios.post("/groups/create", groupData);
 
-  dispatch({ type: "ADD_GROUP", payload: res.data });
-  return res.data;
+    dispatch({ type: "ADD_GROUP", payload: response.data.group });
+  } catch (error) {
+    console.error("Error Creating a Group", error.message);
+  }
 }
 
 // Add a new expense to a group
-export async function addGroupExpense(
-  expenseData,
-  groupDispatch,
-  expenseDispatch
-) {
-  const res = await axios.post(
-    `/groups/${expenseData.groupId}/add-expense`,
+
+export async function addGroupExpense(groupId, expenseData, dispatch) {
+  const response = await axios.patch(
+    `/groups/${groupId}/add-expense`,
     expenseData,
     {
       withCredentials: true,
-      headers: { "Content-Type": "application/json" },
     }
   );
-
-  const createdExpense = res.data;
-  groupDispatch({ type: "ADD_GROUP_EXPENSE", payload: createdExpense });
-  expenseDispatch({ type: "ADD_EXPENSE", payload: createdExpense });
-
-  return createdExpense;
-}
-
-// 3) Update a group
-export async function updateGroup(groupId, expenseData, dispatch) {
-  const response = await axios.patch(`/groups/${groupId}`, expenseData, {
-    withCredentials: true,
-  });
-  console.log("🚀 ~ updateGroup ~ data:", response.data);
   dispatch({ type: "UPDATE_GROUP", payload: response.data });
 }
 
 // 4) Delete a group
-export async function deleteGroup(groupId) {
-  const response = await axios.delete(`/groups/${groupId}`, {
-    withCredentials: true,
-  });
+export async function deleteGroup(groupId, dispatch) {
+  try {
+    await axios.delete(`/groups/${groupId}`, {
+      withCredentials: true,
+    });
+
+    dispatch({ type: "DELETE_GROUP" });
+  } catch (error) {
+    console.error("Error deleting a group", error.message);
+  }
 }
 
 // 5) Add a member
@@ -80,7 +68,6 @@ export async function fetchGroupExpenses(groupId, dispatch) {
   const response = await axios.get(`/groups/${groupId}/expenses`, {
     withCredentials: true,
   });
-  console.log("🚀 ~ fetchGroupExpenses ~ Response:", response);
   dispatch({ type: "GET_GROUP_EXPENSES", payload: response.data });
 }
 
@@ -97,10 +84,16 @@ export async function editGroupExpense(groupId, expenseId, payload) {
 
 // 10) Delete a group expense
 export async function deleteGroupExpense(groupId, expenseId) {
-  const response = await axios.delete(
-    `/groups/${groupId}/delete-expense/${expenseId}`,
-    {
-      withCredentials: true,
-    }
-  );
+  await axios.delete(`/groups/${groupId}/delete-expense/${expenseId}`, {
+    withCredentials: true,
+  });
+}
+
+export async function updateGroupInformation(groupId, newGroupData, dispatch) {
+  try {
+    const response = await axios.patch(`/groups/${groupId}`, newGroupData);
+    dispatch({ type: "UPDATE_GROUP", payload: response.data });
+  } catch (error) {
+    console.error("Error updating the group", error.message);
+  }
 }

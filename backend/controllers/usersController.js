@@ -55,32 +55,6 @@ export const logout = async (req, res, next) => {
   }
 };
 
-//!   Get user profile
-//!   GET /users/profile
-export const getUserProfile = async (req, res, next) => {
-  try {
-    // Ensure req.user exists (assuming middleware sets it)
-    if (!req.user || !req.user.id) {
-      return next(createError(401, "Unauthorized: No user ID found"));
-    }
-
-    // Fetch user from the database
-    const user = await UserModel.findById(req.user.id).select("-password"); // Exclude password field
-
-    if (!user) {
-      return next(createError(404, "User not found"));
-    }
-
-    // Send the response with user data
-    res.status(200).json({
-      success: true,
-      user,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
 //!   Update user profile
 //!   PATCH /users/profile
 export const updateUserProfile = async (req, res, next) => {
@@ -134,6 +108,8 @@ export const onboarding = async (req, res, next) => {
   }
 };
 
+//!   Get user profile
+//!   GET /users/me
 export const getMe = (req, res, next) => {
   const { user, isAuthenticated } = req;
 

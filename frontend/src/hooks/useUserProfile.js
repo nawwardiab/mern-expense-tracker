@@ -1,25 +1,20 @@
 // src/hooks/useUserProfile.js
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import axios from "axios";
+import { getMyData } from "../api/authApi";
+import { AuthContext } from "../contexts/AuthContext";
 
 function useUserProfile() {
-  const [profile, setProfile] = useState(null); // Will hold the user's data
+  const { userDispatch, userState } = useContext(AuthContext);
+  const { user } = userState;
+
   const [loading, setLoading] = useState(true); // For a loading indicator
   const [error, setError] = useState(null); // For any fetch errors
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await axios.get(
-          "http://localhost:8000/users/profile",
-          {
-            withCredentials: true,
-          }
-        );
-        // Depending on your server’s response shape:
-        // e.g. { success: true, user: {...} } or { success: true, data: {...} }
-        const userData = response.data.user || response.data.data || {};
-        setProfile(userData);
+        getMyData(userDispatch);
       } catch (err) {
         setError(err);
       } finally {
@@ -29,7 +24,7 @@ function useUserProfile() {
     fetchData();
   }, []);
 
-  return { profile, loading, error };
+  return { profile: user, loading, error };
 }
 
 export default useUserProfile;

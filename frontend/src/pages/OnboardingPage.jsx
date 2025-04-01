@@ -80,11 +80,7 @@ const Onboarding = () => {
       const imageData = new FormData();
       imageData.append("profilePicture", file);
 
-      const response = await axios.patch(
-        "http://localhost:8000/users/profile",
-        imageData,
-        { withCredentials: true }
-      );
+      const response = await axios.patch("/users/profile", imageData);
       if (response.status === 200) {
         // Suppose the server returns { profilePicture: "/uploads/..." }
         const updatedPicturePath =
@@ -109,9 +105,7 @@ const Onboarding = () => {
   const handleSubmit = async () => {
     const updatedData = { ...formData, isOnboarded: true };
     try {
-      await axios.patch("http://localhost:8000/users/onboarding", updatedData, {
-        withCredentials: true,
-      });
+      await axios.patch("/users/onboarding", updatedData);
       navigate("/homepage");
     } catch (err) {
       console.error("Onboarding error:", err);

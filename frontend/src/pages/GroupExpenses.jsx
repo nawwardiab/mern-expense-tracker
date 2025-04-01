@@ -21,12 +21,6 @@ const GroupExpenses = () => {
     fetchUserGroups(groupDispatch);
   }, []);
 
-  // try {
-  //   await fetchUserGroups(groupDispatch);
-  // } catch (error) {
-  //   console.log("Error Fetching Groups.", error.message);
-  // }
-
   return (
     <div className="flex flex-col h-screen bg-gray-50">
       {/* Page Title and Button - Full Width */}

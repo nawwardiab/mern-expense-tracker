@@ -19,16 +19,12 @@ import ExpenseList from "../components/ExpenseList";
 const ExpenseManager = () => {
   // 1) Pull global expense state & dispatch from context
   const { expenseState, expenseDispatch } = useContext(ExpenseContext);
-  const { expenses } = expenseState;
+  const { totalFilteredExpenses } = expenseState;
 
   // 2) Local filters for the UI
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
   const [occurrence, setOccurrence] = useState("");
-
-  // 3) Derived states: the filtered list and the total
-  const [filteredExpenses, setFilteredExpenses] = useState([]);
-  const [totalFilteredExpenses, setTotalFilteredExpenses] = useState(0);
 
   /**
    * 4) On mount, fetch all expenses from the server.
@@ -58,35 +54,6 @@ const ExpenseManager = () => {
    * 5) Whenever expenses or our filter states change,
    * we derive a filtered list and calculate the total cost of those filtered items.
    */
-  useEffect(() => {
-    let filtered = expenses;
-
-    // Search by title
-    if (search) {
-      filtered = filtered.filter((exp) =>
-        exp.title.toLowerCase().includes(search.toLowerCase())
-      );
-    }
-
-    // Category filter
-    if (category) {
-      filtered = filtered.filter((exp) => exp.category === category);
-    }
-
-    // Occurrence filter (note: we compare to .toLowerCase())
-    if (occurrence) {
-      filtered = filtered.filter(
-        (exp) => exp.recurringFrequency === occurrence.toLowerCase()
-      );
-    }
-
-    // Update local state
-    setFilteredExpenses(filtered);
-
-    // Calculate the total for the filtered list
-    const total = filtered.reduce((sum, exp) => sum + exp.amount, 0);
-    setTotalFilteredExpenses(total);
-  }, [expenses, search, category, occurrence]);
 
   return (
     <div className="p-4 md:p-8 max-w-6xl mx-auto">
@@ -154,7 +121,11 @@ const ExpenseManager = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left: Expense List */}
         <div className="lg:col-span-2">
-          <ExpenseList expenses={filteredExpenses} />
+          <ExpenseList
+            search={search}
+            category={category}
+            occurrence={occurrence}
+          />
         </div>
 
         {/* Right: Summary of the filtered list */}
