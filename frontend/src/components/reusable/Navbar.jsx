@@ -6,9 +6,10 @@ import { FaUserGroup } from "react-icons/fa6";
 import { IoIosNotifications, IoIosAddCircle } from "react-icons/io";
 import { RxAvatar } from "react-icons/rx";
 import AddExpense from "../modal/AddExpense";
+import { logout } from "../../api/authApi.js";
 
 const Navbar = () => {
-  const { user, logout } = useContext(AuthContext);
+  const { userState } = useContext(AuthContext);
   const [searchQuery, setSearchQuery] = useState("");
   const [notifications, setNotifications] = useState([]);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -22,7 +23,6 @@ const Navbar = () => {
 
   const handleSearch = async (e) => {
     e.preventDefault();
-    console.log("Search Query:", searchQuery);
     // TODO: Make an API call to search expenses
   };
 
@@ -47,7 +47,7 @@ const Navbar = () => {
         <h1 className="text-2xl text-black font-bold">Track$</h1>
 
         {/* Search Bar */}
-        <form className="hidden md:flex grow items-center space-x-2 bg-white rounded-lg px-3 py-1 text-black">
+        {/* <form className="hidden md:flex grow items-center space-x-2 bg-white rounded-lg px-3 py-1 text-black">
           <FaSearch className="text-gray-500" />
           <input
             type="text"
@@ -56,7 +56,7 @@ const Navbar = () => {
             onChange={(e) => setSearchQuery(e.target.value)}
             className="outline-none bg-transparent text-sm"
           />
-        </form>
+        </form> */}
 
         {/* Desktop Menu */}
         <div className="hidden md:flex justify-between items-baseline w-48 mr-16">
@@ -70,19 +70,19 @@ const Navbar = () => {
           />
           <IoIosNotifications className="text-2xl text-gray-700 hover:text-black cursor-pointer" />
           {/* User Profile */}
-          <div className="hidden md:block">
-            {user?.profilePicture ? (
-              <img
-                src={user.profilePicture}
-                alt="User profile"
-                className="w-10 h-10 rounded-full border-2 border-gray-900"
-              />
-            ) : (
-              <div className="w-10 h-10 rounded-full border-2 border-gray-900 flex items-center justify-center">
-                <RxAvatar className="text-gray-900 w-6 h-6" />
-              </div>
-            )}
-          </div>
+        </div>
+        <div className="hidden md:block">
+          {userState.user?.profilePicture ? (
+            <img
+              src={userState.user.profilePicture}
+              alt="User profile"
+              className="w-10 h-10 rounded-full border-2 border-gray-900"
+            />
+          ) : (
+            <div className="w-10 h-10 rounded-full border-2 border-gray-900 flex items-center justify-center">
+              <RxAvatar className="text-gray-900 w-6 h-6" />
+            </div>
+          )}
         </div>
 
         {/* Mobile Menu Icon */}

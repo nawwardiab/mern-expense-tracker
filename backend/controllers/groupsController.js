@@ -2,108 +2,71 @@ import Group from "../models/Group.js";
 import Expense from "../models/Expense.js";
 import Payment from "../models/Payment.js";
 
-
-
 //Get all groups for a user
-export const getUserGroups = async (req, res) => {
+export const fetchUserGroups = async (req, res) => {
   try {
-    const userId = req.user.id;
-    const groups = await Group.find({ "members.userId": userId })
-      .populate({
-        path: "members.userId",
-        select: "fullName"
-      })
+    const groups = await Group.find()
+      .populate("members.userId")
+      .populate("expenses");
     res.json(groups);
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
   }
 };
 
-
-//Create a new group
 export const createGroup = async (req, res) => {
   try {
-    // Added members = [], totalAmount = 0
-    const { name, description, members = [], totalAmount = 0 } = req.body;
-    const userId = req.user.id;
+    const { name, description, createdBy, members } = req.body;
 
-    if (!name || !Array.isArray(members)) {
-      return res.status(400).json({ message: "Group name and members are required." });
-    }
-
-    const existingGroup = await Group.findOne({ name });
-    if (existingGroup) {
-      return res.status(400).json({ message: "Group name already exists." });
-    }
-
-    const uniqueMemberIds = [...new Set(members.map(String))];
-
-    // Filter out the creator (admin) from members list
-    const filteredMemberIds = uniqueMemberIds.filter(memberId => memberId !== userId);
-
-    const formattedMembers = filteredMemberIds.map(memberId => ({
-      userId: memberId,
-      role: "member"
-    }));
-    console.log("🟢 Formatted Members:", formattedMembers);
-
-    // Add the creator as admin
-    formattedMembers.push({ userId, role: "admin" });
-
-    // Create the group
-    const group = new Group({
+    // Step 1: Create the group using Mongoose's create method
+    const group = await Group.create({
       name,
       description,
-      members: formattedMembers,
-      totalAmount,
-      createdBy: userId,
+      createdBy,
+      members,
     });
 
-    await group.save();
-    res.status(201).json({ message: "Group created successfully.", group });
+    // Step 2: Populate the members.userId and (optional) createdBy
+    const populatedGroup = await Group.findById(group._id)
+      .populate("members.userId") // consider renaming "userId" to "groupMember" wherever it is used (Backend and Frontend)
+      .populate("createdBy")
+      .populate("expenses");
 
+    res
+      .status(201)
+      .json({ message: "Group created successfully.", group: populatedGroup });
   } catch (error) {
-    console.error("❌ Error creating group:", error);
+    console.error("❌ Error creating group:", error.message, error.stack);
     res.status(500).json({ message: "Server error", error });
   }
 };
 
-
-
-
 //Edit group name or description (can be done also by a member)
-export const updateGroup = async (req, res) => {
+export const updateGroupInformation = async (req, res) => {
   try {
     const { groupId } = req.params;
     // Added totalAmount, members to be able to edit it
-    const { name, description, totalAmount, members } = req.body;
-    const userId = req.user.id;
+    const { name, description, members } = req.body;
 
-    const group = await Group.findById(groupId);
+    const group = await Group.findById(groupId)
+      .populate("members.userId") // consider renaming "userId" to "groupMember" wherever it is used (Backend and Frontend)
+      .populate("createdBy")
+      .populate("expenses");
     if (!group) {
       return res.status(404).json({ message: "Group not found." });
     }
 
-    const isAdmin = group.members.some(member => member.userId.toString() === userId && member.role === "admin");
-    if (!isAdmin) {
-      return res.status(403).json({ message: "Only admins can edit group details." });
-    }
-
     if (name) group.name = name;
     if (description) group.description = description;
-    // Added totalAmount and members
-    if (totalAmount !== undefined) group.totalAmount = totalAmount;
     if (Array.isArray(members)) group.members = members;
 
     await group.save();
     res.json({ message: "Group updated successfully.", group });
-
   } catch (error) {
     console.error("Failed to update group:", err);
     res.status(500).json({ message: "Server error", error });
   }
 };
-
 
 //Delete a group (only by Creator/Admin)
 export const deleteGroup = async (req, res) => {
@@ -118,12 +81,15 @@ export const deleteGroup = async (req, res) => {
 
     const expenseExists = await Expense.exists({ group: groupId });
     if (expenseExists) {
-      return res.status(400).json({ message: "Group cannot be deleted because it has expenses." });
+      return res
+        .status(400)
+        .json({ message: "Group cannot be deleted because it has expenses." });
     }
 
-
     if (group.createdBy.toString() !== userId) {
-      return res.status(403).json({ message: "Only the group creator can delete this group." });
+      return res
+        .status(403)
+        .json({ message: "Only the group creator can delete this group." });
     }
 
     await Group.findByIdAndDelete(groupId);
@@ -132,7 +98,6 @@ export const deleteGroup = async (req, res) => {
     res.status(500).json({ message: "Server error", error });
   }
 };
-
 
 //Add a member to a group (only by Admin)
 export const addMember = async (req, res) => {
@@ -146,12 +111,14 @@ export const addMember = async (req, res) => {
       return res.status(404).json({ message: "Group not found." });
     }
 
-    const isAdmin = group.members.some(member => member.userId.toString() === userId && member.role === "admin");
+    const isAdmin = group.members.some(
+      (member) => member.userId.toString() === userId && member.role === "admin"
+    );
     if (!isAdmin) {
       return res.status(403).json({ message: "Only admins can add members." });
     }
 
-    if (group.members.some(member => member.userId.toString() === memberId)) {
+    if (group.members.some((member) => member.userId.toString() === memberId)) {
       return res.status(400).json({ message: "User is already a member." });
     }
 
@@ -163,7 +130,6 @@ export const addMember = async (req, res) => {
     res.status(500).json({ message: "Server error", error });
   }
 };
-
 
 //Remove a member from a group (only by Admin)
 export const removeMemberFromGroup = async (req, res) => {
@@ -177,31 +143,41 @@ export const removeMemberFromGroup = async (req, res) => {
       return res.status(404).json({ message: "Group not found." });
     }
 
-    const isAdmin = group.members.some(member => member.userId.toString() === userId && member.role === "admin");
+    const isAdmin = group.members.some(
+      (member) => member.userId.toString() === userId && member.role === "admin"
+    );
     if (!isAdmin) {
-      return res.status(403).json({ message: "Only admins can remove members." });
+      return res
+        .status(403)
+        .json({ message: "Only admins can remove members." });
     }
 
-    if (!group.members.some(member => member.userId.toString() === memberId)) {
+    if (
+      !group.members.some((member) => member.userId.toString() === memberId)
+    ) {
       return res.status(404).json({ message: "Member not found in group." });
     }
 
-    const owesExpenses = await Expense.exists({ group: groupId, "owedBy.userId": memberId });
+    const owesExpenses = await Expense.exists({
+      group: groupId,
+      "owedBy.userId": memberId,
+    });
     if (owesExpenses) {
-      return res.status(400).json({ message: "Member cannot be removed because they still owe expenses." });
+      return res.status(400).json({
+        message: "Member cannot be removed because they still owe expenses.",
+      });
     }
 
-
-    group.members = group.members.filter(member => member.userId.toString() !== memberId);
+    group.members = group.members.filter(
+      (member) => member.userId.toString() !== memberId
+    );
     await group.save();
-
 
     res.json({ message: "Member removed successfully.", group });
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
   }
 };
-
 
 //Get all expenses for a group
 export const getGroupExpenses = async (req, res) => {
@@ -219,24 +195,19 @@ export const getGroupExpenses = async (req, res) => {
   }
 };
 
-
 // Add an expense to a group
 export const addGroupExpense = async (req, res) => {
   try {
     const { groupId } = req.params;
-    const { title, description, amount, category, transactionDate } = req.body;
+    const { title, amount, category, transactionDate } = req.body;
 
     const userId = req.user.id;
 
     const group = await Group.findById(groupId);
     if (!group) {
-      return res.status(404).json({ success: false, message: "Group not found" });
-    }
-
-    // Check if the user is part of the group
-    const isMember = group.members.some(member => member.userId.toString() === userId);
-    if (!isMember) {
-      return res.status(403).json({ success: false, message: "You're not a member of this group" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Group not found" });
     }
 
     // Create the expense
@@ -244,7 +215,6 @@ export const addGroupExpense = async (req, res) => {
       userId, // Who paid
       groupId,
       title,
-      description,
       amount,
       category,
       transactionDate,
@@ -254,7 +224,7 @@ export const addGroupExpense = async (req, res) => {
 
     // Update group's expense list and totalAmount
     group.expenses.push(newExpense._id);
-    group.totalAmount += amount;
+    group.totalAmount += +amount;
     await group.save();
 
     res.status(201).json({ success: true, data: newExpense });
@@ -262,8 +232,6 @@ export const addGroupExpense = async (req, res) => {
     res.status(500).json({ success: false, error: err.message });
   }
 };
-
-
 
 /// delete an expense from a group only if the payments are completed
 export const deleteGroupExpense = async (req, res) => {
@@ -274,12 +242,14 @@ export const deleteGroupExpense = async (req, res) => {
     // Fetch the group
     const group = await Group.findById(groupId);
     if (!group) {
-      return res.status(404).json({ success: false, message: "Group not found." });
+      return res
+        .status(404)
+        .json({ success: false, message: "Group not found." });
     }
 
     // Check if user is an admin
     const isAdmin = group.members.some(
-      member => member.userId.toString() === userId && member.role === "admin"
+      (member) => member.userId.toString() === userId && member.role === "admin"
     );
 
     if (!isAdmin) {
@@ -292,12 +262,14 @@ export const deleteGroupExpense = async (req, res) => {
     // Find the expense
     const expense = await Expense.findOne({ _id: expenseId, groupId });
     if (!expense) {
-      return res.status(404).json({ success: false, message: "Expense not found." });
+      return res
+        .status(404)
+        .json({ success: false, message: "Expense not found." });
     }
 
     // Check if all related payments are completed
     const relatedPayments = await Payment.find({ groupId, expenseId });
-    const hasIncomplete = relatedPayments.some(p => p.status !== "completed");
+    const hasIncomplete = relatedPayments.some((p) => p.status !== "completed");
 
     if (hasIncomplete) {
       return res.status(400).json({
@@ -310,16 +282,17 @@ export const deleteGroupExpense = async (req, res) => {
     await expense.deleteOne();
 
     // Update the group (remove expense ref & update total)
-    group.expenses = group.expenses.filter(id => id.toString() !== expenseId);
+    group.expenses = group.expenses.filter((id) => id.toString() !== expenseId);
     group.totalAmount -= expense.amount;
     await group.save();
 
-    res.status(200).json({ success: true, message: "Expense deleted successfully." });
+    res
+      .status(200)
+      .json({ success: true, message: "Expense deleted successfully." });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
 };
-
 
 // Edit an expense in a group
 
@@ -331,12 +304,14 @@ export const editGroupExpense = async (req, res) => {
     // Find the group
     const group = await Group.findById(groupId);
     if (!group) {
-      return res.status(404).json({ success: false, message: "Group not found." });
+      return res
+        .status(404)
+        .json({ success: false, message: "Group not found." });
     }
 
     // Check if the user is an admin
     const isAdmin = group.members.some(
-      member => member.userId.toString() === userId && member.role === "admin"
+      (member) => member.userId.toString() === userId && member.role === "admin"
     );
 
     if (!isAdmin) {
@@ -349,7 +324,9 @@ export const editGroupExpense = async (req, res) => {
     // Find the expense
     const expense = await Expense.findOne({ _id: expenseId, groupId });
     if (!expense) {
-      return res.status(404).json({ success: false, message: "Expense not found." });
+      return res
+        .status(404)
+        .json({ success: false, message: "Expense not found." });
     }
 
     const originalAmount = expense.amount;
@@ -369,7 +346,6 @@ export const editGroupExpense = async (req, res) => {
     }
 
     res.status(200).json({ success: true, data: updatedExpense });
-
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }

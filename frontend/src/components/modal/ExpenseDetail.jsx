@@ -1,47 +1,85 @@
-import React, { useState } from "react";
+/**
+ * ExpenseDetail.jsx
+ *
+ * Renders a modal with details for a single expense.
+ * Allows editing fields and saving changes (updateExpense),
+ * or deleting the expense (deleteExpense).
+ * After each successful operation, it dispatches an action
+ * to the ExpenseContext reducer, keeping the store in sync.
+ */
+
+import React, { useContext, useState } from "react";
 import { FaTimes } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
-import axios from "axios";
 
-const ExpenseDetails = ({ expense, onClose, updateExpense }) => {
+// We import the context just to get expenseDispatch.
+// We also import the API functions for updating & deleting expenses.
+import { ExpenseContext } from "../../contexts/ExpenseContext";
+import { updateExpense, deleteExpense } from "../../api/expenseApi";
+
+const ExpenseDetail = ({ expense, onClose }) => {
+  // We only need dispatch from the context to update global state after an API call.
+  const { expenseDispatch } = useContext(ExpenseContext);
+
+  // Local states for editing logic, form data, and UI feedback.
   const [editedExpense, setEditedExpense] = useState(expense);
   const [isEditing, setIsEditing] = useState({});
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
 
-  if (!expense) {
-    console.log("ExpenseDetails received: null");
-    return <p className="text-center text-red-500">Expense not found.</p>;
-  }
+  // If no expense object is given, don't render anything.
+  if (!expense) return null;
 
+  /**
+   * Toggles whether a specific field is editable (readOnly = false).
+   * We track "edit" states in an object where each field is a boolean.
+   */
   const toggleEdit = (field) => {
     setIsEditing((prev) => ({ ...prev, [field]: !prev[field] }));
   };
 
+  /**
+   * Handles changes to the local editedExpense object.
+   * This only modifies local state, not the backend or context
+   * until the user clicks "Save Expense."
+   */
   const handleChange = (e) => {
-    setEditedExpense({ ...editedExpense, [e.target.name]: e.target.value });
+    setEditedExpense({
+      ...editedExpense,
+      [e.target.name]: e.target.value,
+    });
   };
 
+  /**
+   * Example function to update the category to a new value
+   * (could be triggered by a button in the UI).
+   */
+  const handleCategoryChange = (newCategory) => {
+    setEditedExpense((prev) => ({ ...prev, category: newCategory }));
+  };
+
+  /**
+   * Saves the edited expense data to the server,
+   * then dispatches an UPDATE_EXPENSE action to the context.
+   */
   const handleSave = async () => {
     setLoading(true);
     setMessage(null);
 
     try {
-      const response = await axios.patch(
-        `http://localhost:8000/expenses/${expense._id}`,
-        editedExpense,
-        {
-          withCredentials: true,
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-      //console.log("API Response:", response.data);
+      // 1) Call the API to update the expense
+      //    (the function is imported from expenseApi.js)
+      const response = await updateExpense(expense._id, editedExpense);
 
+      // 2) On success, show a success message
       setMessage({ type: "success", text: "Expense updated successfully!" });
 
-      if (response.data) {
-        updateExpense(response.data);
+      // 3) Update the expense in global context
+      //    Our backend might return { success, data }
+      //    so we access response.data for the updated doc
+      if (response?.data) {
+        expenseDispatch({ type: "UPDATE_EXPENSE", payload: response.data });
       }
     } catch (error) {
       console.error("Failed to update expense:", error);
@@ -50,29 +88,40 @@ const ExpenseDetails = ({ expense, onClose, updateExpense }) => {
         text: "Failed to update expense. Please try again.",
       });
     }
+
     setLoading(false);
   };
 
+  /**
+   * Deletes the expense from the server,
+   * then dispatches a DELETE_EXPENSE action to the context.
+   */
   const handleDelete = async () => {
+    // Validate we have an expense ID to delete
     if (!expense?._id) {
       setMessage({ type: "error", text: "Invalid expense ID" });
       return;
     }
 
-    if (!window.confirm("Are you sure you want to delete this expense?"))
+    // Confirm with the user to avoid accidental deletions
+    if (!window.confirm("Are you sure you want to delete this expense?")) {
       return;
+    }
 
     setLoading(true);
     setMessage(null);
 
     try {
-      await axios.delete(`http://localhost:8000/expenses/${expense._id}`, {
-        withCredentials: true, // Ensure authentication
-      });
+      // 1) Call the API to delete the expense
+      await deleteExpense(expense._id);
 
+      // 2) Show a success message
       setMessage({ type: "success", text: "Expense deleted successfully!" });
 
-      // Close modal after showing success message
+      // 3) Remove the expense from global context
+      expenseDispatch({ type: "DELETE_EXPENSE", payload: expense._id });
+
+      // 4) Optionally close the modal after a short delay
       setTimeout(() => onClose(), 1000);
     } catch (error) {
       console.error("Failed to delete expense:", error);
@@ -86,13 +135,13 @@ const ExpenseDetails = ({ expense, onClose, updateExpense }) => {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center  bg-opacity-80 backdrop-blur-lg">
-      <div className="bg-gray-200 p-6 rounded-lg w-full max-w-3/4 shadow-lg  mt-16">
-        {/* Header */}
+    <div className="fixed inset-0 flex items-center justify-center bg-opacity-80 backdrop-blur-lg z-[100]">
+      <div className="bg-gray-200 p-6 rounded-lg w-full max-w-md shadow-lg mt-16">
+        {/* Modal Header */}
         <div className="flex justify-between items-center pb-3">
-          <h2 className="text-xl font-bold">{expense.title} Expenses</h2>
+          <h2 className="text-xl font-bold">{expense.title} Details</h2>
           <FaTimes
-            className="cursor-pointer text-2xl text-gray-600 hover:border-gray-300 hover:text-red-500"
+            className="cursor-pointer text-2xl text-gray-600 hover:text-red-500"
             onClick={onClose}
           />
         </div>
@@ -110,7 +159,7 @@ const ExpenseDetails = ({ expense, onClose, updateExpense }) => {
           </div>
         )}
 
-        {/* Expense Name */}
+        {/* Title Editing */}
         <div className="mt-4">
           <label className="block text-sm font-semibold mb-1">
             Expense Name
@@ -125,13 +174,13 @@ const ExpenseDetails = ({ expense, onClose, updateExpense }) => {
               readOnly={!isEditing.title}
             />
             <MdEdit
-              className="ml-2 cursor-pointer text-2xl text-gray-600 hover:border gray-300 hover:text-black"
+              className="ml-2 cursor-pointer text-2xl text-gray-600 hover:text-black"
               onClick={() => toggleEdit("title")}
             />
           </div>
         </div>
 
-        {/* Amount */}
+        {/* Amount Editing */}
         <div className="mt-4">
           <label className="block text-sm font-semibold mb-1">
             Total Amount
@@ -146,13 +195,13 @@ const ExpenseDetails = ({ expense, onClose, updateExpense }) => {
               readOnly={!isEditing.amount}
             />
             <MdEdit
-              className="ml-2 cursor-pointer text-2xl text-gray-600 hover:border gray-300 hover:text-black"
+              className="ml-2 cursor-pointer text-2xl text-gray-600 hover:text-black"
               onClick={() => toggleEdit("amount")}
             />
           </div>
         </div>
 
-        {/* Category */}
+        {/* Category Editing */}
         <div className="mt-4">
           <label className="block text-sm font-semibold mb-1">Category</label>
           <div className="flex gap-2">
@@ -168,13 +217,11 @@ const ExpenseDetails = ({ expense, onClose, updateExpense }) => {
           </div>
         </div>
 
-        {/* Regularity */}
-        {/* Regularity Selection */}
+        {/* Recurring Frequency Editing */}
         <div className="mt-4">
           <label className="block text-sm font-semibold mb-1">Regularity</label>
           <div className="flex items-center">
             {isEditing.recurringFrequency ? (
-              // Dropdown when editing
               <select
                 name="recurringFrequency"
                 value={editedExpense.recurringFrequency || "one-time"}
@@ -187,25 +234,25 @@ const ExpenseDetails = ({ expense, onClose, updateExpense }) => {
                 <option value="yearly">Yearly</option>
               </select>
             ) : (
-              // Display text when not editing
               <span className="w-48 bg-black text-white px-3 py-1 rounded-lg">
                 {editedExpense.recurringFrequency}
               </span>
             )}
-
             <MdEdit
-              className="ml-2 cursor-pointer text-2xl text-gray-600 hover:border gray-300 hover:text-black"
+              className="ml-2 cursor-pointer text-2xl text-gray-600 hover:text-black"
               onClick={() => toggleEdit("recurringFrequency")}
             />
           </div>
         </div>
 
-        {/* Transaction Date */}
+        {/* Transaction Dates */}
         <div className="mt-4">
           <label className="block text-sm font-semibold mb-1">
             Transaction Date
           </label>
+
           {editedExpense.recurringFrequency !== "one-time" ? (
+            // If recurring, we show start/end date fields
             <div className="flex items-center gap-4">
               {/* Start Date */}
               <div className="flex items-center">
@@ -220,10 +267,10 @@ const ExpenseDetails = ({ expense, onClose, updateExpense }) => {
                   }
                   onChange={handleChange}
                   className="w-full p-2 rounded-xl border border-gray-400 bg-gray-100"
-                  readOnly={!isEditing.startDate} // Ensure it gets toggled properly
+                  readOnly={!isEditing.startDate}
                 />
                 <MdEdit
-                  className="ml-2 cursor-pointer text-2xl text-gray-600 hover:border gray-300 hover:text-black"
+                  className="ml-2 cursor-pointer text-2xl text-gray-600 hover:text-black"
                   onClick={() => toggleEdit("startDate")}
                 />
               </div>
@@ -244,30 +291,35 @@ const ExpenseDetails = ({ expense, onClose, updateExpense }) => {
                   readOnly={!isEditing.endDate}
                 />
                 <MdEdit
-                  className="ml-2 cursor-pointer text-2xl text-gray-600 hover:border gray-300 hover:text-black"
+                  className="ml-2 cursor-pointer text-2xl text-gray-600 hover:text-black"
                   onClick={() => toggleEdit("endDate")}
                 />
               </div>
             </div>
           ) : (
-            // One-time expense: transaction date
+            // One-time expense: just a single transactionDate
             <div className="flex items-center">
               <input
                 type="date"
                 name="transactionDate"
-                value={editedExpense.transactionDate?.split("T")[0] || ""}
+                value={
+                  editedExpense.transactionDate
+                    ? editedExpense.transactionDate.split("T")[0]
+                    : ""
+                }
                 onChange={handleChange}
                 className="w-full p-2 rounded-xl border border-gray-400 bg-gray-100"
                 readOnly={!isEditing.transactionDate}
               />
               <MdEdit
-                className="ml-2 cursor-pointer text-2xl text-gray-600 hover:border gray-300 hover:text-black"
+                className="ml-2 cursor-pointer text-2xl text-gray-600 hover:text-black"
                 onClick={() => toggleEdit("transactionDate")}
               />
             </div>
           )}
         </div>
-        {/* Toggle Switch for Notifications */}
+
+        {/* Notifications Toggle */}
         <div className="mt-4 flex justify-between items-center">
           <span className="block text-sm font-semibold">
             Expense alerts and notifications
@@ -283,19 +335,19 @@ const ExpenseDetails = ({ expense, onClose, updateExpense }) => {
           </label>
         </div>
 
-        {/* Save Button */}
-        <div>
+        {/* Save & Delete Buttons */}
+        <div className="mt-6 flex flex-col gap-4">
           <button
             onClick={handleSave}
             disabled={loading}
-            className="mt-4 w-full bg-black text-white p-2 rounded"
+            className="bg-black text-white p-2 rounded"
           >
             {loading ? "Saving..." : "Save Expense"}
           </button>
           <button
             onClick={handleDelete}
             disabled={loading}
-            className="mt-4 w-48 bg-red-500 text-white p-2 rounded hover:bg-red-300"
+            className="bg-red-500 text-white p-2 rounded hover:bg-red-400"
           >
             {loading ? "Deleting..." : "Delete Expense"}
           </button>
@@ -305,4 +357,4 @@ const ExpenseDetails = ({ expense, onClose, updateExpense }) => {
   );
 };
 
-export default ExpenseDetails;
+export default ExpenseDetail;

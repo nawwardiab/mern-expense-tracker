@@ -55,34 +55,6 @@ export const logout = async (req, res, next) => {
   }
 };
 
-//!   Get user profile
-//!   GET /users/profile
-export const getUserProfile = async (req, res, next) => {
-  try {
-    // Ensure req.user exists (assuming middleware sets it)
-    if (!req.user || !req.user.id) {
-      return next(createError(401, "Unauthorized: No user ID found"));
-    }
-
-    // Fetch user from the database
-    const user = await UserModel.findById(req.user.id).select("-password"); // Exclude password field
-
-    if (!user) {
-      return next(createError(404, "User not found"));
-    }
-
-    // Send the response with user data
-    res.status(200).json({
-      success: true,
-      user,
-    });
-
-  } catch (error) {
-    next(error);
-  }
-};
-
-
 //!   Update user profile
 //!   PATCH /users/profile
 export const updateUserProfile = async (req, res, next) => {
@@ -109,30 +81,43 @@ export const updateUserProfile = async (req, res, next) => {
   }
 };
 
-
 // Onboarding completion
 export const onboarding = async (req, res, next) => {
   try {
     const userId = req.user.id; // Ensure middleware sets req.user
     const updatedData = req.body;
 
-
     const updatedUser = await UserModel.findByIdAndUpdate(
       userId,
       {
-        $set: updatedData // Properly update all fields, including `isOnboarded`
+        $set: updatedData, // Properly update all fields, including `isOnboarded`
       },
       { new: true, runValidators: true }
     );
 
     if (!updatedUser) {
-      return res.status(404).json({ success: false, message: "User not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
 
     res.json({ success: true, user: updatedUser });
-
   } catch (error) {
     console.error("Server Error:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
+};
+
+//!   Get user profile
+//!   GET /users/me
+export const getMe = (req, res, next) => {
+  const { user, isAuthenticated } = req;
+
+  user.password = undefined;
+
+  res.status(200).json({
+    success: true,
+    user,
+    isAuthenticated,
+  });
 };

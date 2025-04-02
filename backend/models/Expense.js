@@ -48,7 +48,7 @@ const expenseSchema = new Schema(
     isRecurring: { type: Boolean, default: false },
     recurringFrequency: {
       type: String,
-      enum: ["daily", "weekly", "monthly", "yearly", "one-time"], 
+      enum: ["weekly", "monthly", "yearly", "one-time"],
       required: function () {
         return this.isRecurring; // Must be present if recurring
       },
@@ -67,4 +67,3 @@ const expenseSchema = new Schema(
 );
 
 export default model("Expense", expenseSchema);
-

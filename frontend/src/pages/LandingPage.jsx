@@ -1,13 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
 import { useState } from "react";
-import {
-  FaMoneyBillWave,
-  FaChartPie,
-  FaClipboardList,
-  FaBars,
-  FaTimes,
-} from "react-icons/fa";
+import { FaMoneyBillWave, FaChartPie, FaClipboardList } from "react-icons/fa";
+
+// import LandingPageNavbar from "../components/LandingPageNavbar";
 
 const LandingPage = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -16,7 +12,6 @@ const LandingPage = () => {
     email: "",
     message: "",
   });
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleGoToLogin = () => navigate("/login");
@@ -31,84 +26,12 @@ const LandingPage = () => {
     }, 5000);
   };
 
-  const scrollToSection = (id) => {
-    document.getElementById(id).scrollIntoView({ behavior: "smooth" });
-    setIsMenuOpen(false);
-  };
-
   return (
     <div className="flex flex-col min-h-screen w-full overflow-hidden m-0 p-0">
       {/* Navbar */}
-      <nav className="bg-white shadow-md fixed w-full z-10 top-0 flex justify-between items-center px-6 py-4 md:px-10">
-        <h1 
-        onClick={() => scrollToSection("hero")}
-        className="text-2xl font-bold cursor-pointer">TRACK$</h1>
-        <button
-          className="text-2xl md:hidden cursor-pointer"
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-        >
-          {isMenuOpen ? <FaTimes /> : <FaBars />}
-        </button>
-        <ul className={`md:flex space-x-6 hidden`}>
-          <li>
-            <button
-              onClick={() => scrollToSection("services")}
-              className="hover:text-gray-500 cursor-pointer"
-            >
-              Services
-            </button>
-          </li>
-          <li>
-            <button
-              onClick={() => scrollToSection("pricing")}
-              className="hover:text-gray-500 cursor-pointer"
-            >
-              Pricing
-            </button>
-          </li>
-          <li>
-            <button
-              onClick={() => scrollToSection("contact")}
-              className="hover:text-gray-500 cursor-pointer"
-            >
-              Contact
-            </button>
-          </li>
-        </ul>
-      </nav>
-
-      {/* Mobile Dropdown Menu (Appears Below Navbar) */}
-{isMenuOpen && (
-   <ul className="md:hidden fixed top-[60px] left-1/2 transform -translate-x-1/2 w-3/4 max-w-sm bg-white shadow-lg flex flex-col items-center space-y-4 py-4 z-50 rounded-[8px]">
-    <li>
-      <button
-        onClick={() => scrollToSection("services")}
-        className="hover:text-gray-500 text-lg py-2 cursor-pointer"
-      >
-        Services
-      </button>
-    </li>
-    <li>
-      <button
-        onClick={() => scrollToSection("pricing")}
-        className="hover:text-gray-500 text-lg py-2 cursor-pointer"
-      >
-        Pricing
-      </button>
-    </li>
-    <li>
-      <button
-        onClick={() => scrollToSection("contact")}
-        className="hover:text-gray-500 text-lg py-2 cursor-pointer"
-      >
-        Contact
-      </button>
-    </li>
-  </ul>
-)}
-
+      {/* <LandingPageNavbar /> */}
       {/* Hero Section */}
-      <header id="hero" className="relative flex flex-col items-center justify-center text-center h-screen w-full overflow-hidden m-0 p-0">
+      <header className="relative flex flex-col items-center justify-center text-center h-screen w-full overflow-hidden m-0 p-0">
         <video
           className="absolute top-0 left-0 w-full h-full object-cover m-0 p-0"
           autoPlay
@@ -156,7 +79,7 @@ const LandingPage = () => {
                 "Gain full control over your spending with real-time insights and smart categorization.",
               icon: (
                 <FaMoneyBillWave className="text-6xl text-green-500 mb-6 mx-auto" />
-              ), 
+              ), // Centered Icon
               bgColor: "bg-green-50",
             },
             {
@@ -165,7 +88,7 @@ const LandingPage = () => {
                 "Set clear financial goals, monitor your cash flow, and optimize your monthly budget.",
               icon: (
                 <FaChartPie className="text-6xl text-blue-500 mb-6 mx-auto" />
-              ), 
+              ), // Centered Icon
               bgColor: "bg-blue-50",
             },
             {
@@ -174,7 +97,7 @@ const LandingPage = () => {
                 "Make informed financial decisions with AI-powered analytics and visual reports.",
               icon: (
                 <FaClipboardList className="text-6xl text-purple-500 mb-6 mx-auto" />
-              ), 
+              ), // Centered Icon
               bgColor: "bg-purple-50",
             },
           ].map((service, index) => (
