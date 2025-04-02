@@ -47,7 +47,7 @@ const Navbar = () => {
         <h1 className="text-2xl text-black font-bold">Track$</h1>
 
         {/* Search Bar */}
-        <form className="hidden md:flex grow items-center space-x-2 bg-white rounded-lg px-3 py-1 text-black">
+        {/* <form className="hidden md:flex grow items-center space-x-2 bg-white rounded-lg px-3 py-1 text-black">
           <FaSearch className="text-gray-500" />
           <input
             type="text"
@@ -56,7 +56,7 @@ const Navbar = () => {
             onChange={(e) => setSearchQuery(e.target.value)}
             className="outline-none bg-transparent text-sm"
           />
-        </form>
+        </form> */}
 
         {/* Desktop Menu */}
         <div className="hidden md:flex justify-between items-baseline w-48 mr-16">
@@ -70,19 +70,19 @@ const Navbar = () => {
           />
           <IoIosNotifications className="text-2xl text-gray-700 hover:text-black cursor-pointer" />
           {/* User Profile */}
-          <div className="hidden md:block">
-            {userState.user?.profilePicture ? (
-              <img
-                src={userState.user.profilePicture}
-                alt="User profile"
-                className="w-10 h-10 rounded-full border-2 border-gray-900"
-              />
-            ) : (
-              <div className="w-10 h-10 rounded-full border-2 border-gray-900 flex items-center justify-center">
-                <RxAvatar className="text-gray-900 w-6 h-6" />
-              </div>
-            )}
-          </div>
+        </div>
+        <div className="hidden md:block">
+          {userState.user?.profilePicture ? (
+            <img
+              src={userState.user.profilePicture}
+              alt="User profile"
+              className="w-10 h-10 rounded-full border-2 border-gray-900"
+            />
+          ) : (
+            <div className="w-10 h-10 rounded-full border-2 border-gray-900 flex items-center justify-center">
+              <RxAvatar className="text-gray-900 w-6 h-6" />
+            </div>
+          )}
         </div>
 
         {/* Mobile Menu Icon */}
