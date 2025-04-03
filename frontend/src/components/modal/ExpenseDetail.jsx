@@ -12,14 +12,17 @@ import React, { useContext, useState } from "react";
 import { FaTimes } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
 
+
 // We import the context just to get expenseDispatch.
 // We also import the API functions for updating & deleting expenses.
+import { AuthContext } from "../../contexts/AuthContext";
 import { ExpenseContext } from "../../contexts/ExpenseContext";
 import { updateExpense, deleteExpense } from "../../api/expenseApi";
 
 const ExpenseDetail = ({ expense, onClose }) => {
   // We only need dispatch from the context to update global state after an API call.
   const { expenseDispatch } = useContext(ExpenseContext);
+  const { notificationState, notificationDispatch } = useContext(AuthContext);
 
   // Local states for editing logic, form data, and UI feedback.
   const [editedExpense, setEditedExpense] = useState(expense);
@@ -132,6 +135,13 @@ const ExpenseDetail = ({ expense, onClose }) => {
     }
 
     setLoading(false);
+  };
+  //Handle Notification Toggle
+  const handleToggleNotification = () => {
+    notificationDispatch({
+      type: "TOGGLE_NOTIFICATION",
+      payload: "expenseAlerts",
+    });
   };
 
   return (
@@ -328,8 +338,8 @@ const ExpenseDetail = ({ expense, onClose }) => {
             <input
               type="checkbox"
               className="sr-only peer"
-              checked={notificationsEnabled}
-              onChange={() => setNotificationsEnabled(!notificationsEnabled)}
+              checked={notificationState.notificationSettings.expenseAlerts}
+              onChange={handleToggleNotification}
             />
             <div className="w-11 h-6 bg-gray-300 peer-focus:ring-4 rounded-full peer peer-checked:after:translate-x-5 peer-checked:bg-black after:absolute after:top-1 after:left-1 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
           </label>

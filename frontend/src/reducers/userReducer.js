@@ -16,10 +16,21 @@ const userReducer = (state, action) => {
     case "LOGOUT":
       return initialUserState;
 
-    case "RESET_PASSWORD":
+    case "UPDATE_PROFILE_SUCCESS":
       return {
         ...state,
         user: action.payload,
+      };
+
+    case "UPDATE_PASSWORD_SUCCESS":
+      return {
+        ...state,
+        message: action.payload,
+      };
+    case "UPDATE_NOTIFICATIONS_SUCCESS":
+      return {
+        ...state,
+        user: { ...state.user, notificationSettings: action.payload },
       };
     case "ERROR":
       return {

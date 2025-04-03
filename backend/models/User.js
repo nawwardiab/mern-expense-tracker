@@ -5,6 +5,7 @@ const userSchema = new Schema(
   {
     fullName: { type: String, required: true },
     email: { type: String, required: true, unique: true },
+    dateOfBirth:{type: Date,required:true},
     password: { type: String, required: true },
     profilePicture: { type: String, default: "" },
     location: { type: String, default: "" },
@@ -13,6 +14,12 @@ const userSchema = new Schema(
     paymentMethod: { type: String, default: "" },
     username: { type: String, unique: true, sparse: true },
     isOnboarded: { type: Boolean, default: false },
+    notificationSettings: {
+      expenseAlerts: { type: Boolean, default: false },
+      communityUpdates: { type: Boolean, default: false },
+      paymentReminders: { type: Boolean, default: false },
+      featureAnnouncements: { type: Boolean, default: false },
+    },
   },
   { timestamp: true }
 );

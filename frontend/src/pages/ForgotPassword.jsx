@@ -1,7 +1,7 @@
 import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaHome, FaArrowLeft } from "react-icons/fa";
-import { resetPassword } from "../api/authApi";
+import { updatePassword } from "../api/authApi";
 import { AuthContext } from "../contexts/AuthContext";
 const ForgotPassword = () => {
   const { userDispatch } = useContext(AuthContext);
@@ -34,7 +34,8 @@ const ForgotPassword = () => {
     try {
       setLoading(true);
 
-      await resetPassword(formData, userDispatch);
+      await updatePassword(formData.password, formData.confirmPassword, userDispatch);
+
 
       navigate("/login");
     } catch (error) {
