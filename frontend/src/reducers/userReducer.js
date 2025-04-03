@@ -2,7 +2,9 @@ export const initialUserState = {
   user: null,
   isUserLoggedin: false,
   error: null,
-  loading: false,  // ✅ New loading state
+  message: null,   
+  messageType: null,
+  loading: false,  
 };
 
 const userReducer = (state, action) => {
@@ -12,8 +14,10 @@ const userReducer = (state, action) => {
     case "UPDATE_PASSWORD_REQUEST":
       return {
         ...state,
-        loading: true,   // ✅ Start loading
-        error: null,     // Clear any previous errors
+        loading: true,       // ✅ Start loading
+        error: null,         // Clear previous errors
+        message: null,       // Clear previous messages
+        messageType: null,
       };
 
     case "LOGIN_SUCCESS":
@@ -21,43 +25,59 @@ const userReducer = (state, action) => {
         ...state,
         user: action.payload,
         isUserLoggedin: true,
-        loading: false,  // ✅ Stop loading
+        loading: false,      // ✅ Stop loading
+        message: "Login successful!", // ✅ Success message
+        messageType: "success",
       };
 
     case "UPDATE_PROFILE_SUCCESS":
       return {
         ...state,
         user: action.payload,
-        loading: false,  // ✅ Stop loading
+        loading: false,      // ✅ Stop loading
+        message: "Profile updated successfully!", // ✅ Success message
+        messageType: "success",
       };
 
-    case "UPDATE_PASSWORD_SUCCESS":
-      return {
-        ...state,
-        message: action.payload,
-        loading: false,  // ✅ Stop loading
+      case "UPDATE_PASSWORD_SUCCESS":
+        return {
+          ...state,
+          message: "Password updated successfully!",
+          messageType: "success",
+          loading: false,
+        };
+      
+        case "UPDATE_NOTIFICATIONS_SUCCESS":
+          return {
+            ...state,
+            user: { ...state.user, notificationSettings: action.payload },
+            loading: false,
+            message: "Notification settings updated successfully!",
+            messageType: "success",
+          };
+    
+          case "ERROR":
+            return {
+              ...state,
+              error: action.payload,
+              message: action.payload,
+              messageType: "error",
+              loading: false,
+            };
+      
+          case "CLEAR_MESSAGE":
+            return {
+              ...state,
+              message: null,
+              messageType: null,
+            };
+      
+          case "LOGOUT":
+            return initialUserState;
+      
+          default:
+            return state;
+        }
       };
       
-    case "UPDATE_NOTIFICATIONS_SUCCESS":
-      return {
-        ...state,
-        user: { ...state.user, notificationSettings: action.payload },
-        loading: false,  // ✅ Stop loading
-      };
-
-    case "ERROR":
-      return {
-        ...state,
-        error: action.payload,
-        loading: false,  // ✅ Stop loading
-      };
-
-    case "LOGOUT":
-      return initialUserState;
-
-    default:
-      return state;
-  }
-};
-
-export default userReducer;
+      export default userReducer;

@@ -24,31 +24,20 @@ const SettingPage = () => {
     paymentMethod: "",
     username: "",
   });
-  /*const [notifications, setNotifications] = useState({
-    expenseAlerts: false,
-    communityUpdates: false,
-    paymentReminders: false,
-    featureAnnouncements: false,
-  });*/
 
   const [profilePicture, setProfilePicture] = useState(null);
   const [preview, setPreview] = useState("https://picsum.photos/100");
-
   const [passwords, setPasswords] = useState({
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
   });
-  const [notifications, setNotifications] = useState({
-    expenseAlerts: false,
-    communityUpdates: false,
-    paymentReminders: false,
-    featureAnnouncements: false,
-  });
 
-  const [message, setMessage] = useState({ type: "", text: "" });
+  // Clear message on component mount
+  useEffect(() => {
+    userDispatch({ type: "CLEAR_MESSAGE" });
+  }, [userDispatch]);
 
-  // ✅ Prefill form when user data is available
   useEffect(() => {
     if (userState.user) {
       const user = userState.user;
@@ -62,17 +51,12 @@ const SettingPage = () => {
         paymentMethod: user.paymentMethod || "",
         username: user.username || "",
       });
+
       if (user.profilePicture) {
-        setPreview(user.profilePicture); // Display the latest profile picture URL
-      } else {
-        setPreview("https://picsum.photos/100");
+        setPreview(user.profilePicture);
       }
     }
-
-    if (notificationState.notificationSettings) {
-      setNotifications(notificationState.notificationSettings);
-    }
-  }, [userState.user, notificationState.notificationSettings]);
+  }, [userState.user]);
 
   // 🔄 Handle input changes
   const handleInputChange = (e) => {
@@ -90,37 +74,38 @@ const SettingPage = () => {
 
   // ✅ Save profile updates
   const handleSaveProfile = async () => {
+    userDispatch({ type: "UPDATE_PROFILE_REQUEST" });
+
     const form = new FormData();
     Object.keys(formData).forEach((key) => form.append(key, formData[key]));
 
     if (profilePicture) {
       form.append("profilePic", profilePicture);
-      console.log("✅ Adding Profile Image to FormData: ", profilePicture.name);
     }
 
     try {
       const updatedUser = await updateProfile(form, userDispatch);
+      userDispatch({ type: "UPDATE_PROFILE_SUCCESS", payload: updatedUser });
 
-      // ✅ Ensure the backend returns the **full URL** of the profile picture
       if (updatedUser.profilePicture) {
-        const fullUrl = updatedUser.profilePicture;
-        setPreview(fullUrl); // Make sure this URL is accessible
-        console.log("✅ Updated Profile Picture URL: ", fullUrl);
+        setPreview(updatedUser.profilePicture);
       }
 
-      userDispatch({ type: "UPDATE_PROFILE_SUCCESS", payload: updatedUser });
-      setMessage({ type: "success", text: "Profile updated successfully!" });
+      setTimeout(() => userDispatch({ type: "CLEAR_MESSAGE" }), 3000);
     } catch (error) {
-      setMessage({ type: "error", text: "Profile update failed." });
+      userDispatch({ type: "ERROR", payload: "Profile update failed." });
+      setTimeout(() => userDispatch({ type: "CLEAR_MESSAGE" }), 3000);
     }
   };
 
   // 🔑 Handle password update
   const handlePasswordUpdate = async () => {
     if (passwords.newPassword !== passwords.confirmPassword) {
-      setMessage({ type: "error", text: "New passwords do not match." });
+      userDispatch({ type: "ERROR", payload: "Passwords do not match." });
       return;
     }
+
+    userDispatch({ type: "UPDATE_PASSWORD_REQUEST" });
 
     try {
       const successMessage = await updatePassword(
@@ -132,16 +117,11 @@ const SettingPage = () => {
         type: "UPDATE_PASSWORD_SUCCESS",
         payload: successMessage,
       });
-      setMessage({ type: "success", text: successMessage });
-      setPasswords({
-        currentPassword: "",
-        newPassword: "",
-        confirmPassword: "",
-      });
 
-      setTimeout(() => navigate("/login"), 2000);
+      setTimeout(() => userDispatch({ type: "CLEAR_MESSAGE" }), 3000);
     } catch (error) {
-      setMessage({ type: "error", text: "Password update failed." });
+      userDispatch({ type: "ERROR", payload: "Password update failed." });
+      setTimeout(() => userDispatch({ type: "CLEAR_MESSAGE" }), 3000);
     }
   };
 
@@ -162,15 +142,19 @@ const SettingPage = () => {
         payload: updatedNotifications,
       });
       setMessage({ type: "success", text: "Notification settings updated!" });
+
+      setTimeout(() => setMessage({ type: "", text: "" }), 3000);
+
     } catch (error) {
       setMessage({ type: "error", text: "Failed to update notifications." });
+      setTimeout(() => setMessage({ type: "", text: "" }), 3000);
     }
   };
   return (
     <div className="bg-gray-200 min-h-screen flex flex-col items-center p-4 md:p-6 shadow-md">
       <div className="p-6 rounded-lg w-full max-w-3xl flex flex-col gap-6">
+  
         {/* Profile Picture */}
-
         <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6">
           <div className="relative w-24 h-24">
             <img
@@ -181,7 +165,7 @@ const SettingPage = () => {
               }
               alt="Profile"
               className="w-24 h-24 rounded-full border-4 border-gray-300"
-              onError={() => setPreview("https://picsum.photos/100")} // Fallback image
+              onError={() => setPreview("https://picsum.photos/100")}
             />
             <label
               htmlFor="profilePic"
@@ -197,7 +181,7 @@ const SettingPage = () => {
               onChange={handleImageUpload}
             />
           </div>
-
+  
           <button
             onClick={handleSaveProfile}
             disabled={userState.loading}
@@ -208,16 +192,18 @@ const SettingPage = () => {
             {userState.loading ? "Saving..." : "Save Updates"}
           </button>
         </div>
+  
         {/* Success/Error Message */}
-        {message.text && (
+        {userState.message && (
           <div
-            className={`p-3 rounded ${
-              message.type === "success" ? "bg-green-500" : "bg-red-500"
+            className={`p-3 rounded mt-4 ${
+              userState.messageType === "success" ? "bg-green-500" : "bg-red-500"
             } text-white text-center`}
           >
-            {message.text}
+            {userState.message}
           </div>
         )}
+  
         {/* User Information */}
         <div className="bg-white p-4 md:p-6 rounded-lg shadow-lg">
           {Object.keys(formData).map((field) => (
@@ -235,6 +221,7 @@ const SettingPage = () => {
             </div>
           ))}
         </div>
+  
         {/* Password Update */}
         <div className="bg-white p-4 md:p-6 rounded-lg shadow-lg">
           <h2 className="text-lg font-semibold">Security</h2>
@@ -265,13 +252,14 @@ const SettingPage = () => {
           >
             {userState.loading ? "Updating..." : "Update Password"}
           </button>
-
+  
           {userState.loading && (
-            <div className="text-center text-sm text-gray-500">
+            <div className="text-center text-sm text-gray-500 mt-2">
               Updating, please wait...
             </div>
           )}
         </div>
+  
         {/* Notifications Toggle */}
         <div className="bg-white p-4 rounded-lg shadow-lg">
           <h2 className="text-lg font-semibold mb-4">Notifications Settings</h2>
@@ -295,6 +283,7 @@ const SettingPage = () => {
       </div>
     </div>
   );
+  
 };
 
 export default SettingPage;
