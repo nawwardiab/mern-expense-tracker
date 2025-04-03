@@ -69,11 +69,9 @@ export const updateUserProfile = async (req, res, next) => {
     console.log("Received File: ", req.file);  // ✅ Check if file is being received
     console.log("Request Body: ", req.body);
 
-    let profilePicture = null;
+    let profilePicture = req.file ? `http://localhost:8000/${req.file.path}` : null;
 
-    if (req.file) {
-      profilePicture = req.file.path; // Store the path of the uploaded file
-    }
+  
 
     const updatedData = { 
       fullName, 
@@ -84,16 +82,17 @@ export const updateUserProfile = async (req, res, next) => {
       currency, 
       income, 
       paymentMethod, 
-      username 
+      username,
+      
     };
-    // Handling Notification Settings
+      // Handling Notification Settings
     if (notificationSettings) {
       updatedData.notificationSettings = JSON.parse(notificationSettings);
     }
 
     
-    if (profilePicture) updatedData.profilePicture = profilePicture;  // Save the file path if it exists
-
+    if (profilePicture) updatedData.profilePicture = profilePicture;
+    
     const updatedUser = await UserModel.findByIdAndUpdate(
       userId,
       updatedData,
@@ -103,7 +102,8 @@ export const updateUserProfile = async (req, res, next) => {
     if (!updatedUser) {
       throw createError(404, "User not found");
     }
-
+    console.log("✅ User successfully updated:", updatedUser);
+    
     res.status(200).json({ success: true, user: updatedUser });
   } catch (error) {
     console.error("Error updating profile:", error.message);

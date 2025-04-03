@@ -51,6 +51,10 @@ export const getMyData = async (dispatch) => {
     if (response.data && response.data.user) {
       const user = response.data.user;
 
+      if (user.profilePicture && !user.profilePicture.startsWith("http")) {
+        user.profilePicture = `${process.env.REACT_APP_BACKEND_URL}/${user.profilePicture}`;
+      }
+
       // Dispatch user data to auth state
       dispatch({ type: "LOGIN_SUCCESS", payload: user });
 
@@ -68,13 +72,16 @@ export const getMyData = async (dispatch) => {
 
 //! Update Profile function
 export const updateProfile = async (formData, dispatch) => {
+  dispatch({ type: "UPDATE_PROFILE_REQUEST" });
   try {
     const response = await axios.patch("/users/update-profile", formData, {
       withCredentials: true,
       headers: { "Content-Type": "multipart/form-data" },
     });
-
+    console.log("Server Response: ", response.data);  // Debug log
+    
     const updatedUser = response.data.user;
+
 
     dispatch({ type: "UPDATE_PROFILE_SUCCESS", payload: updatedUser });
     return updatedUser;
