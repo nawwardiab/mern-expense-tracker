@@ -9,6 +9,7 @@ import {
   updateUserProfile,
   onboarding,
   getMe,
+  googleLogin,
 } from "../controllers/usersController.js";
 
 
@@ -19,6 +20,7 @@ router
   .post("/register", register)
   .get("/verify-email", verifyEmail)
   .post("/login", login)
+  .post("/google-login", googleLogin)
   .get("/logout", checkToken, logout)
   .patch("/profile", checkToken, updateUserProfile)
   .patch("/onboarding", checkToken, onboarding)

@@ -73,3 +73,14 @@ export const resetPassword = async (formData, dispatch) => {
     console.error("Error changeing Password: ", error.message);
   }
 };
+
+// Google Login
+export const googleLogin = async (credential, dispatch) => {
+  try {
+    const res = await axios.post('/users/google-login', { credential });
+    dispatch({ type: "LOGIN_SUCCESS", payload: res.data.data });
+  } catch (err) {
+    console.error("Google Login error:", err);
+    throw err;
+  }
+};

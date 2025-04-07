@@ -1,9 +1,11 @@
 import createError from "http-errors";
 import crypto from "crypto";
+import { OAuth2Client } from 'google-auth-library';
 
 import sendVerificationEmail from "../utils/sendEmail.js";
 import { createSendToken } from "../utils/jwt.js";
 import UserModel from "../models/User.js";
+
 
 export const getUsers = async (req, res, next) => {
   try {
@@ -216,4 +218,41 @@ export const getMe = (req, res, next) => {
     user,
     isAuthenticated,
   });
+};
+
+// GOOGLE LOGIN
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+export const googleLogin = async (req, res, next) => {
+  try {
+    const { token } = req.body;
+
+    if (!token) {
+      return res.status(400).json({ message: "Token missing from request." });
+    }
+
+    // Use the access token to get user info
+    const ticket = await client.getTokenInfo(token);
+    const { email } = ticket;
+
+    // Now check if user already exists
+    let user = await UserModel.findOne({ email });
+
+    if (!user) {
+      // If new user, create them
+      user = await UserModel.create({
+        email,
+        fullName: "Google User",
+        isVerified: true,
+        username: email.split("@")[0],
+        password: crypto.randomBytes(16).toString("hex"), // generate dummy password
+      });
+    }
+
+    // Send JWT
+    createSendToken(res, 200, user);
+  } catch (err) {
+    console.error("Google login error:", err);
+    res.status(500).json({ message: "Google login failed." });
+  }
 };
