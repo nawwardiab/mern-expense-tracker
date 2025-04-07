@@ -13,8 +13,15 @@ const userSchema = new Schema(
     paymentMethod: { type: String, default: "" },
     username: { type: String, unique: true, sparse: true },
     isOnboarded: { type: Boolean, default: false },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+    verificationToken: {
+      type: String,
+    },
   },
-  { timestamp: true }
+  { timestamps: true }
 );
 
 // !  Integrate `bcrypt` for password hashing.
