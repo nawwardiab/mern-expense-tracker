@@ -1,0 +1,9 @@
+### Create Invite Link for Group (replace :groupId)
+POST http://localhost:8000/invites/67ecd9a7d8ef9bacc1a6f444/create
+
+### Validate Invite Token
+GET http://localhost:8000/invites/3b1893a2-33aa-4240-98cb-9374ac571933/validate
+
+
+### Accept Invite Token
+PATCH http://localhost:8000/invites/3b1893a2-33aa-4240-98cb-9374ac571933/accept

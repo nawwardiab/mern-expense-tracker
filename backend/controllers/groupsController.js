@@ -6,6 +6,7 @@ import Payment from "../models/Payment.js";
 export const fetchUserGroups = async (req, res) => {
   try {
     const groups = await Group.find()
+      .sort({ createdAt: -1 })
       .populate("members.userId")
       .populate("expenses");
     res.json(groups);

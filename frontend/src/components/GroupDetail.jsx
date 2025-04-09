@@ -1,20 +1,23 @@
 import React, { useState, useEffect, useContext } from "react";
-import axios from "axios";
-import ExpenseTable from "./ExpenseTable";
-import AddGroupExpense from "./modal/AddGroupModal";
-import EditGroupModal from "./modal/EditGroupModal";
 import { ExpenseContext } from "../contexts/ExpenseContext";
 import { GroupContext } from "../contexts/GroupContext";
 import { fetchGroupExpenses } from "../api/groupApi";
 
+// Modals
+import AddGroupExpense from "./modal/AddGroupModal";
+import EditGroupModal from "./modal/EditGroupModal";
+import InviteModal from "./modal/InviteModal";
+
 const GroupDetail = () => {
   const { expenseState, expenseDispatch } = useContext(ExpenseContext);
   const { groupState, groupDispatch } = useContext(GroupContext);
-  const { selectedGroup, groups } = groupState;
+  const { selectedGroup } = groupState;
   const { expenses } = expenseState;
+
+  const [showInviteModal, setShowInviteModal] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
 
   //Only update groupInfo if the group object exists and has a valid _id
   useEffect(() => {
@@ -23,20 +26,14 @@ const GroupDetail = () => {
       fetchGroupExpenses(selectedGroup._id, groupDispatch);
     }
   }, []);
-  // fetchGroupExpenses(selectedGroup._id, groupDispatch);
-  // updateGroup(selectedGroup._id, groupDispatch);
-  // // updateGroup(selectedGroup._id);
-  // const fetchUpdatedGroup = async () => {
-  //
-  // };
-
-  // const handleExpenseAdded = (newExpense) => {
-  //   setExpenses((prevExpenses) => [...prevExpenses, newExpense]);
-  // };
 
   const uniqueMemberCount = new Set(
     selectedGroup?.members?.map((m) => m.userId)
   ).size;
+
+  const handleInviteClick = () => {
+    setShowInviteModal(true);
+  };
 
   return (
     <div className="p-6 bg-white rounded-lg shadow-lg w-full">
@@ -48,29 +45,22 @@ const GroupDetail = () => {
           </h1>
           <p className="text-gray-600 mt-2">{selectedGroup?.description}</p>
         </div>
+
         <div className="flex gap-3">
           <button
-            className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300"
+            className="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-900 transition-all"
             onClick={() => setEditModalOpen(true)}
           >
             ✏️ Edit Group
           </button>
+          <button
+            className="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-900 transition-all"
+            onClick={handleInviteClick}
+          >
+            Invite Friends
+          </button>
         </div>
       </div>
-
-      {/* Expenses */}
-      {/* <div className="mt-6">
-        <h2 className="text-lg font-semibold mb-2">Expenses</h2>
-        {loading ? (
-          <p className="text-center text-gray-500 py-4">Loading expenses...</p>
-        ) : expenses.length > 0 ? (
-          <ExpenseTable expenses={expenses} />
-        ) : (
-          <p className="text-gray-500 text-center py-4">
-            No expenses recorded yet.
-          </p>
-        )}
-      </div> */}
 
       {/* Summary */}
       <div className="mt-6 grid grid-cols-3 gap-4 border-b pb-4 text-center">
@@ -103,6 +93,13 @@ const GroupDetail = () => {
         <EditGroupModal
           group={selectedGroup}
           onClose={() => setEditModalOpen(false)}
+        />
+      )}
+      {/* Invite Modal (only render it if showInviteModal = true) */}
+      {showInviteModal && (
+        <InviteModal
+          group={selectedGroup}
+          onClose={() => setShowInviteModal(false)}
         />
       )}
     </div>

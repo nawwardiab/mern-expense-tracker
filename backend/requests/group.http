@@ -1,32 +1,19 @@
 ### Get All Groups for User
 GET http://localhost:8000/groups/
-<<<<<<< HEAD
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZDdkYzdkNmM5YTc5YWExNzA2OTg1MyIsImlhdCI6MTc0MjUwNDc1MiwiZXhwIjoxNzQyNTkxMTUyfQ.yUhZSalhBhMfoxRIEAsnbvh-Cfv7eBqyMlY16xmZoto
-=======
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZDk2ZTQyN2I1OWFkNDMwZWQ4MWE1ZSIsImlhdCI6MTc0MjgzNDI3NCwiZXhwIjoxNzQyOTIwNjc0fQ.ykEUaUU5mNf6-WD4EudcVVe9CwUi5vOLliip7i9RHB4
 
->>>>>>> main
 
 
 ### Create a New Group
 POST http://localhost:8000/groups/create
 Content-Type: application/json
-<<<<<<< HEAD
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZDdkYzdkNmM5YTc5YWExNzA2OTg1MyIsImlhdCI6MTc0MjUwNDc1MiwiZXhwIjoxNzQyNTkxMTUyfQ.yUhZSalhBhMfoxRIEAsnbvh-Cfv7eBqyMlY16xmZoto
-
-{
-  "name": "Concert",
-  "description": "Trip + concert.",
-=======
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZDk2ZTQyN2I1OWFkNDMwZWQ4MWE1ZSIsImlhdCI6MTc0MjgzNDI3NCwiZXhwIjoxNzQyOTIwNjc0fQ.ykEUaUU5mNf6-WD4EudcVVe9CwUi5vOLliip7i9RHB4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZWNkODlhZDhlZjliYWNjMWE2ZjQxNyIsImlhdCI6MTc0NDAyOTAyOCwiZXhwIjoxNzQ0MTE1NDI4fQ.WEq4fUKEyooNHbPnFojFrQyt9thM08leKL1C68ICGFQ
 
 
 {
   "name": "Trip to London 2025!",
   "description": "Let's go to London! Hotel, flight and activities.",
->>>>>>> main
-  "members": ["67d7dc7d6c9a79aa17069853", "67d96e427b59ad430ed81a5e",
-  "67d97514b05f1dfb33bd2b27", "67d973bdb05f1dfb33bd2b0b"]
+
 }
 
 

@@ -1,9 +1,8 @@
-// src/contexts/GroupContext.jsx
 import React, { createContext, useReducer } from "react";
 import groupReducer, { initialGroupState } from "../reducers/groupReducer";
 
 //  Create context
-export const GroupContext = createContext(null);
+export const GroupContext = createContext();
 
 //  Provider component
 export const GroupProvider = ({ children }) => {

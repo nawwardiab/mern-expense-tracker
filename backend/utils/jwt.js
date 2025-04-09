@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import "dotenv/config";
 
+//! Create and send token for registration and send it with the cookies
 export const createSendToken = (res, status, user) => {
   const { JWT_EXP, JWT_SECRET } = process.env;
   //! Sign jwt token

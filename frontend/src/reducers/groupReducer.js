@@ -9,7 +9,11 @@ export default function groupReducer(state, action) {
     // Fetch user groups
 
     case "FETCH_GROUPS":
-      return { ...state, groups: action.payload };
+      // Sort by createdAt descending
+      const sortedGroups = action.payload
+        .slice()
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      return { ...state, groups: sortedGroups };
     case "FETCH_GROUPS_ERROR":
       return { ...state, error: action.payload };
 
@@ -19,7 +23,7 @@ export default function groupReducer(state, action) {
 
     // Create a new group
     case "ADD_GROUP":
-      return { ...state, groups: [...state.groups, action.payload] };
+      return { ...state, groups: [action.payload, ...state.groups] };
 
     // Update group details
     case "UPDATE_GROUP":
