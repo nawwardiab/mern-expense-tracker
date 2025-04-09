@@ -1,6 +1,7 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import path from 'path';
 import "dotenv/config";
 
 import connectDB from "./utils/database.js";
@@ -32,7 +33,9 @@ app.use(express.json());
 app.use("/users", usersRouter);
 app.use("/expenses", expensesRouter);
 app.use("/groups", groupsRouter);
-app.use("/payments",paymentRouter)
+app.use("/payments", paymentRouter)
+
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 //! Error Handlers
 app.use(routeNotFound);

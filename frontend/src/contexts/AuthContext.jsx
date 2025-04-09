@@ -1,14 +1,29 @@
 import React, { createContext, useReducer, useEffect } from "react";
 import userReducer, { initialUserState } from "../reducers/userReducer";
+import notificationReducer, { initialNotificationState } from "../reducers/notificationReducer";
 import { getMyData } from "../api/authApi.js";
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [userState, userDispatch] = useReducer(userReducer, initialUserState);
+  const [notificationState, notificationDispatch] = useReducer(notificationReducer, initialNotificationState);
 
   useEffect(() => {
-    getMyData(userDispatch);
+    const fetchUserData = async () => {
+      const user = await getMyData(userDispatch);  // Modified to return the user object
+
+      if (user && user.notificationSettings) {
+        console.log("🔔 Initializing Notification Settings from Backend:", user.notificationSettings);
+
+        notificationDispatch({
+          type: "INITIALIZE_NOTIFICATIONS",
+          payload: user.notificationSettings,
+        });
+      }
+    };
+
+    fetchUserData();
   }, []);
 
   return (
@@ -16,6 +31,8 @@ export const AuthProvider = ({ children }) => {
       value={{
         userState,
         userDispatch,
+        notificationState,
+        notificationDispatch,
       }}
     >
       {children}

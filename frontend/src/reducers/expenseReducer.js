@@ -2,6 +2,7 @@ export const initialExpenseState = {
   expenses: [], // Master list fetched from the server
   selectedExpense: null, // If you want a global “currently selected expense”
   totalFilteredExpenses: 0,
+  isModalOpen: false,
 };
 
 export default function expenseReducer(state, action) {
@@ -40,13 +41,22 @@ export default function expenseReducer(state, action) {
       return {
         ...state,
         selectedExpense: action.payload,
+        isModalOpen: true, 
       };
     case "SET_TOTAL_FILTERED_EXPENSES":
       return {
         ...state,
         totalFilteredExpenses: action.payload,
       };
-
+      case "OPEN_MODAL":
+        return { ...state, isModalOpen: true };
+      case "CLOSE_MODAL":
+        return {
+          ...state,
+          isModalOpen: false,
+          selectedExpense: null,
+        };
+  
     default:
       return state;
   }

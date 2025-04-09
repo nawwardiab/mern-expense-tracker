@@ -1,20 +1,11 @@
-/**
- * ExpenseManager.jsx
- *
- * A page component that displays and manages a list of expenses.
- * It fetches all expenses from the server on mount using a dedicated API function
- * (getAllExpenses) and then dispatches the results to the ExpenseContext.
- * The user can filter by search, category, or occurrence.
- * The filtered list is rendered in ExpenseList, and a summary (total) is shown.
- */
-
 import React, { useEffect, useContext, useState } from "react";
 import { FaWallet } from "react-icons/fa";
 import { TbListSearch } from "react-icons/tb";
-
+import { FaPlus } from "react-icons/fa";
 import { ExpenseContext } from "../contexts/ExpenseContext";
-import { getAllExpenses } from "../api/expenseApi"; // <-- new import
+import { getAllExpenses } from "../api/expenseApi";
 import ExpenseList from "../components/ExpenseList";
+import AddExpense from "../components/modal/AddExpense"; // Import your AddExpense modal
 
 const ExpenseManager = () => {
   // 1) Pull global expense state & dispatch from context
@@ -25,18 +16,12 @@ const ExpenseManager = () => {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
   const [occurrence, setOccurrence] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false); // State to manage modal visibility
 
-  /**
-   * 4) On mount, fetch all expenses from the server.
-   * We call the `getAllExpenses` API function and dispatch
-   * a GET_EXPENSES action to the context.
-   */
   useEffect(() => {
     async function fetchExpenses() {
       try {
         const response = await getAllExpenses(expenseDispatch);
-        // Typically: response = { success: true, data: [...] }
-
         if (response?.data) {
           expenseDispatch({
             type: "GET_EXPENSES",
@@ -50,13 +35,8 @@ const ExpenseManager = () => {
     fetchExpenses();
   }, [expenseDispatch]);
 
-  /**
-   * 5) Whenever expenses or our filter states change,
-   * we derive a filtered list and calculate the total cost of those filtered items.
-   */
-
   return (
-    <div className="p-4 md:p-8 max-w-6xl mx-auto">
+    <div className="p-4 md:p-8 max-w-6xl mx-auto relative">
       <h1 className="text-2xl md:text-4xl font-bold text-center mb-6">
         Manage your expenses
       </h1>
@@ -70,7 +50,6 @@ const ExpenseManager = () => {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        {/* Search icon displayed on the right */}
         <TbListSearch className="absolute right-4 text-gray-500 text-3xl sm:text-4xl" />
       </div>
 
@@ -144,6 +123,18 @@ const ExpenseManager = () => {
           </div>
         </div>
       </div>
+
+      {/* Floating Add Event Button */}
+    {/* Floating Add Event Button (Visible Only on Small Devices) */}
+<FaPlus
+  className="fixed bottom-16 right-6 bg-black text-4xl text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition z-50 md:hidden"
+  onClick={() => setIsModalOpen(true)}
+/>
+
+      {/* AddExpense Modal */}
+      {isModalOpen && (
+        <AddExpense isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      )}
     </div>
   );
 };
