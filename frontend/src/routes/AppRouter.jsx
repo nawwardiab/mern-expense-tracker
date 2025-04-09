@@ -7,6 +7,7 @@ import { AuthContext } from "../contexts/AuthContext";
 // Pages
 import LandingPage from "../pages/LandingPage";
 import LoginPage from "../pages/LoginPage";
+import VerifyEmailPage from "../pages/VerifyEmailPage";
 import SignupPage from "../pages/SignupPage";
 import ForgotPassword from "../pages/ForgotPassword";
 import OnboardingPage from "../pages/OnboardingPage";
@@ -25,6 +26,7 @@ export default function AppRoutes() {
       <Route index element={<LandingPage />} />
       {/* Public-ish routes (or partially protected) */}
       <Route path="login" element={<LoginPage />} />
+      <Route path="verify-email" element={<VerifyEmailPage />} />
       <Route path="signup" element={<SignupPage />} />
       <Route path="forgot-password" element={<ForgotPassword />} />
       {/* Onboarding page requires user but not onboarded */}

@@ -8,8 +8,11 @@ POST http://localhost:8000/users/register
 Content-Type: application/json
 
 {
-  "fullName": "james test",
-  "email": "jamestest@gmail.com",
+
+  "fullName": "Ari Nikol",
+  "email": "irinaniko@gmail.com"
+  
+
   "password": "1234"
 }
 

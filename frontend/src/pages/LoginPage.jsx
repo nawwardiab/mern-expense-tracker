@@ -1,8 +1,12 @@
 import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { login } from "../api/authApi.js";
-import { AuthContext } from "../contexts/AuthContext.jsx";
 import { FaGoogle, FaApple, FaEnvelope, FaHome } from "react-icons/fa";
+import axios from "axios";
+
+import { login as handleLoginSubmit } from "../api/authApi.js";
+import { AuthContext } from "../contexts/AuthContext.jsx";
+import { useGoogleLogin } from '@react-oauth/google';
+
 
 const Login = () => {
   const { userDispatch } = useContext(AuthContext);
@@ -48,6 +52,33 @@ const Login = () => {
       setLoading(false);
     }
   };
+
+  const loginWithGoogle = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      try {
+        const res = await axios.post("/users/google-login", {
+          token: tokenResponse.access_token,
+        });
+
+        const user = res.data.data;
+
+        userDispatch({ type: "LOGIN_SUCCESS", payload: user });
+
+        // ✅ Navigate after login
+        if (user?.isOnboarded) {
+          navigate("/homepage");
+        } else {
+          navigate("/onboarding");
+        }
+      } catch (err) {
+        console.error("Google login failed:", err);
+        setErrorMessage("Google login failed. Please try again.");
+      }
+    },
+    onError: () => {
+      setErrorMessage("Google login failed. Please try again.");
+    },
+  });
 
   return (
     <div className="flex flex-col md:flex-row h-screen">
@@ -130,7 +161,10 @@ const Login = () => {
 
           {/* Social Login Options */}
           <div className="mt-6 space-y-3">
-            <button className="w-full flex items-center justify-center border border-gray-300 py-3 rounded-md hover:bg-gray-100 transition">
+            <button
+              onClick={loginWithGoogle}
+              className="w-full flex items-center justify-center border border-gray-300 py-3 rounded-md hover:bg-gray-100 transition"
+            >
               <FaGoogle className="mr-2 text-red-500" /> Sign in with Google
             </button>
 

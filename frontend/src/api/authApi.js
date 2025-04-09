@@ -43,7 +43,7 @@ export const logout = async (dispatch) => {
   }
 };
 
-// Fetch User Data (including notification settings)
+//! Fetch User Data (including notification settings)
 export const getMyData = async (dispatch) => {
   try {
     const response = await axios.get("/users/me", { withCredentials: true });
@@ -55,20 +55,16 @@ export const getMyData = async (dispatch) => {
         user.profilePicture = `${process.env.REACT_APP_BACKEND_URL}/${user.profilePicture}`;
       }
 
-      // Dispatch user data to auth state
       dispatch({ type: "LOGIN_SUCCESS", payload: user });
 
       console.log("✅ User data fetched successfully:", user);
-
-      // Return the user object for further processing
       return user;
     }
   } catch (error) {
-    console.error("Error logging in: ", error.message);
+    console.error("Error logging in:", error.message);
     dispatch({ type: "ERROR", payload: error.message });
   }
 };
-
 
 //! Update Profile function
 export const updateProfile = async (formData, dispatch) => {
@@ -78,10 +74,9 @@ export const updateProfile = async (formData, dispatch) => {
       withCredentials: true,
       headers: { "Content-Type": "multipart/form-data" },
     });
-    console.log("Server Response: ", response.data);  // Debug log
-    
-    const updatedUser = response.data.user;
+    console.log("Server Response:", response.data);
 
+    const updatedUser = response.data.user;
 
     dispatch({ type: "UPDATE_PROFILE_SUCCESS", payload: updatedUser });
     return updatedUser;
@@ -110,14 +105,14 @@ export const updatePassword = async (currentPassword, newPassword, dispatch) => 
   }
 };
 
-//! Update Notification Settings function (Fixed)
+//! Update Notification Settings function
 export const updateNotificationSettings = async (notificationSettings, dispatch) => {
   try {
-    console.log(" Attempting to save notification settings...", notificationSettings);
+    console.log("Attempting to save notification settings...", notificationSettings);
 
     const response = await axios.patch(
-      "/users/update-notifications",  // Ensure your backend route matches this
-      { notificationSettings },       // Directly send the settings object
+      "/users/update-notifications",
+      { notificationSettings },
       { withCredentials: true }
     );
 
@@ -128,27 +123,39 @@ export const updateNotificationSettings = async (notificationSettings, dispatch)
     dispatch({ type: "UPDATE_NOTIFICATIONS_SUCCESS", payload: updatedNotifications });
     return updatedNotifications;
   } catch (error) {
-    console.error(" Error saving notification settings:", error.message);
+    console.error("Error saving notification settings:", error.message);
     dispatch({ type: "ERROR", payload: error.message });
   }
 };
 
+//! Reset Password function (commented out)
+/*
+export const resetPassword = async (formData, dispatch) => {
+  try {
+    const response = await axios.patch("/users/profile", formData);
 
-//! Reset Password
-//export const resetPassword = async (formData, dispatch) => {
-  //try {
-    //const response = await axios.patch("/users/profile", formData);
+    dispatch({ type: "RESET_PASSWORD", payload: response.data.data });
+  } catch (error) {
+    dispatch({
+      type: "ERROR",
+      payload: {
+        error,
+        customMessage: "Something went wrong. Please try again.",
+      },
+    });
+    console.error("Error changing Password:", error.message);
+  }
+};
+*/
 
-    //dispatch({ type: "RESET_PASSWORD", payload: response.data.data });
-  //} catch (error) {
-    // dispatch({
-    //   type: "ERROR",
-    //   payload: {
-    //     error,
-    //     customMessage: "Something went wrong. Please try again.",
-    //   },
-    // });
+//! Google Login
+export const googleLogin = async (credential, dispatch) => {
+  try {
+    const res = await axios.post("/users/google-login", { credential });
+    dispatch({ type: "LOGIN_SUCCESS", payload: res.data.data });
+  } catch (err) {
+    console.error("Google Login error:", err);
+    throw err;
+  }
+};
 
-  //  console.error("Error changeing Password: ", error.message);
- // }
-//};

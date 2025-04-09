@@ -14,6 +14,12 @@ const userSchema = new Schema(
     paymentMethod: { type: String, default: "" },
     username: { type: String, unique: true, sparse: true },
     isOnboarded: { type: Boolean, default: false },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+    verificationToken: {
+      type: String,
     notificationSettings: {
       expenseAlerts: { type: Boolean, default: false },
       communityUpdates: { type: Boolean, default: false },
@@ -21,7 +27,7 @@ const userSchema = new Schema(
       featureAnnouncements: { type: Boolean, default: false },
     },
   },
-  { timestamp: true }
+  { timestamps: true }
 );
 
 // !  Integrate `bcrypt` for password hashing.
