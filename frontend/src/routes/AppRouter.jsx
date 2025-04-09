@@ -14,6 +14,8 @@ import HomePage from "../pages/HomePage";
 import ExpenseManager from "../pages/ExpenseManager";
 import GroupExpenses from "../pages/GroupExpenses";
 import SettingPage from "../pages/SettingPage";
+import ValidateInvitePage from "../components/InvitePage";
+import PageNotFound from "../pages/PageNotFound";
 
 export default function AppRoutes() {
   const { userState } = useContext(AuthContext);
@@ -33,6 +35,7 @@ export default function AppRoutes() {
         path="onboarding"
         element={!user?.isOnboarded && <OnboardingPage />}
       />
+      <Route path="invite/:token" element={<ValidateInvitePage />} />
       <Route path="/" element={<Layout />}>
         {/* Fully protected routes */}
         <Route path="homepage" element={<HomePage />} />
@@ -41,7 +44,7 @@ export default function AppRoutes() {
         <Route path="settings" element={<SettingPage />} />
 
         {/* Catch-all or 404 route (optional) */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<PageNotFound />} />
       </Route>
     </Routes>
   );

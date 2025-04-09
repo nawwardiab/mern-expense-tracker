@@ -8,6 +8,7 @@ import usersRouter from "./routes/usersRouter.js";
 import expensesRouter from "./routes/expensesRouter.js";
 import paymentRouter from "./routes/paymentRouter.js";
 import groupsRouter from "./routes/groupsRouter.js";
+import inviteRouter from "./routes/inviteRouter.js";
 import {
   globalErrorHandler,
   routeNotFound,
@@ -32,7 +33,8 @@ app.use(express.json());
 app.use("/users", usersRouter);
 app.use("/expenses", expensesRouter);
 app.use("/groups", groupsRouter);
-app.use("/payments",paymentRouter)
+app.use("/invites", inviteRouter);
+app.use("/payments", paymentRouter);
 
 //! Error Handlers
 app.use(routeNotFound);
@@ -41,7 +43,7 @@ app.use(globalErrorHandler);
 app.listen(PORT, () => {
   console.log(
     `🚀 Server is up and running!\n` +
-    `🌐 Listening on http://localhost:${PORT}\n` +
-    `📅 Started at: ${new Date().toLocaleString()}\n`
+      `🌐 Listening on http://localhost:${PORT}\n` +
+      `📅 Started at: ${new Date().toLocaleString()}\n`
   );
 });

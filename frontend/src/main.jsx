@@ -8,16 +8,19 @@ import "./index.css";
 import { ExpenseProvider } from "./contexts/ExpenseContext.jsx";
 import { PaymentProvider } from "./contexts/PaymentContext.jsx";
 import { GroupProvider } from "./contexts/GroupContext.jsx";
+import { InviteProvider } from "./contexts/InviteContext.jsx";
 
 createRoot(document.getElementById("root")).render(
   <AuthProvider>
     <ExpenseProvider>
       <GroupProvider>
-        <PaymentProvider>
-          <BrowserRouter>
-            <App />
-          </BrowserRouter>
-        </PaymentProvider>
+        <InviteProvider>
+          <PaymentProvider>
+            <BrowserRouter>
+              <App />
+            </BrowserRouter>
+          </PaymentProvider>
+        </InviteProvider>
       </GroupProvider>
     </ExpenseProvider>
   </AuthProvider>
