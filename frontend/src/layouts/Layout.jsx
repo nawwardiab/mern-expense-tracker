@@ -20,7 +20,7 @@ const Layout = () => {
         )}
 
         {/* Main content area */}
-        <div className="flex flex-col flex-1 w-full min-h-screen">
+        <div className="flex flex-col flex-1 w-full min-h-screen pt-16">
           {/* Navbar can either always show or conditionally show */}
           {isUserLoggedin && <Navbar />}
 

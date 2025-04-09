@@ -83,6 +83,7 @@ export const updateUserProfile = async (req, res, next) => {
       income, 
       paymentMethod, 
       username,
+      isOnboarded: true,
       
     };
       // Handling Notification Settings
@@ -182,6 +183,7 @@ export const getMe = async (req, res, next) => {
       success: true,
       user,
       isAuthenticated: true,
+      isOnboarded: user.isOnboarded,
     });
   } catch (error) {
     console.error("❌ Error fetching user data:", error.message);

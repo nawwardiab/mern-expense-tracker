@@ -24,7 +24,7 @@ const SettingPage = () => {
     paymentMethod: "",
     username: "",
   });
-
+  const [isOnboarded, setIsOnboarded] = useState(userState.isOnboarded); 
   const [profilePicture, setProfilePicture] = useState(null);
   const [preview, setPreview] = useState("https://picsum.photos/100");
   const [passwords, setPasswords] = useState({
@@ -33,23 +33,27 @@ const SettingPage = () => {
     confirmPassword: "",
   });
 
-  // Clear message on component mount
-  useEffect(() => {
-    userDispatch({ type: "CLEAR_MESSAGE" });
-  }, [userDispatch]);
+  // Function to format labels (convert camelCase to readable format)
+   const formatLabel = (key) =>
+    key.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase());
 
+    // Clear message on component mount
+    useEffect(() => {
+      userDispatch({ type: "CLEAR_MESSAGE" });
+    }, [userDispatch]);
   useEffect(() => {
     if (userState.user) {
       const user = userState.user;
       setFormData({
-        fullName: user.fullName || "",
+        fullname: user.fullName || "",
+        username: user.username || "",
         email: user.email || "",
         dateOfBirth: user.dateOfBirth ? user.dateOfBirth.split("T")[0] : "",
         location: user.location || "",
         currency: user.currency || "",
         income: user.income || "",
         paymentMethod: user.paymentMethod || "",
-        username: user.username || "",
+       
       });
 
       if (user.profilePicture) {
@@ -72,13 +76,13 @@ const SettingPage = () => {
     }
   };
 
-  // ✅ Save profile updates
+  //  Save profile updates
   const handleSaveProfile = async () => {
     userDispatch({ type: "UPDATE_PROFILE_REQUEST" });
 
     const form = new FormData();
     Object.keys(formData).forEach((key) => form.append(key, formData[key]));
-
+    form.append("isOnboarded", isOnboarded);
     if (profilePicture) {
       form.append("profilePic", profilePicture);
     }
@@ -124,6 +128,22 @@ const SettingPage = () => {
       setTimeout(() => userDispatch({ type: "CLEAR_MESSAGE" }), 3000);
     }
   };
+  const handleToggleOnboarding = () => {
+    const newStatus = !isOnboarded;
+    setIsOnboarded(newStatus);
+
+    // ✅ Dispatch onboarding status update
+    userDispatch({
+      type: "UPDATE_ONBOARDING_STATUS",
+      payload: newStatus,
+    });
+
+    // Show success message
+    setMessage({ type: "success", text: `Onboarding status updated to ${newStatus ? 'Completed' : 'Incomplete'}` });
+
+    // Clear message after 3 seconds
+    setTimeout(() => setMessage({ type: "", text: "" }), 3000);
+  };
 
   // 🔔 Handle notification toggle
   const handleToggle = async (type) => {
@@ -151,8 +171,8 @@ const SettingPage = () => {
     }
   };
   return (
-    <div className="bg-gray-200 min-h-screen flex flex-col items-center p-4 md:p-6 shadow-md">
-      <div className="p-6 rounded-lg w-full max-w-3xl flex flex-col gap-6">
+    <div className=" min-h-screen flex flex-col items-center p-4 md:p-6 ">
+      <div className="bg-gray-200 p-6 rounded-lg w-full max-w-3xl flex flex-col gap-6">
   
         {/* Profile Picture */}
         <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6">
@@ -205,30 +225,46 @@ const SettingPage = () => {
         )}
   
         {/* User Information */}
-        <div className="bg-white p-4 md:p-6 rounded-lg shadow-lg">
+        <div className=" p-4 md:p-6 rounded-lg ">
           {Object.keys(formData).map((field) => (
             <div key={field} className="mb-4">
-              <label className="block text-sm font-semibold capitalize">
-                {field}
+              <label className="block text-sm font-semibold mb-1">
+              {formatLabel(field)}
               </label>
               <input
                 type={field === "dateOfBirth" ? "date" : "text"}
                 name={field}
                 value={formData[field]}
                 onChange={handleInputChange}
-                className="w-full p-2 border rounded-xl"
+                className="w-full p-2 rounded-xl border border-gray-400 bg-gray-100"
               />
             </div>
           ))}
         </div>
-  
+        <div className="w-full h-1 bg-gray-400 mx-auto mb-4"></div>
+        {/* Onboarding Toggle */}
+        <div className="bg-white p-4 rounded-lg shadow-lg">
+          <div className="flex justify-between items-center py-2">
+            <span>Onboarding Status</span>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                className="sr-only peer"
+                checked={isOnboarded}
+                onChange={handleToggleOnboarding}
+              />
+              <div className="w-11 h-6 bg-gray-300 peer-focus:ring-4 rounded-full peer peer-checked:after:translate-x-5 peer-checked:bg-black after:absolute after:top-1 after:left-1 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
+            </label>
+          </div>
+        </div>
+        <div className="w-full h-1 bg-gray-400 mx-auto mb-4"></div>
         {/* Password Update */}
-        <div className="bg-white p-4 md:p-6 rounded-lg shadow-lg">
+        <div className=" p-4 md:p-6 rounded-lg ">
           <h2 className="text-lg font-semibold">Security</h2>
           {["currentPassword", "newPassword", "confirmPassword"].map(
             (field) => (
               <div key={field} className="mb-4">
-                <label className="block text-sm font-semibold">
+                <label className="block text-sm font-semibold mb-1">
                   {field.replace(/([A-Z])/g, " $1")}
                 </label>
                 <input
@@ -238,7 +274,7 @@ const SettingPage = () => {
                   onChange={(e) =>
                     setPasswords({ ...passwords, [field]: e.target.value })
                   }
-                  className="w-full p-2 border rounded-xl"
+                  className="w-full p-2 rounded-xl border border-gray-400 bg-gray-100"
                 />
               </div>
             )
@@ -246,7 +282,7 @@ const SettingPage = () => {
           <button
             onClick={handlePasswordUpdate}
             disabled={userState.loading}
-            className={`bg-black text-sm text-white px-4 py-2 rounded-xl mt-4 ${
+            className={`bg-black text-white px-3 py-1 rounded-lg ${
               userState.loading ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >
