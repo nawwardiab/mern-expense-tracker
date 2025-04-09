@@ -6,7 +6,7 @@ import ExpenseItem from "./reusable/ExpenseItem";
 const ExpenseList = ({ search, category, occurrence }) => {
   // 1) Pull out context for global state/dispatch if needed
   const { expenseState, expenseDispatch } = useContext(ExpenseContext);
-  const { selectedExpense, expenses } = expenseState;
+  const { selectedExpense, expenses,isModalOpen } = expenseState;
 
   // Derived states: the filtered list and the total
   const [filteredExpenses, setFilteredExpenses] = useState([]);
@@ -14,10 +14,10 @@ const ExpenseList = ({ search, category, occurrence }) => {
   // 2) Local state for controlling the detail modal visibility
   const [showDetail, setShowDetail] = useState(false);
 
-  console.log("🚀 ~ expenses:", expenses);
+ 
   useEffect(() => {
     let filtered = expenses;
-    console.log("🚀 ~ useEffect ~ filtered:", filtered);
+   
 
     // Search by title
     if (search) {
@@ -78,10 +78,10 @@ const ExpenseList = ({ search, category, occurrence }) => {
       </div>
 
       {/* 6) Show the detail modal if the user selected an expense */}
-      {showDetail && selectedExpense && (
+      {isModalOpen && selectedExpense && (
         <ExpenseDetail
           expense={selectedExpense}
-          onClose={() => setShowDetail(false)}
+          onClose={() => expenseDispatch({ type: "CLOSE_MODAL" })}
         />
       )}
     </div>

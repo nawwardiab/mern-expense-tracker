@@ -50,27 +50,30 @@ const Login = () => {
   };
 
   return (
-    <div className="flex h-screen">
-      {/* Left Side - Image Section */}
-      <div className="w-1/2 bg-white flex items-center justify-center relative">
-        <button
-          onClick={() => navigate("/")}
-          className="absolute top-4 left-4 text-black hover:text-gray-500 transition text-lg flex items-center"
-        >
-          <FaHome className="mr-2" /> Home
-        </button>
+    <div className="flex flex-col md:flex-row h-screen">
+      {/* Home Button */}
+      <button
+        onClick={() => navigate("/")}
+        className="absolute top-4 left-4 text-black hover:text-gray-500 transition text-lg flex items-center"
+      >
+        <FaHome className="mr-2" /> Home
+      </button>
+
+      {/* Image Section (Above in Mobile, Side-by-side in Desktop) */}
+      <div className="w-full md:w-1/2 flex items-center justify-center bg-white p-6">
         <img
           src="/login.png"
           alt="Login"
-          className="w-full h-full object-contain object-center"
+          className="w-full max-w-md h-auto object-contain"
         />
       </div>
 
-      {/* Right Side - Login Form */}
-      <div className="w-1/2 flex items-center justify-center bg-white p-10">
+      {/* Login Form Section */}
+      <div className="w-full md:w-1/2 flex items-center justify-center bg-white p-6">
         <div className="w-full max-w-md">
           <h2 className="text-3xl font-bold mb-6 text-center">Log In</h2>
 
+          {/* Error / Success Messages */}
           {errorMessage && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded-md text-center flex items-center justify-center gap-2 mb-4">
               <span>❌</span> {errorMessage}
@@ -82,6 +85,7 @@ const Login = () => {
             </div>
           )}
 
+          {/* Login Form */}
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div>
               <label className="block text-gray-700 font-medium">Email</label>
@@ -96,9 +100,7 @@ const Login = () => {
             </div>
 
             <div>
-              <label className="block text-gray-700 font-medium">
-                Password
-              </label>
+              <label className="block text-gray-700 font-medium">Password</label>
               <input
                 type="password"
                 name="password"
@@ -151,3 +153,4 @@ const Login = () => {
 };
 
 export default Login;
+

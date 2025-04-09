@@ -1,24 +1,34 @@
 import express from "express";
-import checkToken from "../middleware/checkToken.js";
 import {
   getUsers,
-  login,
   register,
+  login,
   logout,
   updateUserProfile,
-  onboarding,
+  updatePassword,
+onboarding,
   getMe,
 } from "../controllers/usersController.js";
+import { upload } from "../middleware/uploadMiddleware.js";
+import checkToken from "../middleware/checkToken.js";
+import { updateNotificationSettings } from "../controllers/usersController.js";
 
 const router = express.Router();
 
-router
-  .get("/", getUsers)
-  .post("/register", register)
-  .post("/login", login)
-  .get("/logout", checkToken, logout)
-  .patch("/profile", checkToken, updateUserProfile)
-  .patch("/onboarding", checkToken, onboarding)
-  .get("/me", checkToken, getMe);
+router.get("/", getUsers);
+router.post("/register", register);
+router.post("/login", login);
+router.get("/logout", logout);
+
+
+
+// Protecting the routes using checkToken middleware
+router.patch("/profile", checkToken, updateUserProfile);
+router.get("/me", checkToken, getMe);
+router.patch("/onboarding", checkToken, onboarding);
+router.patch("/update-profile", checkToken, upload.single("profilePic"), updateUserProfile);
+router.patch("/update-password", checkToken, updatePassword);
+router.patch("/update-notifications", checkToken, updateNotificationSettings);
+
 
 export default router;
