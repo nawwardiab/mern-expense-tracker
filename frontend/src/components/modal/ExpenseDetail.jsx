@@ -8,18 +8,23 @@
  * to the ExpenseContext reducer, keeping the store in sync.
  */
 
-import React, { useContext, useState } from "react";
+import React, { useContext, useState,useEffect } from "react";
 import { FaTimes } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
 
 // We import the context just to get expenseDispatch.
 // We also import the API functions for updating & deleting expenses.
+import { AuthContext } from "../../contexts/AuthContext";
 import { ExpenseContext } from "../../contexts/ExpenseContext";
 import { updateExpense, deleteExpense } from "../../api/expenseApi";
 
 const ExpenseDetail = ({ expense, onClose }) => {
+  
   // We only need dispatch from the context to update global state after an API call.
-  const { expenseDispatch } = useContext(ExpenseContext);
+  const { expenseDispatch,expenseState } = useContext(ExpenseContext);
+  const { notificationState, notificationDispatch } = useContext(AuthContext);
+
+  const { selectedExpense, isModalOpen } = expenseState;
 
   // Local states for editing logic, form data, and UI feedback.
   const [editedExpense, setEditedExpense] = useState(expense);
@@ -27,9 +32,15 @@ const ExpenseDetail = ({ expense, onClose }) => {
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
+ 
+ 
+  useEffect(() => {
+    if (selectedExpense) {
+      setEditedExpense(selectedExpense); // Update local state when a new expense is selected
+    }
+  }, [selectedExpense]);
 
-  // If no expense object is given, don't render anything.
-  if (!expense) return null;
+  if (!isModalOpen || !selectedExpense) return null;
 
   /**
    * Toggles whether a specific field is editable (readOnly = false).
@@ -133,7 +144,16 @@ const ExpenseDetail = ({ expense, onClose }) => {
 
     setLoading(false);
   };
-
+  //Handle Notification Toggle
+  const handleToggleNotification = () => {
+    notificationDispatch({
+      type: "TOGGLE_NOTIFICATION",
+      payload: "expenseAlerts",
+    });
+  };
+  const closeModal = () => {
+    expenseDispatch({ type: "CLOSE_MODAL" });
+  };
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-opacity-80 backdrop-blur-lg z-[100]">
       <div className="bg-gray-200 p-6 rounded-lg w-full max-w-md shadow-lg mt-16">
@@ -142,7 +162,7 @@ const ExpenseDetail = ({ expense, onClose }) => {
           <h2 className="text-xl font-bold">{expense.title} Details</h2>
           <FaTimes
             className="cursor-pointer text-2xl text-gray-600 hover:text-red-500"
-            onClick={onClose}
+            onClick={closeModal}
           />
         </div>
 
@@ -328,8 +348,8 @@ const ExpenseDetail = ({ expense, onClose }) => {
             <input
               type="checkbox"
               className="sr-only peer"
-              checked={notificationsEnabled}
-              onChange={() => setNotificationsEnabled(!notificationsEnabled)}
+              checked={notificationState.notificationSettings.expenseAlerts}
+              onChange={handleToggleNotification}
             />
             <div className="w-11 h-6 bg-gray-300 peer-focus:ring-4 rounded-full peer peer-checked:after:translate-x-5 peer-checked:bg-black after:absolute after:top-1 after:left-1 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
           </label>

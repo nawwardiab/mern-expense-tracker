@@ -1,5 +1,4 @@
 import { useState, useEffect, useContext } from "react";
-import ExpenseItem from "../components/reusable/ExpenseItem.jsx";
 import ExpenseDetails from "../components/modal/ExpenseDetail.jsx";
 import { AuthContext } from "../contexts/AuthContext.jsx";
 import { ExpenseContext } from "../contexts/ExpenseContext.jsx";
@@ -11,13 +10,10 @@ import TransactionList from "../components/TransactionList.jsx";
 const HomePage = () => {
   const { userState } = useContext(AuthContext);
   const { expenseDispatch, expenseState } = useContext(ExpenseContext);
-  const { expenses } = expenseState;
+  const { expenses, isModalOpen, selectedExpense } = expenseState;
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedExpense, setSelectedExpense] = useState(null);
-
-  // Function to fetch expenses from the server
 
   useEffect(() => {
     const fetchData = async () => {
@@ -43,63 +39,28 @@ const HomePage = () => {
       {/* Left & Center content */}
       <div className="lg:col-span-2 space-y-6">
         <h1 className="text-2xl font-bold">Overview</h1>
-
         <SummaryCards />
-
         <WeeklySpendingChart />
       </div>
 
-      {/* Right Sidebar */}
-      <TransactionList />
-
-      <div className="space-y-4">
-        {loading && (
-          <p className="text-center text-gray-500">Loading expenses...</p>
-        )}
-        {error && <p className="text-center text-red-500">{error}</p>}
-        {!loading && !error && expenses.length === 0 && (
-          <p className="text-center text-gray-500">No expenses found.</p>
-        )}
-        {!loading &&
-          !error &&
-          expenses.map((expense) => (
-            <ExpenseItem
-              key={expense._id}
-              expense={expense}
-              // currencySymbol={getCurrencySymbol(user?.currency)}
-              onClick={() => setSelectedExpense(expense)}
-            />
-          ))}
+      {/* Right Sidebar - Transaction Summary */}
+      <div className="flex flex-col mt-8 lg:mt-0">
+        <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">
+          Transaction Summary
+        </h1>
+        <div className="bg-white shadow-md rounded-lg overflow-hidden max-h-[700px] sm:h-[600px] h-[400px]">
+          <div className="h-full overflow-y-auto p-3 sm:p-4 bg-gray-50 scrollbar-hide">
+            <TransactionList />
+          </div>
+        </div>
       </div>
-      {/* {loading && (
-        <p className="text-center text-gray-500">Loading expenses...</p>
-      )}
-      {error && <p className="text-center text-red-500">{error}</p>}
-
-      {!loading && !error && expenses.length === 0 && (
-        <p className="text-center text-gray-500">No expenses found.</p>
-      )}
-
-      <div className="space-y-4">
-        {expenses.map((expense) => (
-          <ExpenseItem
-            key={expense._id}
-            expense={expense}
-            onClick={() => {
-              setSelectedExpense(expense); // ✅ Fix: Pass the entire expense object
-            }}
-          />
-        ))}
-      </div> */}
 
       {/* Expense Details Modal */}
-      {selectedExpense && (
+      {isModalOpen && selectedExpense && (
         <ExpenseDetails
           expense={selectedExpense}
-          onClose={() => {
-            setSelectedExpense(null);
-          }}
-          onRefresh={handleRefresh} // Pass the refresh function to the modal
+          onClose={() => expenseDispatch({ type: "CLOSE_MODAL" })}
+          onRefresh={handleRefresh}
         />
       )}
     </div>

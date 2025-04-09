@@ -1,91 +1,89 @@
-// components/TransactionList.jsx
+import React, { useContext, useEffect } from "react";
+import { ExpenseContext } from "../contexts/ExpenseContext";
+import ExpenseItem from "./reusable/ExpenseItem";
+import { getAllExpenses } from "../api/expenseApi";
+
 const TransactionList = () => {
-    const mockTransactions = [
-      {
-        section: "Pending Transactions",
-        items: [
-          {
-            title: "Food Expenses",
-            description: "Dining Out",
-            amount: "-$189.36",
-            icon: "🍽️",
-          },
-        ],
-      },
-      {
-        section: "Today's Transactions",
-        items: [
-          {
-            title: "Coffee Expenses",
-            description: "Retail Expenses",
-            amount: "-$189.36",
-            icon: "☕",
-          },
-          {
-            title: "Shopping Expenses",
-            description: "Retail Purchases",
-            amount: "$350.00",
-            icon: "🛍️",
-            highlight: true,
-          },
-          {
-            title: "Tech Expenses",
-            description: "Gadgets and Electronics",
-            amount: "-$189.36",
-            icon: "💻",
-          },
-        ],
-      },
-      {
-        section: "21 January 2022",
-        items: [
-          {
-            title: "Restaurant Expenses",
-            description: "Eating Out",
-            amount: "-$189.36",
-            icon: "🍔",
-          },
-          {
-            title: "Personal Care",
-            description: "Beauty and Hygiene",
-            amount: "$350.00",
-            icon: "🧴",
-          },
-        ],
-      },
-    ];
-  
-    return (
-      <aside className="w-full md:max-w-sm p-4">
-        <h2 className="text-xl font-bold mb-4">Transaction Summary</h2>
-        {mockTransactions.map((section, i) => (
-          <div key={i} className="mb-6">
-            <h3 className="font-semibold text-gray-600 text-sm mb-2">{section.section}</h3>
-            <div className="space-y-2">
-              {section.items.map((item, j) => (
-                <div
-                  key={j}
-                  className={`flex justify-between items-center p-4 rounded-lg ${
-                    item.highlight ? "bg-gray-300" : "bg-gray-100"
-                  }`}
-                >
-                  <div className="flex items-center space-x-3">
-                    <div className="text-2xl">{item.icon}</div>
-                    <div>
-                      <p className="font-semibold">{item.title}</p>
-                      <p className="text-sm text-gray-500">{item.description}</p>
-                    </div>
-                  </div>
-                  <div className="font-semibold">{item.amount}</div>
-                </div>
-              ))}
-            </div>
+  const { expenseState, expenseDispatch } = useContext(ExpenseContext);
+  const { expenses } = expenseState;
+
+  useEffect(() => {
+    getAllExpenses(expenseDispatch);
+  }, [expenseDispatch]);
+
+  const today = new Date();
+  const todayDateString = today.toISOString().split("T")[0];
+  const currentYear = today.getFullYear();
+  const currentMonth = today.getMonth();
+
+  const groupedTransactions = expenses.reduce((acc, transaction) => {
+    const transactionDate = new Date(transaction.transactionDate);
+    const transactionDateString = transaction.transactionDate.split("T")[0];
+
+    const isPending =
+      transactionDate > today &&
+      transactionDate.getMonth() === currentMonth &&
+      transactionDate.getFullYear() === currentYear;
+
+    if (isPending) {
+      if (!acc["Pending Transactions"]) acc["Pending Transactions"] = [];
+      acc["Pending Transactions"].push(transaction);
+    } else if (transactionDateString === todayDateString) {
+      if (!acc["Today's Transactions"]) acc["Today's Transactions"] = [];
+      acc["Today's Transactions"].push(transaction);
+    } else {
+      if (!acc[transactionDateString]) acc[transactionDateString] = [];
+      acc[transactionDateString].push(transaction);
+    }
+
+    return acc;
+  }, {});
+
+  const orderedSections = [
+    "Pending Transactions",
+    "Today's Transactions",
+    ...Object.keys(groupedTransactions)
+      .filter(
+        (section) =>
+          section !== "Pending Transactions" && section !== "Today's Transactions"
+      )
+      .sort((a, b) => new Date(b) - new Date(a)),
+  ];
+
+  return (
+    <aside className="w-full md:max-w-sm p-4">
+     {/** <h2 className="text-xl font-bold mb-4">Transaction Summary</h2> */}
+
+      {orderedSections.map((section, i) => (
+        <div key={i} className="mb-6">
+          <h3 className="font-semibold text-gray-600 text-sm mb-2">{section}</h3>
+          <div className="space-y-2">
+            {groupedTransactions[section] && groupedTransactions[section].length > 0 ? (
+              groupedTransactions[section].map((expense) => (
+                <ExpenseItem
+                  key={expense._id}
+                  expense={expense}
+                  transactionState={section}
+                  onClick={() => {
+                    expenseDispatch({ type: "SET_SELECTED_EXPENSE", payload: expense });
+                    expenseDispatch({ type: "OPEN_MODAL" });
+                  }}
+                />
+              ))
+            ) : section === "Today's Transactions" ? (
+              <p className="text-gray-500 text-sm italic">No expenses today</p>
+            ) : null}
           </div>
-        ))}
-        <p className="text-sm text-gray-500 mt-2 cursor-pointer hover:underline">See more...</p>
-      </aside>
-    );
-  };
-  
-  export default TransactionList;
-  
+        </div>
+      ))}
+
+      <p className="text-sm text-gray-500 mt-2 cursor-pointer hover:underline">
+        See more...
+      </p>
+    </aside>
+  );
+};
+
+export default TransactionList;
+
+

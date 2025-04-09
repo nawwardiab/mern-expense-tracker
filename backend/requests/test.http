@@ -1,0 +1,93 @@
+### Register a New User
+POST http://localhost:8000/users/register
+Content-Type: application/json
+
+{
+  "fullName": "Test User",
+  "email": "testuser@example.com",
+  "password": "password123"
+}
+
+### Login User
+POST http://localhost:8000/users/login
+Content-Type: application/json
+
+{
+  "email": "testuser@mail.com",
+  "password": "12345"
+}
+### Update User Profile
+PATCH http://localhost:8000/users/update-profile
+Content-Type: multipart/form-data; boundary=boundary
+Cookie: jwtToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZWQzYTAxNzljYjQ3ODZjM2YxZDk2ZSIsImlhdCI6MTc0MzYwNjQ0MCwiZXhwIjoxNzQzNjkyODQwfQ.8mzoGG_HrKC5IiuVqDQCyZTXbd0ihlQQfZ7yrjP9KE4; Max-Age=86400; Path=/; Expires=Thu, 03 Apr 2025 15:07:20 GMT; HttpOnly
+
+--boundary
+Content-Disposition: form-data; name="fullName"
+
+Updated Test User
+--boundary
+Content-Disposition: form-data; name="email"
+
+testuser@mail.com
+--boundary
+Content-Disposition: form-data; name="location"
+
+New York, USA
+--boundary
+Content-Disposition: form-data; name="currency"
+
+USD
+--boundary
+Content-Disposition: form-data; name="income"
+
+6000
+--boundary
+Content-Disposition: form-data; name="paymentMethod"
+
+Paypal
+--boundary
+Content-Disposition: form-data; name="profileImage"; filename="profile.jpg"
+Content-Type: image/jpeg
+
+< ./path/to/your/profile.jpg
+--boundary--
+
+### Update Password
+PATCH http://localhost:8000/users/update-password
+Content-Type: application/json
+Cookie:  jwtToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZWQzYTAxNzljYjQ3ODZjM2YxZDk2ZSIsImlhdCI6MTc0MzYwMDIxNywiZXhwIjoxNzQzNjg2NjE3fQ.cvHUDIE1_G8uIi_8vqqoHBcoPQz7MRUu_UsghJ9UFlM; Max-Age=86400; Path=/; Expires=Thu, 03 Apr 2025 13:23:37 GMT; HttpOnly
+
+
+{
+  "currentPassword": "password123",
+  "newPassword": "1234"
+}
+
+
+### Update User Notification Settings
+PATCH http://localhost:8000/users/update-profile
+Content-Type: application/json
+Cookie: jwtToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZWQzYTAxNzljYjQ3ODZjM2YxZDk2ZSIsImlhdCI6MTc0MzYyNDkwNiwiZXhwIjoxNzQzNzExMzA2fQ.qiqMtsNX3zAzy82hQPk4Jd0sY_M-3j9QXyVP7RfSfeM; Max-Age=86400; Path=/; Expires=Thu, 03 Apr 2025 20:15:06 GMT; HttpOnly
+
+{
+  "notificationSettings": "{\"expenseAlerts\":true, \"communityUpdates\":false, \"paymentReminders\":true, \"featureAnnouncements\":false}"
+}
+
+### Fetch User Data
+GET http://localhost:8000/users/me
+Cookie: jwtToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZWQzYTAxNzljYjQ3ODZjM2YxZDk2ZSIsImlhdCI6MTc0MzYyNDkwNiwiZXhwIjoxNzQzNzExMzA2fQ.qiqMtsNX3zAzy82hQPk4Jd0sY_M-3j9QXyVP7RfSfeM; Max-Age=86400; Path=/; Expires=Thu, 03 Apr 2025 20:15:06 GMT; HttpOnly
+
+### Update Notification
+
+PATCH http://localhost:8000/users/update-notifications
+Content-Type: application/json
+Cookie: jwtToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZWQzYTAxNzljYjQ3ODZjM2YxZDk2ZSIsImlhdCI6MTc0MzYzNTM2MywiZXhwIjoxNzQzNzIxNzYzfQ.w4GVKxkiXpnkr_jXXFjc2dsC-y3PToohCNExE-nxoLE; Max-Age=86400; Path=/; Expires=Thu, 03 Apr 2025 23:09:23 GMT; HttpOnly
+
+{
+  "notificationSettings": {
+    "expenseAlerts": true,
+    "communityUpdates": false,
+    "paymentReminders": true,
+    "featureAnnouncements": true
+  }
+}
