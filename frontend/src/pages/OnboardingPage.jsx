@@ -58,7 +58,7 @@ const Onboarding = () => {
   }
   if (error) {
     return (
-      <div className="p-8 text-center text-red-500">
+      <div className="p-8 text-center text-red-600">
         Error loading user data: {error.message}
       </div>
     );
@@ -137,9 +137,8 @@ const Onboarding = () => {
           {[1, 2, 3, 4].map((num) => (
             <div
               key={num}
-              className={`w-8 h-2 rounded-full ${
-                step >= num ? "bg-black" : "bg-gray-300"
-              }`}
+              className={`w-8 h-2 rounded-full ${step >= num ? "bg-black" : "bg-gray-300"
+                }`}
             />
           ))}
         </div>

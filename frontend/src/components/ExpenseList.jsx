@@ -6,7 +6,7 @@ import ExpenseItem from "./reusable/ExpenseItem";
 const ExpenseList = ({ search, category, occurrence }) => {
   // 1) Pull out context for global state/dispatch if needed
   const { expenseState, expenseDispatch } = useContext(ExpenseContext);
-  const { selectedExpense, expenses,isModalOpen } = expenseState;
+  const { selectedExpense, expenses, isModalOpen } = expenseState;
 
   // Derived states: the filtered list and the total
   const [filteredExpenses, setFilteredExpenses] = useState([]);
@@ -14,10 +14,10 @@ const ExpenseList = ({ search, category, occurrence }) => {
   // 2) Local state for controlling the detail modal visibility
   const [showDetail, setShowDetail] = useState(false);
 
- 
+
   useEffect(() => {
     let filtered = expenses;
-   
+
 
     // Search by title
     if (search) {
@@ -37,6 +37,9 @@ const ExpenseList = ({ search, category, occurrence }) => {
         (exp) => exp.recurringFrequency === occurrence.toLowerCase()
       );
     }
+
+    // Sort by newest first (assuming createdAt is a Date or ISO string)
+    filtered.sort((a, b) => new Date(b.transactionDate) - new Date(a.transactionDate));
 
     // Update local state
     setFilteredExpenses(filtered);

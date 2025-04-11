@@ -30,17 +30,17 @@ const ExpenseItem = ({ expense, transactionState }) => {
     transactionState === "Pending Transactions"
       ? "border-dashed border-l-4 border-gray-500"
       : transactionState === "Today's Transactions"
-      ? "border-solid border-l-4 border-gray-500"
-      : "border-dotted border-l-4 border-gray-500";
+        ? "border-solid border-l-4 border-gray-500"
+        : "border-dotted border-l-4 border-gray-500";
 
-  
-      const openModal = () => {
-        expenseDispatch({ type: "SET_SELECTED_EXPENSE", payload: expense });
-      
-      };
-      
+
+  const openModal = () => {
+    expenseDispatch({ type: "SET_SELECTED_EXPENSE", payload: expense });
+
+  };
+
   return (
-    <div   onClick={openModal}
+    <div onClick={openModal}
       className={`flex justify-between items-center p-4 bg-white rounded-lg shadow-md cursor-pointer hover:bg-gray-100 transition ${borderStyle}`}
     >
       <div className="flex items-center gap-4">
@@ -51,16 +51,15 @@ const ExpenseItem = ({ expense, transactionState }) => {
         <div>
           <h3 className="font-semibold text-lg">{expense.title}</h3>
           <div className="flex gap-4 ">
-          <p className="text-gray-500 self-end">{expense.category}</p>
-          <p className="text-xs text-gray-400 self-end">{displayDate}</p>
-         </div>
+            <p className="text-gray-500 self-end">{expense.category}</p>
+            <p className="text-xs text-gray-400 self-end">{displayDate}</p>
+          </div>
         </div>
       </div>
 
       <span
-        className={`text-lg font-bold ${
-          expense.amount < 0 ? "text-red-500" : "text-green-500"
-        }`}
+        className={`text-lg font-bold ${expense.amount < 0 ? "text-red-600" : "text-green-600"
+          }`}
       >
         {expense.amount < 0
           ? `-€${Math.abs(expense.amount)}`

@@ -8,7 +8,7 @@
  * to the ExpenseContext reducer, keeping the store in sync.
  */
 
-import React, { useContext, useState,useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { FaTimes } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
 
@@ -19,9 +19,9 @@ import { ExpenseContext } from "../../contexts/ExpenseContext";
 import { updateExpense, deleteExpense } from "../../api/expenseApi";
 
 const ExpenseDetail = ({ expense, onClose }) => {
-  
+
   // We only need dispatch from the context to update global state after an API call.
-  const { expenseDispatch,expenseState } = useContext(ExpenseContext);
+  const { expenseDispatch, expenseState } = useContext(ExpenseContext);
   const { notificationState, notificationDispatch } = useContext(AuthContext);
 
   const { selectedExpense, isModalOpen } = expenseState;
@@ -32,8 +32,8 @@ const ExpenseDetail = ({ expense, onClose }) => {
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
- 
- 
+
+
   useEffect(() => {
     if (selectedExpense) {
       setEditedExpense(selectedExpense); // Update local state when a new expense is selected
@@ -161,7 +161,7 @@ const ExpenseDetail = ({ expense, onClose }) => {
         <div className="flex justify-between items-center pb-3">
           <h2 className="text-xl font-bold">{expense.title} Details</h2>
           <FaTimes
-            className="cursor-pointer text-2xl text-gray-600 hover:text-red-500"
+            className="cursor-pointer text-2xl text-gray-600 hover:text-red-600"
             onClick={closeModal}
           />
         </div>
@@ -169,11 +169,10 @@ const ExpenseDetail = ({ expense, onClose }) => {
         {/* Success/Error Message */}
         {message && (
           <div
-            className={`mt-2 p-2 text-sm rounded ${
-              message.type === "success"
-                ? "bg-green-200 text-green-800"
-                : "bg-red-200 text-red-800"
-            }`}
+            className={`mt-2 p-2 text-sm rounded ${message.type === "success"
+              ? "bg-green-200 text-green-700"
+              : "bg-red-200 text-red-700"
+              }`}
           >
             {message.text}
           </div>
@@ -230,7 +229,7 @@ const ExpenseDetail = ({ expense, onClose }) => {
             </span>
             <button
               onClick={() => handleCategoryChange("New Category")}
-              className="bg-black text-white px-3 py-1 rounded-lg"
+              className="bg-black text-white px-3 py-1 rounded-lg hover:bg-gray-600 cursor-pointer transition-all"
             >
               Add +
             </button>
@@ -360,14 +359,14 @@ const ExpenseDetail = ({ expense, onClose }) => {
           <button
             onClick={handleSave}
             disabled={loading}
-            className="bg-black text-white p-2 rounded"
+            className="bg-black text-white p-2 rounded-lg hover:bg-gray-600 cursor-pointer transition-all"
           >
             {loading ? "Saving..." : "Save Expense"}
           </button>
           <button
             onClick={handleDelete}
             disabled={loading}
-            className="bg-red-500 text-white p-2 rounded hover:bg-red-400"
+            className="bg-red-600 text-white p-2 rounded-lg hover:bg-red-700 cursor-pointer transition-all"
           >
             {loading ? "Deleting..." : "Delete Expense"}
           </button>

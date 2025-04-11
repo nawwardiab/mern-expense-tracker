@@ -25,7 +25,7 @@ const Layout = () => {
           {isUserLoggedin && <Navbar />}
 
           {/* You can add some margin/padding here if you like */}
-          <main className="flex-1 p-4 overflow-auto m-6 rounded-md">
+          <main className="flex-1 p-4 overflow-auto m-3 rounded-md">
             {/* The Outlet will render the nested route's component */}
             <Outlet />
           </main>
