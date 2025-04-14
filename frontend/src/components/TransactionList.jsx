@@ -18,13 +18,13 @@ const TransactionList = () => {
 
   const groupedTransactions = expenses.reduce((acc, transaction) => {
     const transactionDate = new Date(transaction.transactionDate);
-    const transactionDateString = transaction.transactionDate.split("T")[0];
-
+    const transactionDateString = isNaN(transactionDate)
+      ? ""
+      : transactionDate.toISOString().split("T")[0];
     const isPending =
       transactionDate > today &&
       transactionDate.getMonth() === currentMonth &&
       transactionDate.getFullYear() === currentYear;
-
     if (isPending) {
       if (!acc["Pending Transactions"]) acc["Pending Transactions"] = [];
       acc["Pending Transactions"].push(transaction);
@@ -35,7 +35,6 @@ const TransactionList = () => {
       if (!acc[transactionDateString]) acc[transactionDateString] = [];
       acc[transactionDateString].push(transaction);
     }
-
     return acc;
   }, {});
 
@@ -52,7 +51,7 @@ const TransactionList = () => {
 
   return (
     <aside className="w-full md:max-w-sm p-4">
-     {/** <h2 className="text-xl font-bold mb-4">Transaction Summary</h2> */}
+      {/** <h2 className="text-xl font-bold mb-4">Transaction Summary</h2> */}
 
       {orderedSections.map((section, i) => (
         <div key={i} className="mb-6">
