@@ -21,6 +21,10 @@ const TransactionList = () => {
     const transactionDateString = isNaN(transactionDate)
       ? ""
       : transactionDate.toISOString().split("T")[0];
+    const isPending =
+      transactionDate > today &&
+      transactionDate.getMonth() === currentMonth &&
+      transactionDate.getFullYear() === currentYear;
 
     if (isPending) {
       if (!acc["Pending Transactions"]) acc["Pending Transactions"] = [];
