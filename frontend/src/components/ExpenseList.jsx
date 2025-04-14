@@ -58,13 +58,10 @@ const ExpenseList = ({ search, category, occurrence }) => {
   if (filteredExpenses.length === 0) {
     return <p className="text-gray-500">No expenses found.</p>;
   }
-  console.log("🚀 ~ ExpenseList ~ filteredExpenses:", filteredExpenses);
 
   return (
     <div className="mt-10 w-full max-w-5xl mx-auto px-2 sm:px-4">
-      <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6">
-        Expense List
-      </h2>
+     
 
       {/* 5) Render a list of ExpenseItem components */}
       <div className="flex flex-col gap-4">

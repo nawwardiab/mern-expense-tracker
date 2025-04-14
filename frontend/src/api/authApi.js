@@ -50,7 +50,7 @@ export const getMyData = async (dispatch) => {
 
     if (response.data && response.data.user) {
       const user = response.data.user;
-
+     
       if (user.profilePicture && !user.profilePicture.startsWith("http")) {
         user.profilePicture = `${process.env.REACT_APP_BACKEND_URL}/${user.profilePicture}`;
       }
@@ -58,7 +58,7 @@ export const getMyData = async (dispatch) => {
       // Dispatch user data to auth state
       dispatch({ type: "LOGIN_SUCCESS", payload: user });
 
-      console.log("✅ User data fetched successfully:", user);
+     
 
       // Return the user object for further processing
       return user;

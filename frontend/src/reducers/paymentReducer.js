@@ -18,6 +18,11 @@ export default function paymentReducer(state, action) {
         loading: false,
         payments: action.payload, // full array of payments
       };
+      case "SET_PAYMENT_SUMMARY":
+        return {
+          ...state,
+          paymentSummary: action.payload,
+        };
     case "CREATE_PAYMENT_SUCCESS":
       return {
         ...state,

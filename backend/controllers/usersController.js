@@ -85,6 +85,7 @@ export const updateUserProfile = async (req, res, next) => {
       username,
       isOnboarded: true,
       
+      
     };
       // Handling Notification Settings
     if (notificationSettings) {
@@ -169,16 +170,18 @@ export const onboarding = async (req, res, next) => {
 //!   GET /users/me
 export const getMe = async (req, res, next) => {
   try {
-    const user = await UserModel.findById(req.user.id).select("+notificationSettings");
+    const user = await UserModel.findById(req.user.id).select("+notificationSettings +createdAt");
+
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    user.password = undefined;  // Hide password from response
+    user.password = undefined;
 
     console.log("✅ Fetched user data with notification settings:", user.notificationSettings);
-
+    console.log("📅 User created at:", user.createdAt); // ✅ Debug log
+    console.log("📤 Final user response:", user);
     res.status(200).json({
       success: true,
       user,
@@ -190,6 +193,7 @@ export const getMe = async (req, res, next) => {
     next(error);
   }
 };
+
 // Update Notification Settings
 export const updateNotificationSettings = async (req, res, next) => {
   try {

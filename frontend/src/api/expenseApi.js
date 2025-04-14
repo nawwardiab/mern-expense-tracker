@@ -4,7 +4,7 @@ import axios from "axios";
 export async function getAllExpenses(dispatch) {
   const response = await axios.get(`/expenses`);
   // Typically returns { success: true, data: [...] }
-  console.log("🚀 ~ getAllExpenses ~ response:", response);
+ 
   dispatch({ type: "GET_EXPENSES", payload: response.data.data });
 }
 
