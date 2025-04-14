@@ -9,6 +9,7 @@ import { formatDate } from "../../utils/date";
 
 const ExpenseItem = ({ expense, transactionState }) => {
   const { expenseDispatch } = useContext(ExpenseContext);
+
   const categoryIcons = {
     Fixed: <GiTiedScroll />,
     "Group Expenses": <TiGroupOutline size={24} />,
@@ -25,7 +26,6 @@ const ExpenseItem = ({ expense, transactionState }) => {
     expense.recurringFrequency
   );
 
-  // Determine border style based on transaction state
   const borderStyle =
     transactionState === "Pending Transactions"
       ? "border-dashed border-l-4 border-gray-500"
@@ -33,41 +33,41 @@ const ExpenseItem = ({ expense, transactionState }) => {
       ? "border-solid border-l-4 border-gray-500"
       : "border-dotted border-l-4 border-gray-500";
 
-  
-      const openModal = () => {
-        expenseDispatch({ type: "SET_SELECTED_EXPENSE", payload: expense });
-      
-      };
-      
+  const openModal = () => {
+    expenseDispatch({ type: "SET_SELECTED_EXPENSE", payload: expense });
+  };
+
+  const formattedAmount = Math.abs(expense.amount).toFixed(2);
+
   return (
-    <div   onClick={openModal}
-      className={`flex justify-between items-center p-4 bg-white rounded-lg shadow-md cursor-pointer hover:bg-gray-100 transition ${borderStyle}`}
+    <div
+      onClick={openModal}
+      className={`flex flex-col sm:flex-row sm:justify-between items-start sm:items-center p-4 bg-white rounded-lg shadow-md cursor-pointer hover:bg-gray-100 transition ${borderStyle}`}
     >
-      <div className="flex items-center gap-4">
-        <div className="bg-black text-white p-1 rounded-full">
+      <div className="flex items-start sm:items-center gap-4 w-full sm:w-auto">
+        <div className="bg-black text-white p-1 rounded-full text-sm sm:text-base">
           {categoryIcon}
         </div>
 
         <div>
-          <h3 className="font-semibold text-lg">{expense.title}</h3>
-          <div className="flex gap-4 ">
-          <p className="text-gray-500 self-end">{expense.category}</p>
-          <p className="text-xs text-gray-400 self-end">{displayDate}</p>
-         </div>
+          <h3 className="font-semibold text-base sm:text-lg">{expense.title}</h3>
+          <div className="flex flex-col sm:flex-row gap-1 sm:gap-4">
+            <p className="text-gray-500 text-sm">{expense.category}</p>
+            <p className="text-gray-400 text-xs">{displayDate}</p>
+          </div>
         </div>
       </div>
 
       <span
-        className={`text-lg font-bold ${
+        className={`mt-2 sm:mt-0 text-base sm:text-lg font-bold ${
           expense.amount < 0 ? "text-red-500" : "text-green-500"
         }`}
       >
-        {expense.amount < 0
-          ? `-€${Math.abs(expense.amount)}`
-          : `€${expense.amount}`}
+        {expense.amount < 0 ? `-€${formattedAmount}` : `€${formattedAmount}`}
       </span>
     </div>
   );
 };
 
 export default ExpenseItem;
+
