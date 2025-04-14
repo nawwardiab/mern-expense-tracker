@@ -3,6 +3,15 @@ export const initialExpenseState = {
   selectedExpense: null, // If you want a global “currently selected expense”
   totalFilteredExpenses: 0,
   isModalOpen: false,
+   // Added summary fields
+   expenseSummary: {
+    totalTransactions: 0,
+    monthlyTransactions: 0,
+    totalIncoming: 0,
+    monthlyIncoming: 0,
+    totalOutgoing: 0,
+    monthlyOutgoing: 0,
+  },
 };
 
 export default function expenseReducer(state, action) {
@@ -13,6 +22,11 @@ export default function expenseReducer(state, action) {
         ...state,
         expenses: action.payload,
       };
+      case "SET_EXPENSE_SUMMARY":
+        return {
+          ...state,
+          expenseSummary: action.payload,
+        };
 
     case "ADD_EXPENSE":
       // Insert a single new expense

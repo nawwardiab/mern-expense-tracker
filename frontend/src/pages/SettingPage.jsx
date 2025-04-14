@@ -19,12 +19,13 @@ const SettingPage = () => {
     email: "",
     dateOfBirth: "",
     location: "",
-    currency: "",
+   
     income: "",
     paymentMethod: "",
     username: "",
   });
-  const [isOnboarded, setIsOnboarded] = useState(userState.isOnboarded);
+  const [message, setMessage] = useState({ type: "", text: "" });
+const [isOnboarded, setIsOnboarded] = useState(userState.isOnboarded);
   const [profilePicture, setProfilePicture] = useState(null);
   const [preview, setPreview] = useState("https://picsum.photos/100");
   const [passwords, setPasswords] = useState({
@@ -50,7 +51,7 @@ const SettingPage = () => {
         email: user.email || "",
         dateOfBirth: user.dateOfBirth ? user.dateOfBirth.split("T")[0] : "",
         location: user.location || "",
-        currency: user.currency || "",
+      
         income: user.income || "",
         paymentMethod: user.paymentMethod || "",
 
@@ -243,7 +244,7 @@ const SettingPage = () => {
         {/* Onboarding Toggle */}
         <div className="bg-white p-4 rounded-lg shadow-lg">
           <div className="flex justify-between items-center py-2">
-            <span>Onboarding Status</span>
+            <span> Skip Onboarding</span>
             <label className="relative inline-flex items-center cursor-pointer">
               <input
                 type="checkbox"
