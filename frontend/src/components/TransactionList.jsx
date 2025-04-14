@@ -38,7 +38,7 @@ const TransactionList = () => {
     }
     return acc;
   }, {});
-  
+
   const orderedSections = [
     "Pending Transactions",
     "Today's Transactions",
@@ -77,7 +77,7 @@ const TransactionList = () => {
         </div>
       ))}
 
-<p className="text-xs sm:text-sm text-gray-500 mt-2 cursor-pointer hover:underline">
+      <p className="text-xs sm:text-sm text-gray-500 mt-2 cursor-pointer hover:underline">
         See more...
       </p>
     </aside>

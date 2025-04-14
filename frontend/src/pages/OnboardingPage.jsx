@@ -1,20 +1,15 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-
 import useUserProfile from "../hooks/useUserProfile";
-
 import OnboardingStep1 from "./OnboardingSteps/Step1";
 import OnboardingStep2 from "./OnboardingSteps/Step2";
 import OnboardingStep3 from "./OnboardingSteps/Step3";
 import OnboardingStep4 from "./OnboardingSteps/Step4";
-
 const Onboarding = () => {
   const navigate = useNavigate();
-
   // 1) Load the user's profile once here
   const { profile, loading, error } = useUserProfile();
-
   // 2) Local state for multi-step form
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
@@ -27,7 +22,6 @@ const Onboarding = () => {
     profilePicture: "",
     isOnboarded: false,
   });
-
   // 3) When `profile` is loaded, populate our form data
   useEffect(() => {
     if (profile) {
@@ -44,14 +38,12 @@ const Onboarding = () => {
       }));
     }
   }, [profile]);
-
   // 4) If user is already onboarded, skip
   useEffect(() => {
     if (formData.isOnboarded) {
       navigate("/homepage");
     }
   }, [formData.isOnboarded, navigate]);
-
   // 5) Optionally handle loading/error states
   if (loading) {
     return <div className="p-8 text-center">Loading your profile...</div>;
@@ -63,7 +55,6 @@ const Onboarding = () => {
       </div>
     );
   }
-
   // 6) Single change handler for multi-step form
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -72,14 +63,12 @@ const Onboarding = () => {
       [name]: value,
     }));
   };
-
   // 7) Handle profile picture upload (if you want it separate)
   const handleProfilePictureChange = async (file) => {
     if (!file) return;
     try {
       const imageData = new FormData();
       imageData.append("profilePicture", file);
-
       const response = await axios.patch("/users/profile", imageData);
       if (response.status === 200) {
         // Suppose the server returns { profilePicture: "/uploads/..." }
@@ -96,11 +85,9 @@ const Onboarding = () => {
       console.error("Error uploading profile picture:", error);
     }
   };
-
   // 8) Step navigation
   const handleNext = () => setStep((prev) => Math.min(prev + 1, 4));
   const handleBack = () => setStep((prev) => Math.max(prev - 1, 1));
-
   // 9) Final submit (Finish button)
   const handleSubmit = async () => {
     const updatedData = { ...formData, isOnboarded: true };
@@ -111,7 +98,6 @@ const Onboarding = () => {
       console.error("Onboarding error:", err);
     }
   };
-
   // 10) Render the UI with step indicators, skip/home buttons, etc.
   return (
     <div
@@ -131,7 +117,6 @@ const Onboarding = () => {
         >
           Skip
         </button>
-
         {/* Step Indicators */}
         <div className="flex justify-center space-x-2 mb-6">
           {[1, 2, 3, 4].map((num) => (
@@ -142,9 +127,7 @@ const Onboarding = () => {
             />
           ))}
         </div>
-
         <h2 className="text-2xl font-bold mb-6">Step {step} of 4</h2>
-
         {step === 1 && (
           <OnboardingStep1 formData={formData} handleChange={handleChange} />
         )}
@@ -159,7 +142,6 @@ const Onboarding = () => {
           <OnboardingStep3 formData={formData} handleChange={handleChange} />
         )}
         {step === 4 && <OnboardingStep4 formData={formData} />}
-
         <div className="flex justify-between mt-6">
           {step > 1 && (
             <button
@@ -192,5 +174,4 @@ const Onboarding = () => {
     </div>
   );
 };
-
 export default Onboarding;
