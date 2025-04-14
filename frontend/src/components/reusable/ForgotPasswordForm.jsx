@@ -71,7 +71,7 @@ const ForgotPasswordForm = ({ onSubmit }) => {
             </div>
             <button
                 type="submit"
-                className="w-full bg-black text-white py-3 rounded-md hover:bg-gray-800 transition"
+                className="w-full bg-black text-white py-3 rounded-md hover:bg-gray-600 cursor-pointer transition-all"
                 disabled={loading}
             >
                 {loading ? "Resetting..." : "Reset Password"}
