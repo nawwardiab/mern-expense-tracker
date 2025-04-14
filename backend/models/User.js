@@ -5,14 +5,14 @@ const userSchema = new Schema(
   {
     fullName: { type: String, required: true },
     email: { type: String, required: true, unique: true },
-    dateOfBirth:{type: Date,default:""},
+    dateOfBirth: { type: Date, default: "" },
     password: { type: String, required: true },
     profilePicture: { type: String, default: "" },
     location: { type: String, default: "" },
     currency: { type: String, default: "" },
     income: { type: String, default: "" },
     paymentMethod: { type: String, default: "" },
-    username: { type: String, unique: true, sparse: true },
+    username: { type: String, sparse: true },
     isOnboarded: { type: Boolean, default: false },
     notificationSettings: {
       expenseAlerts: { type: Boolean, default: false },

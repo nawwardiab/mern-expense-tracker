@@ -103,3 +103,20 @@
 - Call `createInviteByEmail()` in the `inviteModal.jsx`
 - Add `Email Input` + `send email button` in `inviteModal.jsx`
 - Update `inviteReducer.js` with Email Invitation actions
+
+---
+
+## 10.04.2025
+
+**Workflow**:
+
+- a user creates a group
+- creator invites members
+- members add expenses they paid
+- the expenses are added to the total group expense
+- the amount is splitted upon members
+- members who already paid expenses only pay the difference between their paid amount and to-be-paid amount
+- if member paid expense higher than their to-be-paid, they become payee (with the diference)
+- this should be all managed and shown inside the group event
+
+-
