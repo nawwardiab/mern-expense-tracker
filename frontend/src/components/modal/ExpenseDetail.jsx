@@ -33,6 +33,15 @@ const ExpenseDetail = ({ expense, onClose }) => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
 
+  const categoryOptions = [
+    "Fixed",
+    "Group Expenses",
+    "Food&Drinks",
+    "Entertainment",
+    "Subscriptions",
+    "Others",
+  ];
+
 
   useEffect(() => {
     if (selectedExpense) {
@@ -91,6 +100,11 @@ const ExpenseDetail = ({ expense, onClose }) => {
       //    so we access response.data for the updated doc
       if (response?.data) {
         expenseDispatch({ type: "UPDATE_EXPENSE", payload: response.data });
+
+        setTimeout(() => {
+          setMessage(null);
+          expenseDispatch({ type: "CLOSE_MODAL" }); // or call onClose()
+        }, 1500);
       }
     } catch (error) {
       console.error("Failed to update expense:", error);
@@ -133,7 +147,11 @@ const ExpenseDetail = ({ expense, onClose }) => {
       expenseDispatch({ type: "DELETE_EXPENSE", payload: expense._id });
 
       // 4) Optionally close the modal after a short delay
-      setTimeout(() => onClose(), 1000);
+      setTimeout(() => {
+        setMessage(null);
+        expenseDispatch({ type: "CLOSE_MODAL" });
+      }, 1500);
+
     } catch (error) {
       console.error("Failed to delete expense:", error);
       setMessage({
@@ -144,6 +162,7 @@ const ExpenseDetail = ({ expense, onClose }) => {
 
     setLoading(false);
   };
+
   //Handle Notification Toggle
   const handleToggleNotification = () => {
     notificationDispatch({
@@ -151,15 +170,20 @@ const ExpenseDetail = ({ expense, onClose }) => {
       payload: "expenseAlerts",
     });
   };
+
   const closeModal = () => {
     expenseDispatch({ type: "CLOSE_MODAL" });
   };
+
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-opacity-80 backdrop-blur-lg z-[100]">
-      <div className="bg-gray-200 p-6 rounded-lg w-full max-w-md shadow-lg mt-16">
+      <div className="bg-gray-200 p-6 px-6 sm:px-8 rounded-lg w-full max-w-md shadow-lg mt-16 sm:mt-10">
+
         {/* Modal Header */}
         <div className="flex justify-between items-center pb-3">
-          <h2 className="text-xl font-bold">{expense.title} Details</h2>
+          <h2 className="text-xl sm:text-2xl font-semibold text-gray-800">
+            {expense.title} Details
+          </h2>
           <FaTimes
             className="cursor-pointer text-2xl text-gray-600 hover:text-red-600"
             onClick={closeModal}
@@ -179,89 +203,64 @@ const ExpenseDetail = ({ expense, onClose }) => {
         )}
 
         {/* Title Editing */}
-        <div className="mt-4">
+        <div className="mt-4 space-y-4">
           <label className="block text-sm font-semibold mb-1">
             Expense Name
           </label>
-          <div className="flex items-center">
-            <input
-              type="text"
-              name="title"
-              value={editedExpense.title || ""}
-              onChange={handleChange}
-              className="w-full p-2 rounded-xl border border-gray-400 bg-gray-100"
-              readOnly={!isEditing.title}
-            />
-            <MdEdit
-              className="ml-2 cursor-pointer text-2xl text-gray-600 hover:text-black"
-              onClick={() => toggleEdit("title")}
-            />
-          </div>
+          <input
+            type="text"
+            name="title"
+            value={editedExpense.title || ""}
+            onChange={handleChange}
+            className="w-full p-2 rounded-xl border border-gray-400 bg-gray-100"
+          />
         </div>
 
         {/* Amount Editing */}
-        <div className="mt-4">
+        <div className="mt-4 space-y-4">
           <label className="block text-sm font-semibold mb-1">
             Total Amount
           </label>
-          <div className="flex items-center">
-            <input
-              type="number"
-              name="amount"
-              value={editedExpense.amount || ""}
-              onChange={handleChange}
-              className="w-full p-2 rounded-xl border border-gray-400 bg-gray-100"
-              readOnly={!isEditing.amount}
-            />
-            <MdEdit
-              className="ml-2 cursor-pointer text-2xl text-gray-600 hover:text-black"
-              onClick={() => toggleEdit("amount")}
-            />
-          </div>
+          <input
+            type="number"
+            name="amount"
+            value={editedExpense.amount || ""}
+            onChange={handleChange}
+            className="w-full p-2 rounded-xl border border-gray-400 bg-gray-100"
+          />
         </div>
 
         {/* Category Editing */}
-        <div className="mt-4">
+        <div className="mt-4 space-y-4">
           <label className="block text-sm font-semibold mb-1">Category</label>
-          <div className="flex gap-2">
-            <span className="bg-black text-white px-3 py-1 rounded-lg">
-              {editedExpense.category}
-            </span>
-            <button
-              onClick={() => handleCategoryChange("New Category")}
-              className="bg-black text-white px-3 py-1 rounded-lg hover:bg-gray-600 cursor-pointer transition-all"
-            >
-              Add +
-            </button>
-          </div>
+          <select
+            name="category"
+            value={editedExpense.category}
+            onChange={handleChange}
+            className="w-full p-2 rounded-xl border border-gray-400 bg-gray-100"
+          >
+            {categoryOptions.map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
+            ))}
+          </select>
         </div>
 
         {/* Recurring Frequency Editing */}
         <div className="mt-4">
-          <label className="block text-sm font-semibold mb-1">Regularity</label>
-          <div className="flex items-center">
-            {isEditing.recurringFrequency ? (
-              <select
-                name="recurringFrequency"
-                value={editedExpense.recurringFrequency || "one-time"}
-                onChange={handleChange}
-                className="w-48 bg-black text-white px-3 py-1 rounded-lg"
-              >
-                <option value="one-time">One-Time</option>
-                <option value="weekly">Weekly</option>
-                <option value="monthly">Monthly</option>
-                <option value="yearly">Yearly</option>
-              </select>
-            ) : (
-              <span className="w-48 bg-black text-white px-3 py-1 rounded-lg">
-                {editedExpense.recurringFrequency}
-              </span>
-            )}
-            <MdEdit
-              className="ml-2 cursor-pointer text-2xl text-gray-600 hover:text-black"
-              onClick={() => toggleEdit("recurringFrequency")}
-            />
-          </div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Regularity</label>
+          <select
+            name="recurringFrequency"
+            value={editedExpense.recurringFrequency || "one-time"}
+            onChange={handleChange}
+            className="w-full sm:w-60 p-2 rounded-lg border border-gray-300 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400"
+          >
+            <option value="one-time">One-Time</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+            <option value="yearly">Yearly</option>
+          </select>
         </div>
 
         {/* Transaction Dates */}
@@ -279,18 +278,9 @@ const ExpenseDetail = ({ expense, onClose }) => {
                 <input
                   type="date"
                   name="startDate"
-                  value={
-                    editedExpense.startDate
-                      ? editedExpense.startDate.split("T")[0]
-                      : ""
-                  }
+                  value={editedExpense.startDate ? editedExpense.startDate.split("T")[0] : ""}
                   onChange={handleChange}
                   className="w-full p-2 rounded-xl border border-gray-400 bg-gray-100"
-                  readOnly={!isEditing.startDate}
-                />
-                <MdEdit
-                  className="ml-2 cursor-pointer text-2xl text-gray-600 hover:text-black"
-                  onClick={() => toggleEdit("startDate")}
                 />
               </div>
 
@@ -300,43 +290,27 @@ const ExpenseDetail = ({ expense, onClose }) => {
                 <input
                   type="date"
                   name="endDate"
-                  value={
-                    editedExpense.endDate
-                      ? editedExpense.endDate.split("T")[0]
-                      : ""
-                  }
+                  value={editedExpense.endDate ? editedExpense.endDate.split("T")[0] : ""}
                   onChange={handleChange}
                   className="w-full p-2 rounded-xl border border-gray-400 bg-gray-100"
-                  readOnly={!isEditing.endDate}
-                />
-                <MdEdit
-                  className="ml-2 cursor-pointer text-2xl text-gray-600 hover:text-black"
-                  onClick={() => toggleEdit("endDate")}
                 />
               </div>
             </div>
           ) : (
             // One-time expense: just a single transactionDate
-            <div className="flex items-center">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+              <label className="block text-sm font-medium">Date</label>
               <input
                 type="date"
                 name="transactionDate"
-                value={
-                  editedExpense.transactionDate
-                    ? editedExpense.transactionDate.split("T")[0]
-                    : ""
-                }
+                value={editedExpense.transactionDate ? editedExpense.transactionDate.split("T")[0] : ""}
                 onChange={handleChange}
                 className="w-full p-2 rounded-xl border border-gray-400 bg-gray-100"
-                readOnly={!isEditing.transactionDate}
-              />
-              <MdEdit
-                className="ml-2 cursor-pointer text-2xl text-gray-600 hover:text-black"
-                onClick={() => toggleEdit("transactionDate")}
               />
             </div>
           )}
         </div>
+
 
         {/* Notifications Toggle */}
         <div className="mt-4 flex justify-between items-center">
@@ -350,23 +324,23 @@ const ExpenseDetail = ({ expense, onClose }) => {
               checked={notificationState.notificationSettings.expenseAlerts}
               onChange={handleToggleNotification}
             />
-            <div className="w-11 h-6 bg-gray-300 peer-focus:ring-4 rounded-full peer peer-checked:after:translate-x-5 peer-checked:bg-black after:absolute after:top-1 after:left-1 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
+            <div className="w-11 h-6 bg-gray-300 peer-focus:ring-2 rounded-full peer peer-checked:after:translate-x-5 peer-checked:bg-black after:absolute after:top-1 after:left-1 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
           </label>
         </div>
 
         {/* Save & Delete Buttons */}
-        <div className="mt-6 flex flex-col gap-4">
+        <div className="mt-6 flex flex-col gap-4 items-center w-full">
           <button
             onClick={handleSave}
             disabled={loading}
-            className="bg-black text-white p-2 rounded-lg hover:bg-gray-600 cursor-pointer transition-all"
+            className="w-full max-w-sm bg-black text-white p-2 rounded-lg hover:bg-gray-600 cursor-pointer transition-all"
           >
             {loading ? "Saving..." : "Save Expense"}
           </button>
           <button
             onClick={handleDelete}
             disabled={loading}
-            className="bg-red-600 text-white p-2 rounded-lg hover:bg-red-700 cursor-pointer transition-all"
+            className="w-full max-w-sm bg-red-600 text-white p-2 rounded-lg hover:bg-red-700 cursor-pointer transition-all"
           >
             {loading ? "Deleting..." : "Delete Expense"}
           </button>
