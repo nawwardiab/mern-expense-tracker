@@ -1,4 +1,5 @@
 import React, { useEffect, useContext, useState } from "react";
+import { formatAmount } from "../utils/format";
 import { ExpenseContext } from "../contexts/ExpenseContext";
 import { PaymentContext } from "../contexts/PaymentContext";
 import { AuthContext } from "../contexts/AuthContext";
@@ -87,7 +88,7 @@ const SummaryCards = () => {
             totalStats.balance < 0 ? "text-red-600" : "text-black"
           }`}
         >
-          €{totalStats.balance?.toFixed(2) || "0.00"}
+          €{formatAmount(totalStats.balance)}
         </h2>
       </div>
 
@@ -105,27 +106,27 @@ const SummaryCards = () => {
         <div className="bg-gray-200 rounded-xl p-4">
           <p className="text-sm font-medium mb-1">Total Outgoing</p>
           <p className="text-md text-red-500">
-            €{monthlyStats.totalOutgoing?.toFixed(2) || "0.00"}<span className="text-xs font-thin text-gray-800"> /Month</span> 
+            €{formatAmount(monthlyStats.totalOutgoing)}<span className="text-xs font-thin text-gray-800"> /Month</span> 
           </p>
           <p className="text-sm text-red-700 mt-4">
-            €{totalStats.totalOutgoing?.toFixed(2) || "0.00"}<span className="text-xs font-thin text-gray-800"> /total</span> 
+            €{formatAmount(totalStats.totalOutgoing)}<span className="text-xs font-thin text-gray-800"> /total</span> 
           </p>
         </div>
 
         <div className="bg-gray-200 rounded-xl p-4">
           <p className="text-sm font-medium mb-1">Total Incoming</p>
           <p className="text-md text-green-600">
-            €{monthlyStats.totalIncoming?.toFixed(2) || "0.00"}<span className="text-xs font-thin text-gray-800"> /Month</span> 
+            €{formatAmount(monthlyStats.totalOutgoing)}<span className="text-xs font-thin text-gray-800"> /Month</span> 
           </p>
           <p className="text-sm text-green-700 mt-4">
-            €{totalStats.totalIncoming?.toFixed(2) || "0.00"}<span className="text-xs font-thin text-gray-800"> /total</span> 
+            €{formatAmount(totalStats.totalIncoming)}<span className="text-xs font-thin text-gray-800"> /total</span> 
           </p>
         </div>
 
         <div className="bg-gray-200 rounded-xl p-4">
           <p className="text-sm font-medium mb-1">Net Savings</p>
           <p className="text-md font-semibold">
-            €{(monthlyStats.totalIncoming - monthlyStats.totalOutgoing)?.toFixed(2) || "0.00"}<span className="text-xs font-thin text-gray-800"> /Month</span> 
+            €{formatAmount(monthlyStats.totalIncoming - monthlyStats.totalOutgoing)}<span className="text-xs font-thin text-gray-800"> /Month</span> 
           </p>
         </div>
       </div>

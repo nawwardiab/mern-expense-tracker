@@ -36,7 +36,7 @@ const NotificationToggle = ({ label, settingKey }) => {
           checked={notificationsEnabled}
           onChange={handleToggle}
         />
-        <div className="w-11 h-6 bg-gray-300 peer-focus:ring-4 rounded-lg peer peer-checked:after:translate-x-5 peer-checked:bg-black after:absolute after:top-1 after:left-1 after:bg-white after:rounded-lg after:h-4 after:w-4 after:transition-all"></div>
+        <div className="w-11 h-6 bg-gray-300 peer-focus:ring-2  rounded-lg peer peer-checked:after:translate-x-5 peer-checked:bg-black after:absolute after:top-1 after:left-1 after:bg-white after:rounded-lg after:h-4 after:w-4 after:transition-all"></div>
       </label>
     </div>
   );

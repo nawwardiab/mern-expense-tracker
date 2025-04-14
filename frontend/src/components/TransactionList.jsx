@@ -18,13 +18,15 @@ const TransactionList = () => {
 
   const groupedTransactions = expenses.reduce((acc, transaction) => {
     const transactionDate = new Date(transaction.transactionDate);
-    const transactionDateString = transaction.transactionDate.split("T")[0];
-
+    const transactionDateString = isNaN(transactionDate)
+      ? ""
+      : transactionDate.toISOString().split("T")[0];
+  
     const isPending =
       transactionDate > today &&
       transactionDate.getMonth() === currentMonth &&
       transactionDate.getFullYear() === currentYear;
-
+  
     if (isPending) {
       if (!acc["Pending Transactions"]) acc["Pending Transactions"] = [];
       acc["Pending Transactions"].push(transaction);
@@ -35,10 +37,10 @@ const TransactionList = () => {
       if (!acc[transactionDateString]) acc[transactionDateString] = [];
       acc[transactionDateString].push(transaction);
     }
-
+  
     return acc;
   }, {});
-
+  
   const orderedSections = [
     "Pending Transactions",
     "Today's Transactions",
@@ -56,7 +58,7 @@ const TransactionList = () => {
 
       {orderedSections.map((section, i) => (
         <div key={i} className="mb-6">
-          <h3 className="font-semibold text-gray-600 text-sm mb-2">{section}</h3>
+          <h3 className="font-semibold text-gray-600 text-xs sm:text-sm mb-2">{section}</h3>
           <div className="space-y-2">
             {groupedTransactions[section] && groupedTransactions[section].length > 0 ? (
               groupedTransactions[section].map((expense) => (
@@ -71,13 +73,13 @@ const TransactionList = () => {
                 />
               ))
             ) : section === "Today's Transactions" ? (
-              <p className="text-gray-500 text-sm italic">No expenses today</p>
+              <p className="text-gray-500 text-xs sm:text-sm italic">No expenses today</p>
             ) : null}
           </div>
         </div>
       ))}
 
-      <p className="text-sm text-gray-500 mt-2 cursor-pointer hover:underline">
+<p className="text-xs sm:text-sm text-gray-500 mt-2 cursor-pointer hover:underline">
         See more...
       </p>
     </aside>
