@@ -21,6 +21,10 @@ const TransactionList = () => {
     const transactionDateString = isNaN(transactionDate)
       ? ""
       : transactionDate.toISOString().split("T")[0];
+    const isPending =
+      transactionDate > today &&
+      transactionDate.getMonth() === currentMonth &&
+      transactionDate.getFullYear() === currentYear;
 
     if (isPending) {
       if (!acc["Pending Transactions"]) acc["Pending Transactions"] = [];
@@ -34,7 +38,7 @@ const TransactionList = () => {
     }
     return acc;
   }, {});
-  
+
   const orderedSections = [
     "Pending Transactions",
     "Today's Transactions",
@@ -73,7 +77,7 @@ const TransactionList = () => {
         </div>
       ))}
 
-<p className="text-xs sm:text-sm text-gray-500 mt-2 cursor-pointer hover:underline">
+      <p className="text-xs sm:text-sm text-gray-500 mt-2 cursor-pointer hover:underline">
         See more...
       </p>
     </aside>
