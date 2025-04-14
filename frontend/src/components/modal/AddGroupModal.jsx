@@ -57,11 +57,10 @@ const AddGroupModal = ({ isOpen, onClose }) => {
 
         {message && (
           <div
-            className={`mb-3 p-2 rounded text-sm ${
-              message.type === "success"
-                ? "bg-green-200 text-green-700"
-                : "bg-red-200 text-red-700"
-            }`}
+            className={`mb-3 p-2 rounded text-sm ${message.type === "success"
+              ? "bg-green-200 text-green-700"
+              : "bg-red-200 text-red-700"
+              }`}
           >
             {message.text}
           </div>
@@ -86,7 +85,7 @@ const AddGroupModal = ({ isOpen, onClose }) => {
 
           <button
             type="submit"
-            className="w-full bg-black text-white py-2 rounded hover:bg-gray-800"
+            className="w-full bg-black text-white py-2 rounded-lg hover:bg-gray-600 cursor-pointer transition-all duration-300"
             disabled={loading}
           >
             {loading ? "Creating..." : "Create Group"}

@@ -131,13 +131,8 @@ const Login = () => {
           {/* Social Login Options */}
           <div className="mt-6 space-y-3">
             <button className="w-full flex items-center justify-center border border-gray-300 py-3 rounded-md hover:bg-gray-100 transition">
-              <FaGoogle className="mr-2 text-red-500" /> Sign in with Google
+              <FaGoogle className="mr-2 text-red-600" /> Sign in with Google
             </button>
-
-            <button className="w-full flex items-center justify-center border border-gray-300 py-3 rounded-md hover:bg-gray-100 transition">
-              <FaApple className="mr-2 text-black" /> Sign in with Apple
-            </button>
-
             <button
               onClick={() => navigate("/signup")}
               className="w-full flex items-center justify-center border border-gray-300 py-3 rounded-md hover:bg-gray-100 transition"

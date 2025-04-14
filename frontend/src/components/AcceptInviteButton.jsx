@@ -30,7 +30,7 @@ function AcceptInviteButton({ token }) {
       }
 
       <button
-        className="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-900 transition-all"
+        className="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-600 cursor-pointer transition-all duration-300"
         onClick={handleAccept}
         disabled={loading}
       >

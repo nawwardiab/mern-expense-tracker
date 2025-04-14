@@ -5,7 +5,7 @@ import { FaPlus } from "react-icons/fa";
 import { ExpenseContext } from "../contexts/ExpenseContext";
 import { getAllExpenses } from "../api/expenseApi";
 import ExpenseList from "../components/ExpenseList";
-import AddExpense from "../components/modal/AddExpense"; // Import your AddExpense modal
+import AddExpense from "../components/modal/AddExpense";
 
 const ExpenseManager = () => {
   // 1) Pull global expense state & dispatch from context
@@ -37,7 +37,7 @@ const ExpenseManager = () => {
 
   return (
     <div className="p-4 md:p-8 max-w-6xl mx-auto relative">
-      <h1 className="text-2xl md:text-4xl font-bold text-center mb-6">
+      <h1 className="text-2xl md:text-4xl font-bold text-center mb-8">
         Manage your expenses
       </h1>
 
@@ -50,7 +50,7 @@ const ExpenseManager = () => {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <TbListSearch className="absolute right-4 text-gray-500 text-3xl sm:text-4xl" />
+        <TbListSearch className="absolute right-4 text-gray-500 text-xl sm:text-2xl top-1/2 transform -translate-y-1/2" />
       </div>
 
       {/* =========== Categories Filter =========== */}
@@ -67,9 +67,8 @@ const ExpenseManager = () => {
           ].map((cat) => (
             <button
               key={cat}
-              className={`px-3 sm:px-4 py-2 rounded-lg shadow-md text-sm sm:text-base ${
-                category === cat ? "bg-black text-white" : "border"
-              }`}
+              className={`px-3 sm:px-4 py-2 rounded-lg shadow-md text-sm sm:text-base ${category === cat ? "bg-black text-white" : "border"
+                }`}
               onClick={() => setCategory(category === cat ? "" : cat)}
             >
               {cat}
@@ -85,9 +84,8 @@ const ExpenseManager = () => {
           {["Weekly", "Monthly", "Yearly", "One-Time"].map((occ) => (
             <button
               key={occ}
-              className={`px-3 sm:px-4 py-2 rounded-lg shadow-md text-sm sm:text-base ${
-                occurrence === occ ? "bg-black text-white" : "border"
-              }`}
+              className={`px-3 sm:px-4 py-2 rounded-lg shadow-md text-sm sm:text-base ${occurrence === occ ? "bg-black text-white" : "border"
+                }`}
               onClick={() => setOccurrence(occurrence === occ ? "" : occ)}
             >
               {occ}
@@ -97,23 +95,23 @@ const ExpenseManager = () => {
       </div>
 
       {/* =========== Expense List + Summary =========== */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="flex flex-col lg:flex-row gap-6">
         {/* Left: Expense List */}
-        <div className="lg:col-span-2">
-          <ExpenseList
-            search={search}
-            category={category}
-            occurrence={occurrence}
-          />
+        <div className="lg:w-2/3 w-full">
+          <div className="max-h-[450px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-100 scrollbar-track-transparent hover:scrollbar-thumb-gray-200">
+            <ExpenseList
+              search={search}
+              category={category}
+              occurrence={occurrence}
+            />
+          </div>
         </div>
 
         {/* Right: Summary of the filtered list */}
-        <div className="flex justify-center w-full">
-          <div className="p-5 bg-blue-50 rounded-xl shadow-lg flex flex-col items-center text-center w-full max-w-md">
+        <div className="lg:w-1/3 w-full">
+          <div className="p-5 bg-blue-50 rounded-xl shadow-lg flex flex-col items-center text-center h-full">
             <FaWallet className="text-blue-600 text-4xl sm:text-5xl mb-3 mt-6 sm:mt-10" />
-            <h2 className="text-lg sm:text-xl font-semibold mt-4">
-              Total Spent
-            </h2>
+            <h2 className="text-lg sm:text-xl font-semibold mt-4">Total Spent</h2>
             <p className="text-2xl sm:text-3xl font-bold text-gray-800 mt-2">
               €{totalFilteredExpenses.toFixed(2)}
             </p>
@@ -125,11 +123,11 @@ const ExpenseManager = () => {
       </div>
 
       {/* Floating Add Event Button */}
-    {/* Floating Add Event Button (Visible Only on Small Devices) */}
-<FaPlus
-  className="fixed bottom-16 right-6 bg-black text-4xl text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition z-50 md:hidden"
-  onClick={() => setIsModalOpen(true)}
-/>
+      {/* Floating Add Event Button (Visible Only on Small Devices) */}
+      <FaPlus
+        className="fixed bottom-16 right-6 bg-black text-4xl text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition z-50 md:hidden"
+        onClick={() => setIsModalOpen(true)}
+      />
 
       {/* AddExpense Modal */}
       {isModalOpen && (

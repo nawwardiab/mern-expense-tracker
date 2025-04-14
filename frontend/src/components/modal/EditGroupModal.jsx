@@ -152,10 +152,9 @@ const EditGroupModal = ({ onClose }) => {
                     <span>{user.userId.fullName}</span>
                     <button
                       type="button"
-                      className={`px-3 py-1 rounded text-white ${
-                        user ? "bg-red-500" : "bg-green-500"
-                      }`}
-                      // onClick={() => handleMemberToggle(user._id)}
+                      className={`px-3 py-1 rounded-lg text-white ${user ? "bg-red-600" : "bg-green-600"
+                        }`}
+                    // onClick={() => handleMemberToggle(user._id)}
                     >
                       {user ? "Remove" : "Add"}
                     </button>
@@ -167,7 +166,7 @@ const EditGroupModal = ({ onClose }) => {
 
           <button
             type="submit"
-            className="w-full bg-black text-white py-2 rounded hover:bg-gray-800"
+            className="w-full bg-black text-white py-2 rounded-lg hover:bg-gray-600 cursor-pointer transition-all duration-300"
             disabled={loading}
           >
             {loading ? "Saving..." : "Save Changes"}
@@ -175,7 +174,7 @@ const EditGroupModal = ({ onClose }) => {
 
           <button
             type="button"
-            className="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700 mt-2"
+            className="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 mt-2 cursor-pointer transition-all duration-300"
             onClick={handleDeleteGroup}
           >
             Delete Group

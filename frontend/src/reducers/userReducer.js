@@ -28,8 +28,7 @@ const userReducer = (state, action) => {
         isUserLoggedin: true,
         isOnboarded: action.payload.isOnboarded || false, 
         loading: false,
-        message: "Login successful!",
-        messageType: "success",
+ 
       };
 
     case "UPDATE_PROFILE_SUCCESS":
@@ -80,8 +79,8 @@ const userReducer = (state, action) => {
     case "CLEAR_MESSAGE":
       return {
         ...state,
-        message: null,
-        messageType: null,
+        message: "",
+        messageType: "",
       };
 
     case "LOGOUT":

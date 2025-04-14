@@ -22,7 +22,7 @@ const ExpenseTable = () => {
 
   //   if (loading)
   //     return <p className="text-center text-gray-500">Loading expenses...</p>;
-  if (error) return <p className="text-center text-red-500">{error}</p>;
+  if (error) return <p className="text-center text-red-600">{error}</p>;
 
   return (
     <div className="mt-6 bg-white rounded-lg shadow-md p-6">
@@ -65,7 +65,7 @@ const ExpenseTable = () => {
 
       <button
         onClick={() => setIsAddExpenseModalOpen(true)}
-        className="mt-4 bg-black text-white px-4 py-2 rounded hover:bg-gray-800"
+        className="mt-4 bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-600 cursor-pointer transition-all duration-300"
       >
         + Add More Group Expenses
       </button>

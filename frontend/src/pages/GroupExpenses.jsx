@@ -25,14 +25,14 @@ const GroupExpenses = () => {
     <div className="flex flex-col h-screen bg-gray-50">
       {/* Page Title and Button - Full Width */}
       <div className="bg-white shadow-md p-6 flex justify-between items-center w-full">
-        <h1 className="text-3xl font-bold text-gray-900">
+        <h1 className="text-3xl font-bold mb-8">
           Group Expense Management
         </h1>
 
         {/* Open Modal Button */}
         <button
           onClick={() => setIsModalOpen(true)}
-          className="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-900 transition-all"
+          className="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-600 cursor-pointer transition-all duration-300"
         >
           New Group
         </button>
@@ -71,7 +71,7 @@ const GroupExpenses = () => {
         <AddGroupExpense
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
-          // onGroupAdded={handleGroupAdded}
+        // onGroupAdded={handleGroupAdded}
         />
       )}
     </div>

@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useContext } from "react";
-import { Link, useNavigate,useLocation } from "react-router-dom";
+import React, { useState, useEffect, useContext, useRef } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { AuthContext } from "../../contexts/AuthContext";
 import { FaBars, FaTimes } from "react-icons/fa";
 import { FaUserGroup } from "react-icons/fa6";
@@ -17,6 +17,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const currentPath = location.pathname;
+  const dropdownRef = useRef(null);
 
   const isActive = (path) => currentPath === path;
 
@@ -38,27 +39,64 @@ const Navbar = () => {
     setShowNotificationDropdown(!showNotificationDropdown);
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target)
+      ) {
+        setShowNotificationDropdown(false);
+      }
+    };
+
+    if (showNotificationDropdown) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showNotificationDropdown]);
+
   return (
     <>
-        <nav className="fixed top-0  w-full h-16 flex justify-between items-center p-4 bg-gray-100 text-white shadow-md z-40">
+      <nav className="fixed top-0  w-full h-16 flex justify-between items-center p-4 bg-gray-100 text-white shadow-md z-40">
         {/* App Logo */}
-        <h1 className="text-2xl text-black font-bold">Track$</h1>
+        <Link
+          to="/homepage"
+          className="text-3xl font-bold text-black hover:text-purple-700 transition-colors duration-200"
+        >
+          Track<span className="text-purple-500">$</span>
+        </Link>
+
 
         {/* Desktop Menu */}
         <div className="hidden md:flex items-center gap-6 mr-76">
-          <IoIosAddCircle
-            className="text-2xl text-gray-700 hover:text-black cursor-pointer"
+          {/* Add Expense */}
+          <div
+            className="relative group cursor-pointer flex flex-col items-center"
             onClick={() => setIsModalOpen(true)}
-          />
-          <FaUserGroup
-            className="text-2xl text-gray-700 hover:text-black cursor-pointer"
-            onClick={() => navigate("/expenses/group")}
-          />
+          >
+            <IoIosAddCircle className="text-2xl text-gray-700 hover:text-black" />
+            <span className="absolute bottom-[-1.75rem] z-10 bg-black text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition whitespace-nowrap">
+              Add Expense
+            </span>
+          </div>
+
+          {/* Group Events */}
+          <div className="relative group cursor-pointer flex flex-col items-center" onClick={() => navigate("/expenses/group")}>
+            <FaUserGroup className="text-2xl text-gray-700 hover:text-black" />
+            <span className="absolute top-full mt-1 bg-black text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-10">
+              Group Events
+            </span>
+          </div>
 
           {/* Notification Icon with Dropdown */}
-          <div className="relative cursor-pointer">
+          <div className="relative cursor-pointer" ref={dropdownRef}>
             <div onClick={toggleNotificationDropdown} className="relative">
-              <IoIosNotifications className="text-2xl text-gray-700 hover:text-black" />
+              <IoIosNotifications className="text-3xl text-gray-700 hover:text-black" />
               {notificationCount > 0 && (
                 <span className="absolute -top-2 -right-2 flex items-center justify-center bg-red-500 text-white rounded-full text-xs h-5 w-5">
                   {notificationCount}
@@ -66,22 +104,26 @@ const Navbar = () => {
               )}
             </div>
 
+            {/* Dropdown */}
             {showNotificationDropdown && (
-              <div className="absolute right-0 mt-2 w-80 bg-white text-black border border-gray-300 rounded-lg shadow-lg z-10">
+              <div
+                className="absolute top-full mt-2 left-0 right-0 mx-auto w-[90vw] max-w-sm md:right-0 md:left-auto md:mx-0 md:w-80 bg-white text-black border border-gray-300 rounded-lg shadow-lg z-50"
+              >
                 <div className="p-4 border-b font-bold">Notifications</div>
-                <div className="p-4 flex flex-col gap-2">
-                  {notificationSettings && Object.keys(notificationSettings).map((key) =>
-                    notificationSettings[key] && (
-                      <div key={key} className="p-2 rounded-lg hover:bg-gray-100 cursor-pointer">
-                        {key === "expenseAlerts" && "You have new expense alerts!"}
-                        {key === "communityUpdates" && "New community updates available!"}
-                        {key === "paymentReminders" && "You have pending payment reminders!"}
-                        {key === "featureAnnouncements" && "New features have been announced!"}
-                      </div>
+                <div className="p-4 flex flex-col gap-2 max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300">
+                  {notificationSettings && Object.keys(notificationSettings).some((key) => notificationSettings[key]) ? (
+                    Object.keys(notificationSettings).map((key) =>
+                      notificationSettings[key] && (
+                        <div key={key} className="p-2 rounded-lg hover:bg-gray-100 cursor-pointer text-sm">
+                          {key === "expenseAlerts" && "You have new expense alerts!"}
+                          {key === "communityUpdates" && "New community updates available!"}
+                          {key === "paymentReminders" && "You have pending payment reminders!"}
+                          {key === "featureAnnouncements" && "New features have been announced!"}
+                        </div>
+                      )
                     )
-                  )}
-                  {notificationCount === 0 && (
-                    <div className="p-2 text-center text-gray-500">No new notifications</div>
+                  ) : (
+                    <div className="p-2 text-center text-gray-500 text-sm">No new notifications</div>
                   )}
                 </div>
               </div>
@@ -108,7 +150,7 @@ const Navbar = () => {
           <div className="relative cursor-pointer">
             <IoIosNotifications className="text-2xl text-gray-700 hover:text-black" />
             {notificationCount > 0 && (
-              <span className="absolute -top-2 -right-2 flex items-center justify-center bg-red-500 text-white rounded-full text-xs h-5 w-5">
+              <span className="absolute -top-2 -right-2 flex items-center justify-center bg-red-600 text-white rounded-full text-xs h-5 w-5">
                 {notificationCount}
               </span>
             )}
@@ -133,8 +175,8 @@ const Navbar = () => {
         </div>
       </nav>
 
-       {/* Mobile Menu */}
-       {isMobileMenuOpen && (
+      {/* Mobile Menu */}
+      {isMobileMenuOpen && (
         <div className="md:hidden absolute top-16 right-0 w-1/3 bg-gray-100 shadow-lg z-10">
           <ul className="flex flex-col items-start gap-4 p-4">
             <li>
@@ -159,7 +201,7 @@ const Navbar = () => {
               <Link
                 to="/expenses/group"
                 onClick={closeMobileMenu}
-                className={`text-sm font-semibold p-2 rounded ${isActive("/expenses/group") ?  "underline  underline-offset-4" : "text-gray-700 hover:text-black"}`}
+                className={`text-sm font-semibold p-2 rounded ${isActive("/expenses/group") ? "underline  underline-offset-4" : "text-gray-700 hover:text-black"}`}
               >
                 Groups
               </Link>
@@ -176,7 +218,7 @@ const Navbar = () => {
             <li>
               <button
                 onClick={handleLogout}
-                className="text-red-700 text-sm font-semibold underline hover:text-black"
+                className="text-red-600 text-sm font-semibold underline hover:text-black"
               >
                 Logout
               </button>

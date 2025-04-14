@@ -18,21 +18,6 @@ function OnboardingStep3({ formData, handleChange }) {
       </div>
 
       <div className="flex items-center border p-3 rounded-md bg-gray-100">
-        <FaDollarSign className="text-gray-500 mr-3" />
-        <select
-          name="currency"
-          value={formData.currency}
-          onChange={handleChange}
-          className="w-full bg-transparent outline-none"
-        >
-          <option value="">Select your currency</option>
-          <option value="USD">USD ($)</option>
-          <option value="EUR">EUR (€)</option>
-          <option value="GBP">GBP (£)</option>
-        </select>
-      </div>
-
-      <div className="flex items-center border p-3 rounded-md bg-gray-100">
         <FaMoneyBillWave className="text-gray-500 mr-3" />
         <input
           type="text"
