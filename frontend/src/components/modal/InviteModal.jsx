@@ -63,7 +63,7 @@ const InviteModal = ({ group, onClose }) => {
             />
             <button
               onClick={handleInviteByEmail}
-              className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800"
+              className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-600 cursor-pointer transition-all"
               disabled={loading}
             >
               {loading ? "Sending..." : "Send Invite"}
@@ -78,7 +78,7 @@ const InviteModal = ({ group, onClose }) => {
         {/* Generate Link Button */}
         <div className="mb-4">
           <button
-            className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800"
+            className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-600 cursor-pointer transition-all"
             onClick={handleGenerateInvite}
             disabled={loading}
           >
@@ -87,7 +87,7 @@ const InviteModal = ({ group, onClose }) => {
         </div>
 
         {/* Global Error Message */}
-        {error && <p className="text-red-500 mb-2">Error: {error}</p>}
+        {error && <p className="text-red-600 mb-2">Error: {error}</p>}
 
         {/* Show the Link if generated */}
         {inviteURL && !loading && !error && (
@@ -101,7 +101,7 @@ const InviteModal = ({ group, onClose }) => {
                 value={inviteURL}
               />
               <button
-                className="bg-gray-200 ml-2 px-3 py-1 rounded hover:bg-gray-300"
+                className="bg-gray-200 ml-2 px-3 py-1 rounded-lg hover:bg-gray-300"
                 onClick={handleCopyLink}
               >
                 Copy
@@ -112,7 +112,7 @@ const InviteModal = ({ group, onClose }) => {
 
         {/* Close Button */}
         <button
-          className="w-full bg-gray-200 text-black py-2 rounded hover:bg-gray-300 mt-2"
+          className="w-full bg-gray-200 text-black py-2 rounded-lg hover:bg-gray-300 mt-2"
           onClick={handleCloseModal}
         >
           Close

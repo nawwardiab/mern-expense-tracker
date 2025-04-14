@@ -24,7 +24,7 @@ const SettingPage = () => {
     paymentMethod: "",
     username: "",
   });
-  const [isOnboarded, setIsOnboarded] = useState(userState.isOnboarded); 
+  const [isOnboarded, setIsOnboarded] = useState(userState.isOnboarded);
   const [profilePicture, setProfilePicture] = useState(null);
   const [preview, setPreview] = useState("https://picsum.photos/100");
   const [passwords, setPasswords] = useState({
@@ -34,13 +34,13 @@ const SettingPage = () => {
   });
 
   // Function to format labels (convert camelCase to readable format)
-   const formatLabel = (key) =>
+  const formatLabel = (key) =>
     key.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase());
 
-    // Clear message on component mount
-    useEffect(() => {
-      userDispatch({ type: "CLEAR_MESSAGE" });
-    }, [userDispatch]);
+  // Clear message on component mount
+  useEffect(() => {
+    userDispatch({ type: "CLEAR_MESSAGE" });
+  }, [userDispatch]);
   useEffect(() => {
     if (userState.user) {
       const user = userState.user;
@@ -53,7 +53,7 @@ const SettingPage = () => {
       
         income: user.income || "",
         paymentMethod: user.paymentMethod || "",
-       
+
       });
 
       if (user.profilePicture) {
@@ -173,7 +173,7 @@ const SettingPage = () => {
   return (
     <div className=" min-h-screen flex flex-col items-center p-4 md:p-6 ">
       <div className="bg-gray-200 p-6 rounded-lg w-full max-w-3xl flex flex-col gap-6">
-  
+
         {/* Profile Picture */}
         <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6">
           <div className="relative w-24 h-24">
@@ -201,35 +201,33 @@ const SettingPage = () => {
               onChange={handleImageUpload}
             />
           </div>
-  
+
           <button
             onClick={handleSaveProfile}
             disabled={userState.loading}
-            className={`bg-black text-sm text-white px-4 py-2 rounded-xl ${
-              userState.loading ? "opacity-50 cursor-not-allowed" : ""
-            }`}
+            className={`bg-black text-sm text-white px-4 py-2 rounded-lg hover:bg-gray-600 cursor-pointer transition-all ${userState.loading ? "opacity-50 cursor-not-allowed" : ""
+              }`}
           >
             {userState.loading ? "Saving..." : "Save Updates"}
           </button>
         </div>
-  
+
         {/* Success/Error Message */}
         {userState.message && (
           <div
-            className={`p-3 rounded mt-4 ${
-              userState.messageType === "success" ? "bg-green-500" : "bg-red-500"
-            } text-white text-center`}
+            className={`p-3 rounded mt-4 ${userState.messageType === "success" ? "bg-green-600" : "bg-red-600"
+              } text-white text-center`}
           >
             {userState.message}
           </div>
         )}
-  
+
         {/* User Information */}
         <div className=" p-4 md:p-6 rounded-lg ">
           {Object.keys(formData).map((field) => (
             <div key={field} className="mb-4">
               <label className="block text-sm font-semibold mb-1">
-              {formatLabel(field)}
+                {formatLabel(field)}
               </label>
               <input
                 type={field === "dateOfBirth" ? "date" : "text"}
@@ -282,20 +280,19 @@ const SettingPage = () => {
           <button
             onClick={handlePasswordUpdate}
             disabled={userState.loading}
-            className={`bg-black text-white px-3 py-1 rounded-lg ${
-              userState.loading ? "opacity-50 cursor-not-allowed" : ""
-            }`}
+            className={`bg-black text-white px-3 py-1 rounded-lg hover:bg-gray-600 cursor-pointer transition-all ${userState.loading ? "opacity-50 cursor-not-allowed" : ""
+              }`}
           >
             {userState.loading ? "Updating..." : "Update Password"}
           </button>
-  
+
           {userState.loading && (
             <div className="text-center text-sm text-gray-500 mt-2">
               Updating, please wait...
             </div>
           )}
         </div>
-  
+
         {/* Notifications Toggle */}
         <div className="bg-white p-4 rounded-lg shadow-lg">
           <h2 className="text-lg font-semibold mb-4">Notifications Settings</h2>
@@ -319,7 +316,7 @@ const SettingPage = () => {
       </div>
     </div>
   );
-  
+
 };
 
 export default SettingPage;

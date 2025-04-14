@@ -195,9 +195,9 @@ const AddExpense = ({ isOpen, onClose }) => {
         : "one-time",
       ...(expense.isRecurring
         ? {
-            startDate: formatDate(expense.startDate),
-            endDate: formatDate(expense.endDate),
-          }
+          startDate: formatDate(expense.startDate),
+          endDate: formatDate(expense.endDate),
+        }
         : { transactionDate: formatDate(expense.transactionDate) }),
     };
 
@@ -241,11 +241,10 @@ const AddExpense = ({ isOpen, onClose }) => {
         {/* Success/Error Message */}
         {message && (
           <div
-            className={`mt-2 p-2 text-sm rounded ${
-              message.type === "success"
-                ? "bg-green-200 text-green-800"
-                : "bg-red-200 text-red-800"
-            }`}
+            className={`mt-2 p-2 text-sm rounded ${message.type === "success"
+              ? "bg-green-200 text-green-700"
+              : "bg-red-200 text-red-700"
+              }`}
           >
             {message.text}
           </div>
@@ -372,10 +371,9 @@ const AddExpense = ({ isOpen, onClose }) => {
                       key={option}
                       type="button"
                       className={`px-4 py-2 rounded-lg font-semibold transition 
-                        ${
-                          expense.recurringFrequency === option.toLowerCase()
-                            ? "bg-black text-white"
-                            : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                        ${expense.recurringFrequency === option.toLowerCase()
+                          ? "bg-black text-white"
+                          : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                         }`}
                       onClick={() =>
                         setExpense((prev) => ({
@@ -464,7 +462,7 @@ const AddExpense = ({ isOpen, onClose }) => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-black text-white py-3 rounded-lg text-lg hover:bg-gray-800 transition"
+            className="w-full bg-black text-white py-3 rounded-lg text-lg hover:bg-gray-600 cursor-pointer transition-all duration-300"
           >
             {loading ? "Saving..." : "Add Expense"}
           </button>

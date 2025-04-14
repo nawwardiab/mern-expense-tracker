@@ -1,18 +1,31 @@
-import { FaCheckCircle } from "react-icons/fa";
+import { Link } from "react-router-dom";
+import { FaInfoCircle } from "react-icons/fa";
 
-function OnboardingStep4({ formData }) {
+function OnboardingStep4({ isOnboarded }) {
   return (
-    <>
-      <h3 className="text-lg font-semibold">Review &amp; Complete</h3>
-      <ul className="text-left text-gray-800 mt-4 border p-4 rounded-md bg-gray-100">
-        {Object.entries(formData).map(([key, value]) => (
-          <li key={key} className="mb-2">
-            <FaCheckCircle className="text-green-500 inline-block mr-2" />
-            <strong className="capitalize">{key}:</strong> {value || "Not set"}
-          </li>
-        ))}
-      </ul>
-    </>
+    <div className="text-center p-6 bg-gray-100 border border-gray-300 rounded-lg mt-6">
+      {isOnboarded ? (
+        <>
+          <h3 className="text-xl font-semibold text-green-600 flex items-center justify-center gap-2">
+            <FaInfoCircle /> All Set!
+          </h3>
+          <p className="mt-2 text-gray-700">You're ready to start using the app 🎉</p>
+        </>
+      ) : (
+        <>
+          <h3 className="text-xl font-semibold text-purple-700 flex items-center justify-center gap-2">
+            <FaInfoCircle /> Almost There!
+          </h3>
+          <p className="mt-2 text-gray-700">
+            You’ve completed the basics. You can finish setting up your profile anytime from{" "}
+            <Link to="/settings" className="text-purple-700 underline hover:text-purple-900">
+              Settings
+            </Link>
+            .
+          </p>
+        </>
+      )}
+    </div>
   );
 }
 

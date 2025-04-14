@@ -226,7 +226,7 @@ const LandingPage = () => {
             ></textarea>
             <button
               type="submit"
-              className="w-full bg-black text-white py-3 rounded-md hover:bg-gray-800 transition"
+              className="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-800 transition"
             >
               Send Message
             </button>
