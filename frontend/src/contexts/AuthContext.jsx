@@ -11,10 +11,10 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const fetchUserData = async () => {
-      const user = await getMyData(userDispatch);  // Modified to return the user object
-
+      const user = await getMyData(userDispatch);  
+   
       if (user && user.notificationSettings) {
-        console.log("🔔 Initializing Notification Settings from Backend:", user.notificationSettings);
+      
 
         notificationDispatch({
           type: "INITIALIZE_NOTIFICATIONS",

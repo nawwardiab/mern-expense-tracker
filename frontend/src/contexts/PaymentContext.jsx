@@ -53,6 +53,8 @@ export function PaymentProvider({ children }) {
     loadPayments,
     addPayment,
     modifyPayment,
+    paymentDispatch,
+    paymentState,
   };
 
   return (

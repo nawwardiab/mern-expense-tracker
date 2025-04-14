@@ -7,7 +7,7 @@ const NotificationToggle = ({ label, settingKey }) => {
   const notificationsEnabled = notificationState.notificationSettings[settingKey] || false;
 
   const handleToggle = async () => {
-    console.log("🟢 Toggle clicked for:", settingKey);
+   
 
     // Update the state locally BEFORE making the API call
     const updatedSettings = {
@@ -19,7 +19,7 @@ const NotificationToggle = ({ label, settingKey }) => {
     notificationDispatch({ type: "UPDATE_NOTIFICATIONS_SUCCESS", payload: updatedSettings });
 
     try {
-      console.log("📡 Attempting to save notification settings...", updatedSettings);
+     
       await updateNotificationSettings(updatedSettings, notificationDispatch);
     } catch (error) {
       console.error("Failed to save notification settings:", error);

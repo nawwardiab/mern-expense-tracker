@@ -9,8 +9,8 @@ const userSchema = new Schema(
     password: { type: String, required: true },
     profilePicture: { type: String, default: "" },
     location: { type: String, default: "" },
-    currency: { type: String, default: "" },
-    income: { type: String, default: "" },
+    currency: { type: String, default: 0 },
+    income: { type: Number, default: "" },
     paymentMethod: { type: String, default: "" },
     username: { type: String, unique: true, sparse: true },
     isOnboarded: { type: Boolean, default: false },
@@ -21,7 +21,7 @@ const userSchema = new Schema(
       featureAnnouncements: { type: Boolean, default: false },
     },
   },
-  { timestamp: true }
+  { timestamps: true }
 );
 
 // !  Integrate `bcrypt` for password hashing.

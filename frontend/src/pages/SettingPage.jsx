@@ -19,7 +19,7 @@ const SettingPage = () => {
     email: "",
     dateOfBirth: "",
     location: "",
-    currency: "",
+   
     income: "",
     paymentMethod: "",
     username: "",
@@ -50,7 +50,7 @@ const SettingPage = () => {
         email: user.email || "",
         dateOfBirth: user.dateOfBirth ? user.dateOfBirth.split("T")[0] : "",
         location: user.location || "",
-        currency: user.currency || "",
+      
         income: user.income || "",
         paymentMethod: user.paymentMethod || "",
 
@@ -243,7 +243,7 @@ const SettingPage = () => {
         {/* Onboarding Toggle */}
         <div className="bg-white p-4 rounded-lg shadow-lg">
           <div className="flex justify-between items-center py-2">
-            <span>Onboarding Status</span>
+            <span> skip Onboarding</span>
             <label className="relative inline-flex items-center cursor-pointer">
               <input
                 type="checkbox"

@@ -3,7 +3,7 @@ import ExpenseDetails from "../components/modal/ExpenseDetail.jsx";
 import { AuthContext } from "../contexts/AuthContext.jsx";
 import { ExpenseContext } from "../contexts/ExpenseContext.jsx";
 import { getAllExpenses } from "../api/expenseApi.js";
-import WeeklySpendingChart from "../components/Chart.jsx";
+import DashboardChat from "../components/Chart.jsx";
 import SummaryCards from "../components/SummaryCards.jsx";
 import TransactionList from "../components/TransactionList.jsx";
 
@@ -40,7 +40,7 @@ const HomePage = () => {
       <div className="lg:col-span-2 space-y-6">
         <h1 className="text-2xl font-bold">Overview</h1>
         <SummaryCards />
-        <WeeklySpendingChart />
+        <DashboardChat/>
       </div>
 
       {/* Right Sidebar - Transaction Summary */}

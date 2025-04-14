@@ -9,7 +9,7 @@ Content-Type: application/json
 
 {
   "fullName": "james test",
-  "email": "jamestest@gmail.com",
+  "email": "ira@gmail.com",
   "password": "1234"
 }
 
@@ -19,19 +19,23 @@ POST http://localhost:8000/users/login
 Content-Type: application/json
 
 {
-  "email": "nawar.test@test.com",
-  "password": "12345"
+  "email": "ds@mail.com",
+  "password": "1234"
 }
 
 ### Get Profile
-GET http://localhost:8000/users/getme
+GET http://localhost:8000/users/me
+Cookie: jwtToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZjgxZmU3NmQ2YmMzMGJhOGExZDUxMCIsImlhdCI6MTc0NDMxNTYxOSwiZXhwIjoxNzQ0NDAyMDE5fQ.8QBOJexaGZrUEjnARlp7_wR0uN3x9X_dkgVvuO-UEbE; Max-Age=86400; Path=/; Expires=Fri, 11 Apr 2025 20:06:59 GMT; HttpOnly
+
 
 
 
 ### update profile
 PATCH http://localhost:8000/users/profile
 Content-Type: application/json
+Cookie: jwtToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZjgxZmU3NmQ2YmMzMGJhOGExZDUxMCIsImlhdCI6MTc0NDMxNTYxOSwiZXhwIjoxNzQ0NDAyMDE5fQ.8QBOJexaGZrUEjnARlp7_wR0uN3x9X_dkgVvuO-UEbE; Max-Age=86400; Path=/; Expires=Fri, 11 Apr 2025 20:06:59 GMT; HttpOnly
 
 {
-  "password": "1234"
+ "createdAt": "2025-01-01T19:45:43.488Z",
+  "income": 4500
 }
