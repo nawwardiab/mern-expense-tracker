@@ -1,11 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 
-const SettleUpModal = ({ data, onClose }) => {
-  // data has {amount, payeeId} and whatever we pass in the parent
-  const { amount, payeeId } = data;
+const SettleUpModal = ({ data, onClose, onConfirmPayment }) => {
+  // data has { amount, payeeId, payeeName }
+  const { payeeId, payeeName } = data;
+  // Keep a local "amount" state, default to data.amount
+  const [amount, setAmount] = useState(data.amount);
 
   const handleConfirmPay = () => {
-    alert(`You paid ${amount}€ to user: ${payeeId}`);
+    onConfirmPayment({ payeeId, payeeName, amount });
     onClose();
   };
 
@@ -16,11 +18,23 @@ const SettleUpModal = ({ data, onClose }) => {
           &times;
         </button>
 
-        <h2 className="tet-xl font-bold mb-4">Settle Up</h2>
+        <h2 className="text-xl font-bold mb-4">Settle Up</h2>
         <p className="mb-4">
-          You owe <strong>{amount.toFixed(2)} €</strong> to user with ID:{" "}
-          {payeeId}
+          You owe <strong>{amount.toFixed(2)} €</strong> to {payeeName}
         </p>
+
+        <label className="block mb-1">Amount to Pay:</label>
+        <input
+          type="number"
+          step="0.01"
+          value={amount}
+          onChange={(e) => {
+            const val = parseFloat(e.target.value);
+            setAmount(isNaN(val) ? 0 : val);
+          }}
+          className="border p-1 rounded mb-4 w-full"
+        />
+
         <button
           onClick={handleConfirmPay}
           className="bg-blue-600 text-white px-4 py-2 rounded"

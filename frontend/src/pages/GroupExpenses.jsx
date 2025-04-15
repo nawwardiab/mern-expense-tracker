@@ -10,6 +10,8 @@ import GroupMembersTable from "../components/GroupMembersTable";
 
 import { GroupContext } from "../contexts/GroupContext";
 import { fetchUserGroups } from "../api/groupApi";
+import PaymentList from "../components/PaymentList";
+import PaymentForm from "../components/PaymentForm";
 
 const GroupExpenses = () => {
   const { groupState, groupDispatch } = useContext(GroupContext);
@@ -25,9 +27,7 @@ const GroupExpenses = () => {
     <div className="flex flex-col h-screen bg-gray-50">
       {/* Page Title and Button - Full Width */}
       <div className="bg-white shadow-md p-6 flex justify-between items-center w-full">
-        <h1 className="text-3xl font-bold mb-8">
-          Group Expense Management
-        </h1>
+        <h1 className="text-3xl font-bold mb-8">Group Expense Management</h1>
 
         {/* Open Modal Button */}
         <button
@@ -39,7 +39,7 @@ const GroupExpenses = () => {
       </div>
 
       {/* Content Section - Sidebar & Main Content */}
-      <div className="flex flex-1">
+      <div className="flex flex-1 h-full overflow-y-auto p-3 sm:p-4 bg-gray-50 scrollbar-hide">
         {/* Sidebar - Group List */}
         <aside className="w-1/4 bg-white border-r shadow-md p-4 overflow-auto">
           <h2 className="text-lg font-semibold mb-4">Groups</h2>
@@ -54,10 +54,8 @@ const GroupExpenses = () => {
               <>
                 <GroupDetail />
                 <ExpenseTable />
-                <GroupMembersTable
-                // members={selectedGroup.members}
-                // totalAmount={selectedGroup.totalAmount}
-                />
+                <PaymentList groupId={selectedGroup?._id} />
+                <GroupMembersTable />
               </>
             ) : (
               <p className="text-center text-gray-500">No group selected.</p>
@@ -71,7 +69,7 @@ const GroupExpenses = () => {
         <AddGroupExpense
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
-        // onGroupAdded={handleGroupAdded}
+          // onGroupAdded={handleGroupAdded}
         />
       )}
     </div>

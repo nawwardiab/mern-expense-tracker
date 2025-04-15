@@ -33,7 +33,9 @@ const DashboardChart = () => {
 
     // 👇 fallback to 1 month if createdAt missing
     const monthsSinceCreation = createdAt
-      ? (today.getFullYear() - createdAt.getFullYear()) * 12 + (today.getMonth() - createdAt.getMonth()) + 1
+      ? (today.getFullYear() - createdAt.getFullYear()) * 12 +
+        (today.getMonth() - createdAt.getMonth()) +
+        1
       : 1;
 
     const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -55,16 +57,17 @@ const DashboardChart = () => {
 
     // Payments
     const monthlyIncomingFromPayments = payments
-      .filter((p) => isInCurrentMonth(p.createdAt))
+      ?.filter((p) => isInCurrentMonth(p.createdAt))
       .reduce((sum, p) => sum + Number(p.amount || 0), 0);
 
-    const totalIncomingFromPayments = payments.reduce(
+    const totalIncomingFromPayments = payments?.reduce(
       (sum, p) => sum + Number(p.amount || 0),
       0
     );
 
     const monthlyIncoming = monthlyIncomingFromPayments + salary;
-    const totalIncoming = totalIncomingFromPayments + salary * monthsSinceCreation;
+    const totalIncoming =
+      totalIncomingFromPayments + salary * monthsSinceCreation;
 
     setChartData({
       labels: ["Incoming", "Outgoing"],
@@ -87,7 +90,7 @@ const DashboardChart = () => {
 
   return (
     <div className="bg-white rounded-lg shadow p-6">
-   {/**   <h2 className="text-lg font-semibold mb-4"> Income vs Expense Chart</h2> */}
+      {/**   <h2 className="text-lg font-semibold mb-4"> Income vs Expense Chart</h2> */}
       <Bar
         data={chartData}
         options={{
@@ -111,4 +114,3 @@ const DashboardChart = () => {
 };
 
 export default DashboardChart;
-

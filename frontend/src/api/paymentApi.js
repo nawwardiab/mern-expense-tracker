@@ -1,11 +1,12 @@
 import axios from "axios";
 
 // Fetch all payments (optional: pass filters like groupId)
-export async function fetchPayments(dispatch) {
+export async function fetchPayments(dispatch, groupId) {
   try {
     dispatch({ type: "PAYMENTS_REQUEST" });
-    const response = await axios.get("/payments");
-    dispatch({ type: "PAYMENTS_SUCCESS", payload: response.data });
+    // Pass groupId in the query
+    const response = await axios.get(`/payments?groupId=${groupId}`);
+    dispatch({ type: "PAYMENTS_SUCCESS", payload: response.data.data });
   } catch (error) {
     dispatch({ type: "PAYMENTS_FAILURE", payload: error.message });
   }
