@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { GroupContext } from "../contexts/GroupContext";
 import AddGroupExpenseModal from "./modal/AddGroupExpenseModal";
 import { addGroupExpense } from "../api/groupApi";
+import PaymentList from "./PaymentList";
 
 const ExpenseTable = () => {
   const { groupState, groupDispatch } = useContext(GroupContext);

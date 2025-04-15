@@ -31,7 +31,8 @@ const SummaryCards = () => {
 
     const monthsSinceCreation = createdAt
       ? (today.getFullYear() - createdAt.getFullYear()) * 12 +
-        (today.getMonth() - createdAt.getMonth()) + 1
+        (today.getMonth() - createdAt.getMonth()) +
+        1
       : 1; // fallback to 1 month if createdAt missing
 
     const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -47,7 +48,7 @@ const SummaryCards = () => {
         : expenses;
 
       const filteredPayments = isMonthly
-        ? payments.filter((p) => isInCurrentMonth(p.createdAt))
+        ? payments?.filter((p) => isInCurrentMonth(p.createdAt))
         : payments;
 
       const totalOutgoing = filteredExpenses.reduce(
@@ -55,7 +56,7 @@ const SummaryCards = () => {
         0
       );
 
-      const totalIncomingFromPayments = filteredPayments.reduce(
+      const totalIncomingFromPayments = filteredPayments?.reduce(
         (acc, curr) => acc + Number(curr.amount || 0),
         0
       );
@@ -78,7 +79,6 @@ const SummaryCards = () => {
     setTotalStats(calculateStats(false));
   }, [expenses, payments, user]);
 
-
   return (
     <section className="grid gap-4 mb-6">
       <div className="bg-gray-300 rounded-xl p-6">
@@ -96,37 +96,47 @@ const SummaryCards = () => {
         <div className="bg-gray-200 rounded-xl p-4">
           <p className="text-sm font-medium mb-1">All Transactions</p>
           <p className="text-md">
-            <strong>{monthlyStats.totalTransactions || 0}</strong><span className="text-xs font-thin text-gray-800"> /Month</span> 
+            <strong>{monthlyStats.totalTransactions || 0}</strong>
+            <span className="text-xs font-thin text-gray-800"> /Month</span>
           </p>
           <p className="text-md">
-            <strong>{totalStats.totalTransactions || 0}</strong><span className="text-xs font-thin text-gray-800"> /total</span> 
+            <strong>{totalStats.totalTransactions || 0}</strong>
+            <span className="text-xs font-thin text-gray-800"> /total</span>
           </p>
         </div>
 
         <div className="bg-gray-200 rounded-xl p-4">
           <p className="text-sm font-medium mb-1">Total Outgoing</p>
           <p className="text-md text-red-500">
-            €{formatAmount(monthlyStats.totalOutgoing)}<span className="text-xs font-thin text-gray-800"> /Month</span> 
+            €{formatAmount(monthlyStats.totalOutgoing)}
+            <span className="text-xs font-thin text-gray-800"> /Month</span>
           </p>
           <p className="text-sm text-red-700 mt-4">
-            €{formatAmount(totalStats.totalOutgoing)}<span className="text-xs font-thin text-gray-800"> /total</span> 
+            €{formatAmount(totalStats.totalOutgoing)}
+            <span className="text-xs font-thin text-gray-800"> /total</span>
           </p>
         </div>
 
         <div className="bg-gray-200 rounded-xl p-4">
           <p className="text-sm font-medium mb-1">Total Incoming</p>
           <p className="text-md text-green-600">
-            €{formatAmount(monthlyStats.totalOutgoing)}<span className="text-xs font-thin text-gray-800"> /Month</span> 
+            €{formatAmount(monthlyStats.totalOutgoing)}
+            <span className="text-xs font-thin text-gray-800"> /Month</span>
           </p>
           <p className="text-sm text-green-700 mt-4">
-            €{formatAmount(totalStats.totalIncoming)}<span className="text-xs font-thin text-gray-800"> /total</span> 
+            €{formatAmount(totalStats.totalIncoming)}
+            <span className="text-xs font-thin text-gray-800"> /total</span>
           </p>
         </div>
 
         <div className="bg-gray-200 rounded-xl p-4">
           <p className="text-sm font-medium mb-1">Net Savings</p>
           <p className="text-md font-semibold">
-            €{formatAmount(monthlyStats.totalIncoming - monthlyStats.totalOutgoing)}<span className="text-xs font-thin text-gray-800"> /Month</span> 
+            €
+            {formatAmount(
+              monthlyStats.totalIncoming - monthlyStats.totalOutgoing
+            )}
+            <span className="text-xs font-thin text-gray-800"> /Month</span>
           </p>
         </div>
       </div>
@@ -134,26 +144,4 @@ const SummaryCards = () => {
   );
 };
 
-
-export default SummaryCards
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
+export default SummaryCards;

@@ -7,6 +7,7 @@ import { fetchGroupExpenses } from "../api/groupApi";
 import AddGroupExpense from "./modal/AddGroupModal";
 import EditGroupModal from "./modal/EditGroupModal";
 import InviteModal from "./modal/InviteModal";
+import PaymentForm from "./PaymentForm";
 
 const GroupDetail = () => {
   const { expenseState, expenseDispatch } = useContext(ExpenseContext);

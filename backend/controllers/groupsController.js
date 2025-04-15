@@ -5,10 +5,19 @@ import Payment from "../models/Payment.js";
 //Get all groups for a user
 export const fetchUserGroups = async (req, res) => {
   try {
-    const groups = await Group.find()
+    // We have the user's ID from the JWT checkToken middleware: req.user._id
+    const userId = req.user._id;
+
+    // Only return groups where:
+    // (A) "members.userId" includes this user, OR
+    // (B) "createdBy" is this user
+    const groups = await Group.find({
+      $or: [{ "members.userId": userId }, { createdBy: userId }],
+    })
       .sort({ createdAt: -1 })
       .populate("members.userId")
       .populate("expenses");
+
     res.json(groups);
   } catch (error) {
     res.status(500).json({ message: "Server error", error });

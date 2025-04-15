@@ -1,41 +1,47 @@
 import axios from "axios";
 
 // Fetch all payments (optional: pass filters like groupId)
-export async function fetchPayments(params = {}) {
+export async function fetchPayments(dispatch, groupId) {
   try {
-    const response = await axios.get("/payments", { params });
-    return response.data; // { success: boolean, data: [...payments] }
-  } catch (err) {
-    throw err.response?.data || err.message;
+    dispatch({ type: "PAYMENTS_REQUEST" });
+    // Pass groupId in the query
+    const response = await axios.get(`/payments?groupId=${groupId}`);
+    dispatch({ type: "PAYMENTS_SUCCESS", payload: response.data.data });
+  } catch (error) {
+    dispatch({ type: "PAYMENTS_FAILURE", payload: error.message });
   }
 }
 
 // Get a single payment by ID
-export async function getPayment(paymentId) {
+export async function getPayment(paymentId, dispatch) {
   try {
+    dispatch({ type: "PAYMENTS_REQUEST" });
+
     const response = await axios.get(`/payments/${paymentId}`);
-    return response.data; // { success: boolean, data: {...payment} }
-  } catch (err) {
-    throw err.response?.data || err.message;
+    dispatch({ type: "PAYMENTS_SUCCESS", payload: response.data });
+  } catch (error) {
+    dispatch({ type: "PAYMENTS_FAILURE", payload: error.message });
   }
 }
 
 // Create a new payment
-export async function createPayment(payload) {
+export async function createPayment(payload, dispatch) {
   try {
+    dispatch({ type: "PAYMENTS_REQUEST" });
     const response = await axios.post(`/payments/create`, payload);
-    return response.data; // { success: boolean, data: {...payment} }
-  } catch (err) {
-    throw err.response?.data || err.message;
+    dispatch({ type: "CREATE_PAYMENT_SUCCESS", payload: response.data });
+  } catch (error) {
+    dispatch({ type: "PAYMENTS_FAILURE", payload: error.message });
   }
 }
 
 // Update a payment (typically status or transactionId)
-export async function updatePayment(paymentId, payload) {
+export async function updatePayment(paymentId, payload, dispatch) {
   try {
+    dispatch({ type: "PAYMENTS_REQUEST" });
     const response = await axios.patch(`/payments/${paymentId}`, payload);
-    return response.data; // { success: boolean, data: {...updatedPayment} }
-  } catch (err) {
-    throw err.response?.data || err.message;
+    dispatch({ type: "UPDATE_PAYMENT_SUCCESS", payload: response.data });
+  } catch (error) {
+    dispatch({ type: "PAYMENTS_FAILURE", payload: error.message });
   }
 }
