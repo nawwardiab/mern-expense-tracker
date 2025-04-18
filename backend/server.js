@@ -10,6 +10,7 @@ import expensesRouter from "./routes/expensesRouter.js";
 import paymentRouter from "./routes/paymentRouter.js";
 import groupsRouter from "./routes/groupsRouter.js";
 import inviteRouter from "./routes/inviteRouter.js";
+import groupBalanceRouter from "./routes/groupBalanceRouter.js";
 import {
   globalErrorHandler,
   routeNotFound,
@@ -36,6 +37,7 @@ app.use("/expenses", expensesRouter);
 app.use("/groups", groupsRouter);
 app.use("/invites", inviteRouter);
 app.use("/payments", paymentRouter);
+app.use("/balances", groupBalanceRouter);
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 //! Error Handlers

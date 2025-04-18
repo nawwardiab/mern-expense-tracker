@@ -26,7 +26,7 @@ const AddGroupModal = ({ isOpen, onClose }) => {
         name: group.name,
         description: group.description,
         createdBy: user._id,
-        members: [{ userId: user._id }],
+        members: [{ groupMember: user._id }],
       };
 
       await createGroup(payload, groupDispatch);
@@ -57,10 +57,11 @@ const AddGroupModal = ({ isOpen, onClose }) => {
 
         {message && (
           <div
-            className={`mb-3 p-2 rounded text-sm ${message.type === "success"
-              ? "bg-green-200 text-green-700"
-              : "bg-red-200 text-red-700"
-              }`}
+            className={`mb-3 p-2 rounded text-sm ${
+              message.type === "success"
+                ? "bg-green-200 text-green-700"
+                : "bg-red-200 text-red-700"
+            }`}
           >
             {message.text}
           </div>

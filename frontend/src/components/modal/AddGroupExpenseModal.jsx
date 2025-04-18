@@ -4,7 +4,7 @@ import { FaTimes } from "react-icons/fa";
 import { AuthContext } from "../../contexts/AuthContext";
 import { GroupContext } from "../../contexts/GroupContext";
 import { ExpenseContext } from "../../contexts/ExpenseContext";
-import { addGroupExpense, fetchGroupExpenses } from "../../api/groupApi";
+import { addGroupExpense } from "../../api/groupApi";
 
 const AddGroupExpenseModal = ({ isOpen, onClose, groupId }) => {
   const { userState } = useContext(AuthContext);
@@ -38,8 +38,11 @@ const AddGroupExpenseModal = ({ isOpen, onClose, groupId }) => {
     };
 
     try {
+      // Use the fixed addGroupExpense function
       await addGroupExpense(selectedGroup._id, expenseData, groupDispatch);
+
       setMessage({ type: "success", text: "Expense added to group!" });
+
       setTimeout(() => {
         setForm({
           title: "",
@@ -51,7 +54,6 @@ const AddGroupExpenseModal = ({ isOpen, onClose, groupId }) => {
         onClose();
         setLoading(false);
       }, 1500);
-      await fetchGroupExpenses(selectedGroup._id, groupDispatch);
     } catch (err) {
       console.error("Failed to add group expense:", err);
       setMessage({ type: "error", text: "Error adding expense." });
@@ -71,10 +73,11 @@ const AddGroupExpenseModal = ({ isOpen, onClose, groupId }) => {
 
         {message && (
           <div
-            className={`mb-3 p-2 rounded text-sm ${message.type === "success"
+            className={`mb-3 p-2 rounded text-sm ${
+              message.type === "success"
                 ? "bg-green-200 text-green-700"
                 : "bg-red-200 text-red-700"
-              }`}
+            }`}
           >
             {message.text}
           </div>

@@ -1,14 +1,14 @@
 1. **The invite link should** redirect to a page where the user can accept or join the group **manually** (i.e., the user sees a confirmation screen, not auto-join).
 2. **Only the group creator** can generate an invite link.
-3. The invite link is **for registered users** only; if the user is not registered, they’ll be prompted to sign up.
+3. The invite link is **for registered users** only; if the user is not registered, they'll be prompted to sign up.
 4. The link **expires after a certain time**.
-5. Regarding **tracking who generated the invite**: in most real-world apps, we do store who generated it (the group creator in our case). This helps with auditing, troubleshooting, or restricting link privileges. But it's optional if we don’t need that data.
+5. Regarding **tracking who generated the invite**: in most real-world apps, we do store who generated it (the group creator in our case). This helps with auditing, troubleshooting, or restricting link privileges. But it's optional if we don't need that data.
 
 ---
 
 ## 1. High-Level Flow
 
-1. **Creator clicks “Generate Invite Link.”**
+1. **Creator clicks "Generate Invite Link."**
 
    - The server creates a unique `inviteToken` and an **Invite** record in the database.
    - The response includes a URL (e.g., `http://localhost:5317/invite/<inviteToken>`).
@@ -19,11 +19,11 @@
 
    - If **not logged in**, the user is prompted to log in or sign up.
      - After successful login/signup, they are redirected back to the **invite accept page**.
-   - If **already logged in**, they directly see a “Join Group?” prompt (maybe showing group details).
+   - If **already logged in**, they directly see a "Join Group?" prompt (maybe showing group details).
 
 4. **User accepts the invite**:
 
-   - The server validates `inviteToken`, checks it’s not expired, ensures group still exists, etc.
+   - The server validates `inviteToken`, checks it's not expired, ensures group still exists, etc.
    - If valid, the user is added to the group.
 
 5. **allow multiple uses** until it expires.
@@ -73,7 +73,7 @@ Key fields:
 
 ### 3.1. **Random Token Generation**
 
-Generate a random token using Node’s built-in `crypto` module or a package like `uuid`:
+Generate a random token using Node's built-in `crypto` module or a package like `uuid`:
 
 ```js
 import crypto from "crypto";
@@ -142,7 +142,7 @@ export const createInviteLink = async (req, res) => {
 
 ### 4.1. **Frontend Flow**
 
-1. **Group creator** clicks “Generate Invite Link” button.
+1. **Group creator** clicks "Generate Invite Link" button.
 2. **AJAX call** to `POST /groups/:groupId/invite`.
 3. **Receive** the invite link in JSON. Possibly show a modal with the link or copy to clipboard.
 
@@ -228,7 +228,7 @@ export const acceptInvite = async (req, res) => {
 
     // Check if user is already a member
     const isAlreadyMember = invite.group.members.some(
-      (member) => member.userId.toString() === req.user._id.toString()
+      (member) => member.groupMember.toString() === req.user._id.toString()
     );
 
     if (isAlreadyMember) {
@@ -238,7 +238,7 @@ export const acceptInvite = async (req, res) => {
     }
 
     // Add user to group
-    invite.group.members.push({ userId: req.user._id });
+    invite.group.members.push({ groupMember: req.user._id });
     await invite.group.save();
 
     return res.status(200).json({
@@ -275,17 +275,17 @@ This ensures only registered (and now logged-in) users can accept the invite.
 
 **Pros**:
 
-- Clear user flow: “You’ve been invited to join Group X. Accept or Decline?”
+- Clear user flow: "You've been invited to join Group X. Accept or Decline?"
 - Easy to handle token-based logic: we can do our checks in `useEffect` and conditionally render UI.
-- Great for redirects if user isn’t logged in yet.
+- Great for redirects if user isn't logged in yet.
 
 **Cons**:
 
 - Requires extra code (components/routes) to handle invites in the frontend.
 
-### 7.2. **Alternative**: Directly handle join logic in the backend on “open link”
+### 7.2. **Alternative**: Directly handle join logic in the backend on "open link"
 
-- **Pros**: Fewer steps for the user. Possibly an auto-join if that’s desired.
+- **Pros**: Fewer steps for the user. Possibly an auto-join if that's desired.
 - **Cons**: Less secure (they might accidentally join without wanting to), and user cannot see group info or confirm before joining.
 
 **Best Practice**: Usually a dedicated route is simpler and more user-friendly.
@@ -307,7 +307,7 @@ This ensures only registered (and now logged-in) users can accept the invite.
 3. **Security**:
 
    - The token should be random or a UUID.
-   - Storing it in plain text in the `Invite` doc is fine if it’s purely ephemeral. _May_ also hash it for extra security.
+   - Storing it in plain text in the `Invite` doc is fine if it's purely ephemeral. _May_ also hash it for extra security.
 
 4. **Auditing**:
 
@@ -317,7 +317,7 @@ This ensures only registered (and now logged-in) users can accept the invite.
 5. **Revoking** invites:
 
    - The group creator might want to revoke an unused link.
-   - That means setting `invite.expiresAt = Date.now()` or `invite.used = true` so it can’t be used.
+   - That means setting `invite.expiresAt = Date.now()` or `invite.used = true` so it can't be used.
 
 6. **Notification**:
    - If the group is private, maybe automatically notify the group creator whenever a new member joins.
@@ -336,7 +336,7 @@ This ensures only registered (and now logged-in) users can accept the invite.
    - Checking if user is logged in
    - Letting user confirm they want to join
 5. **Accept** the invite via a separate route (or the same route with a `POST`) that:
-   - Validates it’s still valid
+   - Validates it's still valid
    - Adds the user to the group
    - Marks the invite as used (if single-use)
 
@@ -346,4 +346,4 @@ This approach is the most **straightforward** and **secure** while giving a good
 
 - Implement the invite endpoints (`createInviteLink`, `validateInviteToken`, `acceptInvite`).
 - Create a React page or modal for `/invite/:token`.
-- Integrate with existing login flow to handle the “not logged in => sign up => come back” scenario.
+- Integrate with existing login flow to handle the "not logged in => sign up => come back" scenario.

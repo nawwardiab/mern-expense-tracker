@@ -22,13 +22,27 @@ export async function createGroup(groupData, groupDispatch, inviteDispatch) {
 }
 
 // Add a new expense to a group
-
 export async function addGroupExpense(groupId, expenseData, dispatch) {
-  const response = await axios.patch(
-    `/groups/${groupId}/add-expense`,
-    expenseData
-  );
-  dispatch({ type: "UPDATE_GROUP", payload: response.data });
+  try {
+    const response = await axios.patch(
+      `/groups/${groupId}/add-expense`,
+      expenseData
+    );
+
+    // Dispatch the correct action type with proper payload
+    dispatch({
+      type: "ADD_GROUP_EXPENSE",
+      payload: {
+        ...response.data.data,
+        amount: Number(expenseData.amount), // Ensure amount is a number
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error adding group expense:", error.message);
+    throw error;
+  }
 }
 
 // 4) Delete a group

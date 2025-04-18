@@ -34,19 +34,19 @@ const EditGroupModal = ({ onClose }) => {
 
   // const handleMemberToggle = (userId) => {
   //   const isMember = members.some((m) => {
-  //     const id = typeof m.userId === "object" ? m.userId._id : m.userId;
+  //     const id = typeof m.groupMember === "object" ? m.groupMember._id : m.groupMember;
   //     return id === userId;
   //   });
 
   //   if (isMember) {
   //     setMembers((prev) =>
   //       prev.filter((m) => {
-  //         const id = typeof m.userId === "object" ? m.userId._id : m.userId;
+  //         const id = typeof m.groupMember === "object" ? m.groupMember._id : m.groupMember;
   //         return id !== userId;
   //       })
   //     );
   //   } else {
-  //     setMembers((prev) => [...prev, { userId, role: "member" }]);
+  //     setMembers((prev) => [...prev, { groupMember: userId, role: "member" }]);
   //   }
   // };
 
@@ -146,15 +146,16 @@ const EditGroupModal = ({ onClose }) => {
               {updatedGroup.members.map((user) => {
                 return (
                   <div
-                    key={user.userId._id}
+                    key={user.groupMember._id}
                     className="flex justify-between items-center p-1"
                   >
-                    <span>{user.userId.fullName}</span>
+                    <span>{user.groupMember.fullName}</span>
                     <button
                       type="button"
-                      className={`px-3 py-1 rounded-lg text-white ${user ? "bg-red-600" : "bg-green-600"
-                        }`}
-                    // onClick={() => handleMemberToggle(user._id)}
+                      className={`px-3 py-1 rounded-lg text-white ${
+                        user ? "bg-red-600" : "bg-green-600"
+                      }`}
+                      // onClick={() => handleMemberToggle(user._id)}
                     >
                       {user ? "Remove" : "Add"}
                     </button>
