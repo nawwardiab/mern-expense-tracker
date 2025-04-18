@@ -1,14 +1,20 @@
 import React, { useState, useEffect, useContext } from "react";
 import { GroupContext } from "../contexts/GroupContext";
 import AddGroupExpenseModal from "./modal/AddGroupExpenseModal";
-import { addGroupExpense } from "../api/groupApi";
+import {
+  addGroupExpense,
+  editGroupExpense,
+  deleteGroupExpense,
+} from "../api/groupApi";
 import PaymentList from "./PaymentList";
+import { FaEdit, FaTrash } from "react-icons/fa";
 
 const ExpenseTable = () => {
   const { groupState, groupDispatch } = useContext(GroupContext);
   const { selectedGroup } = groupState;
 
   const [isAddExpenseModalOpen, setIsAddExpenseModalOpen] = useState(false);
+  const [editingExpense, setEditingExpense] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -24,6 +30,25 @@ const ExpenseTable = () => {
   //   if (loading)
   //     return <p className="text-center text-gray-500">Loading expenses...</p>;
   if (error) return <p className="text-center text-red-600">{error}</p>;
+
+  const handleEditExpense = (expense) => {
+    setEditingExpense(expense);
+    setIsAddExpenseModalOpen(true);
+  };
+
+  const handleDeleteExpense = async (expenseId, amount) => {
+    if (window.confirm("Are you sure you want to delete this expense?")) {
+      try {
+        await deleteGroupExpense(selectedGroup._id, expenseId);
+        groupDispatch({
+          type: "DELETE_GROUP_EXPENSE",
+          payload: { expenseId, amount },
+        });
+      } catch (error) {
+        console.error("Error deleting expense:", error);
+      }
+    }
+  };
 
   return (
     <div className="mt-6 bg-white rounded-lg shadow-md p-6">
@@ -44,6 +69,9 @@ const ExpenseTable = () => {
               <th className="border border-gray-300 px-4 py-2 text-left">
                 Date
               </th>
+              <th className="border border-gray-300 px-4 py-2 text-center">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -58,6 +86,24 @@ const ExpenseTable = () => {
                 <td className="border border-gray-300 px-4 py-2">
                   {new Date(expense.transactionDate).toLocaleDateString()}
                 </td>
+                <td className="border border-gray-300 px-4 py-2 text-center">
+                  <button
+                    onClick={() => handleEditExpense(expense)}
+                    className="text-blue-500 hover:text-blue-700 mr-3"
+                    title="Edit expense"
+                  >
+                    <FaEdit size={16} />
+                  </button>
+                  <button
+                    onClick={() =>
+                      handleDeleteExpense(expense._id, expense.amount)
+                    }
+                    className="text-red-500 hover:text-red-700"
+                    title="Delete expense"
+                  >
+                    <FaTrash size={16} />
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -65,7 +111,10 @@ const ExpenseTable = () => {
       )}
 
       <button
-        onClick={() => setIsAddExpenseModalOpen(true)}
+        onClick={() => {
+          setEditingExpense(null);
+          setIsAddExpenseModalOpen(true);
+        }}
         className="mt-4 bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-600 cursor-pointer transition-all duration-300"
       >
         + Add More Group Expenses
@@ -76,6 +125,7 @@ const ExpenseTable = () => {
           isOpen={isAddExpenseModalOpen}
           onClose={() => setIsAddExpenseModalOpen(false)}
           groupId={selectedGroup?._id}
+          expense={editingExpense}
         />
       )}
     </div>
