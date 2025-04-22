@@ -7,7 +7,6 @@ import { fetchGroupExpenses } from "../api/groupApi";
 import AddGroupExpense from "./modal/AddGroupModal";
 import EditGroupModal from "./modal/EditGroupModal";
 import InviteModal from "./modal/InviteModal";
-import PaymentForm from "./PaymentForm";
 
 const GroupDetail = () => {
   const { expenseState, expenseDispatch } = useContext(ExpenseContext);
@@ -20,6 +19,8 @@ const GroupDetail = () => {
   const [editModalOpen, setEditModalOpen] = useState(false);
   // const [loading, setLoading] = useState(true);
 
+  console.log("groupState", groupState);
+
   //Only update groupInfo if the group object exists and has a valid _id
   useEffect(() => {
     if (selectedGroup?._id) {
@@ -29,7 +30,7 @@ const GroupDetail = () => {
   }, []);
 
   const uniqueMemberCount = new Set(
-    selectedGroup?.members?.map((m) => m.userId)
+    selectedGroup?.members?.map((m) => m.groupMember)
   ).size;
 
   const handleInviteClick = () => {

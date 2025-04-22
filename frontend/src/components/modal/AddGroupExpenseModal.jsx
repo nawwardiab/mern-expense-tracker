@@ -1,12 +1,12 @@
 // 📁 components/modal/AddGroupExpenseModal.jsx
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { FaTimes } from "react-icons/fa";
 import { AuthContext } from "../../contexts/AuthContext";
 import { GroupContext } from "../../contexts/GroupContext";
 import { ExpenseContext } from "../../contexts/ExpenseContext";
-import { addGroupExpense, fetchGroupExpenses } from "../../api/groupApi";
+import { addGroupExpense, editGroupExpense } from "../../api/groupApi";
 
-const AddGroupExpenseModal = ({ isOpen, onClose, groupId }) => {
+const AddGroupExpenseModal = ({ isOpen, onClose, groupId, expense }) => {
   const { userState } = useContext(AuthContext);
   const { groupDispatch, groupState } = useContext(GroupContext);
   const { selectedGroup } = groupState;
@@ -23,6 +23,20 @@ const AddGroupExpenseModal = ({ isOpen, onClose, groupId }) => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
 
+  // If expense is provided, we're in edit mode
+  useEffect(() => {
+    if (expense) {
+      setForm({
+        title: expense.title || "",
+        amount: expense.amount || "",
+        transactionDate: expense.transactionDate
+          ? new Date(expense.transactionDate).toISOString().split("T")[0]
+          : "",
+        category: expense.category || "Group Expenses",
+      });
+    }
+  }, [expense]);
+
   const handleChange = (e) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
@@ -38,8 +52,31 @@ const AddGroupExpenseModal = ({ isOpen, onClose, groupId }) => {
     };
 
     try {
-      await addGroupExpense(selectedGroup._id, expenseData, groupDispatch);
-      setMessage({ type: "success", text: "Expense added to group!" });
+      if (expense) {
+        // We're editing an existing expense
+        const originalAmount = Number(expense.amount);
+        await editGroupExpense(selectedGroup._id, expense._id, expenseData);
+
+        // Dispatch to update state
+        groupDispatch({
+          type: "EDIT_GROUP_EXPENSE",
+          payload: {
+            updatedExpense: {
+              ...expense,
+              ...expenseData,
+              amount: Number(expenseData.amount),
+            },
+            originalAmount,
+          },
+        });
+
+        setMessage({ type: "success", text: "Expense updated successfully!" });
+      } else {
+        // We're adding a new expense
+        await addGroupExpense(selectedGroup._id, expenseData, groupDispatch);
+        setMessage({ type: "success", text: "Expense added to group!" });
+      }
+
       setTimeout(() => {
         setForm({
           title: "",
@@ -51,10 +88,15 @@ const AddGroupExpenseModal = ({ isOpen, onClose, groupId }) => {
         onClose();
         setLoading(false);
       }, 1500);
-      await fetchGroupExpenses(selectedGroup._id, groupDispatch);
     } catch (err) {
-      console.error("Failed to add group expense:", err);
-      setMessage({ type: "error", text: "Error adding expense." });
+      console.error(
+        expense ? "Failed to update expense:" : "Failed to add group expense:",
+        err
+      );
+      setMessage({
+        type: "error",
+        text: expense ? "Error updating expense." : "Error adding expense.",
+      });
       setLoading(false);
     }
   };
@@ -67,14 +109,17 @@ const AddGroupExpenseModal = ({ isOpen, onClose, groupId }) => {
         <button onClick={onClose} className="absolute top-4 right-4 text-xl">
           <FaTimes />
         </button>
-        <h2 className="text-2xl font-bold mb-4">Add Group Expense</h2>
+        <h2 className="text-2xl font-bold mb-4">
+          {expense ? "Edit Group Expense" : "Add Group Expense"}
+        </h2>
 
         {message && (
           <div
-            className={`mb-3 p-2 rounded text-sm ${message.type === "success"
+            className={`mb-3 p-2 rounded text-sm ${
+              message.type === "success"
                 ? "bg-green-200 text-green-700"
                 : "bg-red-200 text-red-700"
-              }`}
+            }`}
           >
             {message.text}
           </div>
@@ -130,7 +175,13 @@ const AddGroupExpenseModal = ({ isOpen, onClose, groupId }) => {
             className="w-full bg-black text-white py-2 rounded-lg hover:bg-gray-600 cursor-pointer transition-all duration-300"
             disabled={loading}
           >
-            {loading ? "Adding..." : "Add Expense"}
+            {loading
+              ? expense
+                ? "Updating..."
+                : "Adding..."
+              : expense
+              ? "Update Expense"
+              : "Add Expense"}
           </button>
         </form>
       </div>

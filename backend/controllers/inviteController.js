@@ -148,7 +148,7 @@ export const acceptInvite = async (req, res) => {
 
     //! Check if user is already a member
     const isAlreadyMember = invite.group.members.some(
-      (member) => member.userId.toString() === req.user._id.toString()
+      (member) => member.groupMember.toString() === req.user._id.toString()
     );
 
     if (isAlreadyMember) {
@@ -158,7 +158,7 @@ export const acceptInvite = async (req, res) => {
     }
 
     //! Add user to group
-    invite.group.members.push({ userId: req.user._id });
+    invite.group.members.push({ groupMember: req.user._id });
     await invite.group.save();
 
     res.status(200).json({

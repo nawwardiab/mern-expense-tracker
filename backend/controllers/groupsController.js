@@ -9,13 +9,13 @@ export const fetchUserGroups = async (req, res) => {
     const userId = req.user._id;
 
     // Only return groups where:
-    // (A) "members.userId" includes this user, OR
+    // (A) "members.groupMember" includes this user, OR
     // (B) "createdBy" is this user
     const groups = await Group.find({
-      $or: [{ "members.userId": userId }, { createdBy: userId }],
+      $or: [{ "members.groupMember": userId }, { createdBy: userId }],
     })
       .sort({ createdAt: -1 })
-      .populate("members.userId")
+      .populate("members.groupMember")
       .populate("expenses");
 
     res.json(groups);
@@ -36,9 +36,9 @@ export const createGroup = async (req, res) => {
       members,
     });
 
-    // Step 2: Populate the members.userId and (optional) createdBy
+    // Step 2: Populate the members.groupMember and (optional) createdBy
     const populatedGroup = await Group.findById(group._id)
-      .populate("members.userId") // consider renaming "userId" to "groupMember" wherever it is used (Backend and Frontend)
+      .populate("members.groupMember")
       .populate("createdBy")
       .populate("expenses");
 
@@ -59,7 +59,7 @@ export const updateGroupInformation = async (req, res) => {
     const { name, description, members } = req.body;
 
     const group = await Group.findById(groupId)
-      .populate("members.userId") // consider renaming "userId" to "groupMember" wherever it is used (Backend and Frontend)
+      .populate("members.groupMember")
       .populate("createdBy")
       .populate("expenses");
     if (!group) {
@@ -121,18 +121,22 @@ export const addMember = async (req, res) => {
       return res.status(404).json({ message: "Group not found." });
     }
 
-    const isAdmin = group.members.some(
-      (member) => member.userId.toString() === userId && member.role === "admin"
-    );
-    if (!isAdmin) {
-      return res.status(403).json({ message: "Only admins can add members." });
+    // Check if user is the creator of the group
+    const isCreator = group.createdBy.toString() === userId;
+
+    if (!isCreator) {
+      return res
+        .status(403)
+        .json({ message: "Only the group creator can add members." });
     }
 
-    if (group.members.some((member) => member.userId.toString() === memberId)) {
+    if (
+      group.members.some((member) => member.groupMember.toString() === memberId)
+    ) {
       return res.status(400).json({ message: "User is already a member." });
     }
 
-    group.members.push({ userId: memberId, role: "member" });
+    group.members.push({ groupMember: memberId });
     await group.save();
 
     res.json({ message: "Member added successfully.", group });
@@ -153,24 +157,26 @@ export const removeMemberFromGroup = async (req, res) => {
       return res.status(404).json({ message: "Group not found." });
     }
 
-    const isAdmin = group.members.some(
-      (member) => member.userId.toString() === userId && member.role === "admin"
-    );
-    if (!isAdmin) {
+    // Check if user is the creator of the group
+    const isCreator = group.createdBy.toString() === userId;
+
+    if (!isCreator) {
       return res
         .status(403)
-        .json({ message: "Only admins can remove members." });
+        .json({ message: "Only the group creator can remove members." });
     }
 
     if (
-      !group.members.some((member) => member.userId.toString() === memberId)
+      !group.members.some(
+        (member) => member.groupMember.toString() === memberId
+      )
     ) {
       return res.status(404).json({ message: "Member not found in group." });
     }
 
     const owesExpenses = await Expense.exists({
       group: groupId,
-      "owedBy.userId": memberId,
+      "owedBy.groupMember": memberId,
     });
     if (owesExpenses) {
       return res.status(400).json({
@@ -179,7 +185,7 @@ export const removeMemberFromGroup = async (req, res) => {
     }
 
     group.members = group.members.filter(
-      (member) => member.userId.toString() !== memberId
+      (member) => member.groupMember.toString() !== memberId
     );
     await group.save();
 
@@ -257,15 +263,13 @@ export const deleteGroupExpense = async (req, res) => {
         .json({ success: false, message: "Group not found." });
     }
 
-    // Check if user is an admin
-    const isAdmin = group.members.some(
-      (member) => member.userId.toString() === userId && member.role === "admin"
-    );
+    // Check if user is the creator of the group
+    const isCreator = group.createdBy.toString() === userId;
 
-    if (!isAdmin) {
+    if (!isCreator) {
       return res.status(403).json({
         success: false,
-        message: "Only admins can delete group expenses.",
+        message: "Only the group creator can delete group expenses.",
       });
     }
 
@@ -305,7 +309,6 @@ export const deleteGroupExpense = async (req, res) => {
 };
 
 // Edit an expense in a group
-
 export const editGroupExpense = async (req, res) => {
   try {
     const { groupId, expenseId } = req.params;
@@ -319,15 +322,13 @@ export const editGroupExpense = async (req, res) => {
         .json({ success: false, message: "Group not found." });
     }
 
-    // Check if the user is an admin
-    const isAdmin = group.members.some(
-      (member) => member.userId.toString() === userId && member.role === "admin"
-    );
+    // Check if the user is the creator of the group
+    const isCreator = group.createdBy.toString() === userId;
 
-    if (!isAdmin) {
+    if (!isCreator) {
       return res.status(403).json({
         success: false,
-        message: "Only admins can edit group expenses.",
+        message: "Only the group creator can edit group expenses.",
       });
     }
 

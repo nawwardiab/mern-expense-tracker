@@ -11,7 +11,6 @@ import GroupMembersTable from "../components/GroupMembersTable";
 import { GroupContext } from "../contexts/GroupContext";
 import { fetchUserGroups } from "../api/groupApi";
 import PaymentList from "../components/PaymentList";
-import PaymentForm from "../components/PaymentForm";
 
 const GroupExpenses = () => {
   const { groupState, groupDispatch } = useContext(GroupContext);

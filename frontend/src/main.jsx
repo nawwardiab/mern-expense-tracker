@@ -9,6 +9,7 @@ import { ExpenseProvider } from "./contexts/ExpenseContext.jsx";
 import { PaymentProvider } from "./contexts/PaymentContext.jsx";
 import { GroupProvider } from "./contexts/GroupContext.jsx";
 import { InviteProvider } from "./contexts/InviteContext.jsx";
+import { BalanceProvider } from "./contexts/BalanceContext.jsx";
 
 createRoot(document.getElementById("root")).render(
   <AuthProvider>
@@ -16,9 +17,11 @@ createRoot(document.getElementById("root")).render(
       <GroupProvider>
         <InviteProvider>
           <PaymentProvider>
-            <BrowserRouter>
-              <App />
-            </BrowserRouter>
+            <BalanceProvider>
+              <BrowserRouter>
+                <App />
+              </BrowserRouter>
+            </BalanceProvider>
           </PaymentProvider>
         </InviteProvider>
       </GroupProvider>
