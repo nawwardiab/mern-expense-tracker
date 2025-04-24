@@ -94,7 +94,7 @@ const SummaryCards = () => {
         </h2>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bg-gray-200 rounded-xl p-4">
           <p className="text-sm font-medium mb-1">All Transactions</p>
           <p className="text-md">
@@ -128,17 +128,6 @@ const SummaryCards = () => {
           <p className="text-sm text-green-700 mt-4">
             €{formatAmount(totalStats.totalIncoming)}
             <span className="text-xs font-thin text-gray-800"> /total</span>
-          </p>
-        </div>
-
-        <div className="bg-gray-200 rounded-xl p-4">
-          <p className="text-sm font-medium mb-1">Net Savings</p>
-          <p className="text-md font-semibold">
-            €
-            {formatAmount(
-              monthlyStats.totalIncoming - monthlyStats.totalOutgoing
-            )}
-            <span className="text-xs font-thin text-gray-800"> /Month</span>
           </p>
         </div>
       </div>
