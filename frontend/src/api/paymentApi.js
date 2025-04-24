@@ -84,3 +84,36 @@ export async function updatePayment(paymentId, payload, dispatch) {
     throw error;
   }
 }
+
+// Fetch payments related to a user (both as payer and payee)
+export async function fetchUserPayments(userId, dispatch) {
+  try {
+    if (dispatch) dispatch({ type: "PAYMENTS_REQUEST" });
+
+    // First, get payments where user is the payer
+    const outgoingResponse = await axios.get(`/payments?userId=${userId}`);
+
+    // Then, get payments where user is the payee
+    const incomingResponse = await axios.get(
+      `/payments/received?userId=${userId}`
+    );
+
+    // Combine both results
+    const allPayments = [
+      ...outgoingResponse.data.data,
+      ...incomingResponse.data.data,
+    ];
+
+    if (dispatch) {
+      dispatch({ type: "PAYMENTS_SUCCESS", payload: allPayments });
+    }
+
+    return allPayments;
+  } catch (error) {
+    if (dispatch) {
+      dispatch({ type: "PAYMENTS_FAILURE", payload: error.message });
+    }
+    console.error("Failed to fetch user payments:", error);
+    throw error;
+  }
+}

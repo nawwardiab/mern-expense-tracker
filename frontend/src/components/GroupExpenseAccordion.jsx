@@ -3,12 +3,14 @@ import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { GroupContext } from "../contexts/GroupContext";
 import { AuthContext } from "../contexts/AuthContext";
 import { formatAmount } from "../utils/format";
+import { Link, useNavigate } from "react-router-dom";
 
 const GroupExpenseAccordion = () => {
-  const { groupState } = useContext(GroupContext);
+  const { groupState, groupDispatch } = useContext(GroupContext);
   const { userState } = useContext(AuthContext);
   const { groups } = groupState;
   const { user } = userState;
+  const navigate = useNavigate();
 
   // State to track which accordion items are expanded
   const [expandedGroups, setExpandedGroups] = useState({});
@@ -19,6 +21,20 @@ const GroupExpenseAccordion = () => {
       ...prev,
       [groupId]: !prev[groupId],
     }));
+  };
+
+  // Handle view all expenses - navigate to group expenses page and select the group
+  const handleViewAllExpenses = (group, e) => {
+    e.preventDefault(); // Prevent default link behavior
+
+    // Set the selected group in context
+    groupDispatch({
+      type: "SET_SELECTED_GROUP",
+      payload: group,
+    });
+
+    // Navigate to the group expenses page
+    navigate("/expenses/group");
   };
 
   // Calculate user's contribution and balance in each group
@@ -168,7 +184,8 @@ const GroupExpenseAccordion = () => {
                   </div>
                   <div className="text-right mt-2">
                     <a
-                      href={`/groups/${group._id}`}
+                      href="#"
+                      onClick={(e) => handleViewAllExpenses(group, e)}
                       className="text-blue-600 text-sm"
                     >
                       View all expenses →

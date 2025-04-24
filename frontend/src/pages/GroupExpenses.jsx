@@ -52,9 +52,9 @@ const GroupExpenses = () => {
             {selectedGroup ? (
               <>
                 <GroupDetail />
+                <GroupMembersTable />
                 <ExpenseTable />
                 <PaymentList groupId={selectedGroup?._id} />
-                <GroupMembersTable />
               </>
             ) : (
               <p className="text-center text-gray-500">No group selected.</p>
