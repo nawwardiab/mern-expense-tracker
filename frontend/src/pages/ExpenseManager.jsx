@@ -109,8 +109,8 @@ const ExpenseManager = () => {
 
         {/* Right: Summary of the filtered list */}
         <div className="lg:w-1/3 w-full">
-          <div className="p-5 bg-blue-50 rounded-xl shadow-lg flex flex-col items-center text-center h-full">
-            <FaWallet className="text-blue-600 text-4xl sm:text-5xl mb-3 mt-6 sm:mt-10" />
+          <div className="p-5 bg-indigo-50 rounded-xl shadow-lg flex flex-col items-center text-center h-full">
+            <FaWallet className="text-indigo-600 text-4xl sm:text-5xl mb-3 mt-6 sm:mt-10" />
             <h2 className="text-lg sm:text-xl font-semibold mt-4">Total Spent</h2>
             <p className="text-2xl sm:text-3xl font-bold text-gray-800 mt-2">
               €{totalFilteredExpenses.toFixed(2)}
@@ -125,7 +125,7 @@ const ExpenseManager = () => {
       {/* Floating Add Event Button */}
       {/* Floating Add Event Button (Visible Only on Small Devices) */}
       <FaPlus
-        className="fixed bottom-16 right-6 bg-black text-4xl text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition z-50 md:hidden"
+        className="fixed bottom-16 right-6 bg-black text-4xl text-white p-3 rounded-full shadow-lg hover:bg-indigo-600 transition z-50 md:hidden"
         onClick={() => setIsModalOpen(true)}
       />
 

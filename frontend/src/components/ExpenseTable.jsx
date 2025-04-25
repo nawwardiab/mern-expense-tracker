@@ -89,7 +89,7 @@ const ExpenseTable = () => {
                 <td className="border border-gray-300 px-4 py-2 text-center">
                   <button
                     onClick={() => handleEditExpense(expense)}
-                    className="text-blue-500 hover:text-blue-700 mr-3"
+                    className="text-indigo-600 hover:text-indigo-800 mr-3"
                     title="Edit expense"
                   >
                     <FaEdit size={16} />

@@ -212,7 +212,7 @@ const ExpenseDetail = ({ expense, onClose }) => {
             name="title"
             value={editedExpense.title || ""}
             onChange={handleChange}
-            className="w-full p-2 rounded-xl border border-gray-400 bg-gray-100"
+            className="w-full p-2 rounded-md border border-gray-400 bg-gray-100"
           />
         </div>
 
@@ -226,7 +226,7 @@ const ExpenseDetail = ({ expense, onClose }) => {
             name="amount"
             value={editedExpense.amount || ""}
             onChange={handleChange}
-            className="w-full p-2 rounded-xl border border-gray-400 bg-gray-100"
+            className="w-full p-2 rounded-md border border-gray-400 bg-gray-100"
           />
         </div>
 
@@ -237,7 +237,7 @@ const ExpenseDetail = ({ expense, onClose }) => {
             name="category"
             value={editedExpense.category}
             onChange={handleChange}
-            className="w-full p-2 rounded-xl border border-gray-400 bg-gray-100"
+            className="w-full p-2 rounded-lg border border-gray-400 bg-gray-100"
           >
             {categoryOptions.map((cat) => (
               <option key={cat} value={cat}>
@@ -280,7 +280,7 @@ const ExpenseDetail = ({ expense, onClose }) => {
                   name="startDate"
                   value={editedExpense.startDate ? editedExpense.startDate.split("T")[0] : ""}
                   onChange={handleChange}
-                  className="w-full p-2 rounded-xl border border-gray-400 bg-gray-100"
+                  className="w-full p-2 rounded-md border border-gray-400 bg-gray-100"
                 />
               </div>
 
@@ -292,7 +292,7 @@ const ExpenseDetail = ({ expense, onClose }) => {
                   name="endDate"
                   value={editedExpense.endDate ? editedExpense.endDate.split("T")[0] : ""}
                   onChange={handleChange}
-                  className="w-full p-2 rounded-xl border border-gray-400 bg-gray-100"
+                  className="w-full p-2 rounded-md border border-gray-400 bg-gray-100"
                 />
               </div>
             </div>
@@ -305,7 +305,7 @@ const ExpenseDetail = ({ expense, onClose }) => {
                 name="transactionDate"
                 value={editedExpense.transactionDate ? editedExpense.transactionDate.split("T")[0] : ""}
                 onChange={handleChange}
-                className="w-full p-2 rounded-xl border border-gray-400 bg-gray-100"
+                className="w-full p-2 rounded-md border border-gray-400 bg-gray-100"
               />
             </div>
           )}

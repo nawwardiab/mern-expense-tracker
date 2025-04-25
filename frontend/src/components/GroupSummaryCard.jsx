@@ -33,7 +33,7 @@ const GroupSummaryCard = () => {
   return (
     <div className="bg-gray-200 rounded-xl p-4">
       <p className="text-sm font-medium mb-1">Group Expenses</p>
-      <p className="text-2xl font-bold text-blue-600 mb-2">
+      <p className="text-2xl font-bold text-indigo-600 mb-2">
         €{formatAmount(stats.totalExpenses)}
       </p>
 
