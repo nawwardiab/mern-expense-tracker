@@ -74,7 +74,7 @@ const PaymentList = ({ groupId }) => {
           <thead>
             <tr className="bg-gray-100">
               <th
-                className="border border-gray-300 px-4 py-2 text-left cursor-pointer select-none hover:text-purple-600 transition"
+                className="border border-gray-300 px-4 py-2 text-left cursor-pointer select-none hover:text-indigo-600 transition"
                 onClick={handleSortDate}
               >
                 Date
@@ -115,7 +115,7 @@ const PaymentList = ({ groupId }) => {
                   </td>
                   <td className="border border-gray-300 px-4 py-2">
                     {pmt.notes && (
-                      <div className="text-xs text-gray-500 mt-1">{pmt.notes}</div>
+                      <div className="text-s text-gray-800 italic mt-1">{pmt.notes}</div>
                     )}
                   </td>
                 </tr>

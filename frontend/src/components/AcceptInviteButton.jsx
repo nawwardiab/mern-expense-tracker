@@ -20,7 +20,7 @@ function AcceptInviteButton({ token }) {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[40vh] bg-gradient-to-br from-purple-50 via-white to-blue-50 rounded-2xl shadow-xl p-8 border border-gray-100">
+    <div className="flex flex-col items-center justify-center min-h-[10vh] bg-gradient-to-br from-purple-50 via-white to-blue-50 rounded-2xl shadow-xl p-8 border border-gray-100">
       {loading && (
         <p className="text-indigo-600 text-base font-medium animate-pulse mb-4">
           Accepting invite...

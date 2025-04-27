@@ -17,13 +17,20 @@ const ExpenseTable = () => {
   const [editingExpense, setEditingExpense] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [dateSortOrder, setDateSortOrder] = useState("desc");
 
   // Fetch group expenses on load
   //   useEffect(() => {
   //     fetchGroupExpenses(selectedGroup._id, groupDispatch); // This should update GroupContext
   //   }, []);
 
-  const expenses = selectedGroup?.expenses || [];
+  const expenses = [...(selectedGroup?.expenses || [])]
+    .filter((expense) => !!expense.transactionDate)
+    .sort((a, b) => {
+      const aDate = a.transactionDate ? new Date(a.transactionDate) : new Date(0);
+      const bDate = b.transactionDate ? new Date(b.transactionDate) : new Date(0);
+      return dateSortOrder === "asc" ? aDate - bDate : bDate - aDate;
+    });
   console.log("🚀 ~ ExpenseTable ~ selectedGroup:", selectedGroup);
   //   console.log("🚀 ~ ExpenseTable ~ expenses:", expenses);
 
@@ -34,6 +41,10 @@ const ExpenseTable = () => {
   const handleEditExpense = (expense) => {
     setEditingExpense(expense);
     setIsAddExpenseModalOpen(true);
+  };
+
+  const handleSortDate = () => {
+    setDateSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
   };
 
   const handleDeleteExpense = async (expenseId, amount) => {
@@ -66,8 +77,12 @@ const ExpenseTable = () => {
               <th className="border border-gray-300 px-4 py-2 text-left">
                 Amount
               </th>
-              <th className="border border-gray-300 px-4 py-2 text-left">
+              <th
+                className="border border-gray-300 px-4 py-2 text-left cursor-pointer select-none hover:text-indigo-600 transition"
+                onClick={handleSortDate}
+              >
                 Date
+                <span className="ml-1 text-black">{dateSortOrder === "asc" ? "▲" : "▼"}</span>
               </th>
               <th className="border border-gray-300 px-4 py-2 text-center">
                 Actions

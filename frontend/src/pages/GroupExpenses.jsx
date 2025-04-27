@@ -54,8 +54,8 @@ const GroupExpenses = () => {
             {selectedGroup ? (
               <>
                 <GroupDetail />
-                <ExpenseTable />
                 <GroupMembersTable />
+                <ExpenseTable />
                 <PaymentList groupId={selectedGroup?._id} />
               </>
             ) : (
