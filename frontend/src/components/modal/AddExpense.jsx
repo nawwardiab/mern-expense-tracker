@@ -224,7 +224,9 @@ const AddExpense = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-opacity-80 backdrop-blur-lg z-[100]">
-      <div className="bg-gray-200 p-6 rounded-lg w-full max-w-3/4 shadow-lg mt-16 relative">
+      <div className="bg-gray-200 p-8 rounded-lg w-full max-w-[40%] shadow-lg mt-16 relative">
+
+
         {/* Close Modal Button (top-right corner) */}
         <button
           className="absolute top-4 right-4 text-gray-600 hover:text-gray-900"

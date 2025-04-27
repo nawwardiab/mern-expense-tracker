@@ -121,9 +121,8 @@ const GroupExpenseAccordion = () => {
               <div className="text-right">
                 <p className="text-sm">Your Balance</p>
                 <p
-                  className={`font-medium ${
-                    group.balance >= 0 ? "text-green-600" : "text-red-600"
-                  }`}
+                  className={`font-medium ${group.balance >= 0 ? "text-green-600" : "text-red-600"
+                    }`}
                 >
                   {group.balance >= 0 ? "+ " : "- "}€
                   {formatAmount(Math.abs(group.balance))}
@@ -184,9 +183,13 @@ const GroupExpenseAccordion = () => {
                   </div>
                   <div className="text-right mt-2">
                     <a
-                      href="#"
-                      onClick={(e) => handleViewAllExpenses(group, e)}
-                      className="text-blue-600 text-sm"
+
+                      ///onClick={(e) => handleViewAllExpenses(group, e)}
+                      //className="text-blue-600 text-sm"
+
+                      href={`/groups/${group._id}`}
+                      className="text-indigo-600 text-sm"
+
                     >
                       View all expenses →
                     </a>

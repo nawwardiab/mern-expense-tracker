@@ -9,13 +9,7 @@ import { GiTiedScroll } from "react-icons/gi";
 import { formatDate } from "../../utils/date";
 import { FaArrowDown, FaArrowUp } from "react-icons/fa";
 
-const ExpenseItem = ({
-  expense,
-  transactionState,
-  isGroupExpense,
-  onClick,
-}) => {
-  const { expenseDispatch } = useContext(ExpenseContext);
+const ExpenseItem = ({ expense, transactionState, isGroupExpense, onClick }) => {
   const { groupState } = useContext(GroupContext);
   const [groupName, setGroupName] = useState("");
 
@@ -31,6 +25,7 @@ const ExpenseItem = ({
     }
   }, [expense, groupState.groups]);
 
+  // Category icons mapping
   const categoryIcons = {
     Fixed: <GiTiedScroll />,
     "Group Expenses": <TiGroupOutline size={24} />,
@@ -43,29 +38,22 @@ const ExpenseItem = ({
   const categoryIcon = categoryIcons[expense.category] || (
     <TbDeviceUnknownFilled size={24} />
   );
+
+  // Format date and amount
   const displayDate = formatDate(
     expense.transactionDate,
     expense.isRecurring,
     expense.recurringFrequency
   );
+  const formattedAmount = Math.abs(expense.amount).toFixed(2);
 
+  // Border styles depending on transaction state
   const borderStyle =
     transactionState === "Pending Transactions"
       ? "border-dashed border-l-4 border-gray-500"
       : transactionState === "Today's Transactions"
-      ? "border-solid border-l-4 border-gray-500"
-      : "border-dotted border-l-4 border-gray-500";
-
-  const handleClick = () => {
-    if (onClick) {
-      onClick(expense);
-    } else {
-      expenseDispatch({ type: "SET_SELECTED_EXPENSE", payload: expense });
-      expenseDispatch({ type: "OPEN_MODAL" });
-    }
-  };
-
-  const formattedAmount = Math.abs(expense.amount).toFixed(2);
+        ? "border-solid border-l-4 border-gray-500"
+        : "border-dotted border-l-4 border-gray-500";
 
   // Check if this item is a payment transaction
   const isPayment = expense.isPayment || false;
@@ -97,12 +85,19 @@ const ExpenseItem = ({
 
   return (
     <div
-      onClick={handleClick}
-      className={`flex flex-col sm:flex-row justify-between items-start sm:items-center p-3 sm:p-4 bg-white rounded-lg shadow-md cursor-pointer hover:bg-gray-100 transition ${borderStyle}`}
+      onClick={onClick ? () => onClick(expense) : undefined}
+      className={`flex flex-col sm:flex-row justify-between items-start sm:items-center p-3 sm:p-4 bg-white rounded-lg shadow-md
+        ${onClick ? "cursor-pointer hover:bg-gray-100 transition" : ""}
+        ${borderStyle}`}
     >
       <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
         <div
+
           className={`${colorClass} text-white p-1 rounded-full text-xs sm:text-sm`}
+
+         // className={`${isGroupExpense ? "bg-indigo-600" : "bg-black"
+            } text-white p-1 rounded-full text-xs sm:text-sm`}
+
         >
           {itemIcon}
         </div>
@@ -112,8 +107,13 @@ const ExpenseItem = ({
             {expense.title}
           </h3>
           <div className="flex flex-wrap gap-2 text-xs sm:text-sm">
+
             {(isGroupExpense || isPayment) && groupName && (
               <span className="text-blue-600 font-medium">{groupName}</span>
+
+          //  {isGroupExpense && (
+              <span className="text-indigo-600 font-medium">{groupName}</span>
+
             )}
             <p className="text-gray-500">
               {isPayment ? "Group Payment" : expense.category}
@@ -132,4 +132,6 @@ const ExpenseItem = ({
     </div>
   );
 };
+
 export default ExpenseItem;
+

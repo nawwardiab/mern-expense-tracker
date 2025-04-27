@@ -5,6 +5,7 @@ import Layout from "../layouts/Layout"; // The merged layout
 import { AuthContext } from "../contexts/AuthContext";
 
 // Pages
+
 import LandingPage from "../pages/LandingPage";
 import LoginPage from "../pages/LoginPage";
 import SignupPage from "../pages/SignupPage";
@@ -42,6 +43,8 @@ export default function AppRoutes() {
         <Route path="expense-manager" element={<ExpenseManager />} />
         <Route path="expenses/group" element={<GroupExpenses />} />
         <Route path="settings" element={<SettingPage />} />
+     
+        
 
         {/* Catch-all or 404 route (optional) */}
         <Route path="*" element={<PageNotFound />} />

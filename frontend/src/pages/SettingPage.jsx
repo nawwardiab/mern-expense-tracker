@@ -19,13 +19,13 @@ const SettingPage = () => {
     email: "",
     dateOfBirth: "",
     location: "",
-   
+
     income: "",
     paymentMethod: "",
     username: "",
   });
   const [message, setMessage] = useState({ type: "", text: "" });
-const [isOnboarded, setIsOnboarded] = useState(userState.isOnboarded);
+  const [isOnboarded, setIsOnboarded] = useState(userState.isOnboarded);
   const [profilePicture, setProfilePicture] = useState(null);
   const [preview, setPreview] = useState("https://picsum.photos/100");
   const [passwords, setPasswords] = useState({
@@ -51,7 +51,7 @@ const [isOnboarded, setIsOnboarded] = useState(userState.isOnboarded);
         email: user.email || "",
         dateOfBirth: user.dateOfBirth ? user.dateOfBirth.split("T")[0] : "",
         location: user.location || "",
-      
+
         income: user.income || "",
         paymentMethod: user.paymentMethod || "",
 
@@ -190,7 +190,7 @@ const [isOnboarded, setIsOnboarded] = useState(userState.isOnboarded);
             />
             <label
               htmlFor="profilePic"
-              className="absolute bottom-0 right-0 bg-black p-2 rounded-full cursor-pointer"
+              className="absolute bottom-0 right-0 bg-black p-2 rounded-md cursor-pointer"
             >
               <FaCamera className="text-white text-sm" />
             </label>
@@ -224,7 +224,7 @@ const [isOnboarded, setIsOnboarded] = useState(userState.isOnboarded);
         )}
 
         {/* User Information */}
-        <div className=" p-4 md:p-6 rounded-lg ">
+        <div className=" p-4 md:p-6 rounded-md ">
           {Object.keys(formData).map((field) => (
             <div key={field} className="mb-4">
               <label className="block text-sm font-semibold mb-1">
@@ -235,14 +235,14 @@ const [isOnboarded, setIsOnboarded] = useState(userState.isOnboarded);
                 name={field}
                 value={formData[field]}
                 onChange={handleInputChange}
-                className="w-full p-2 rounded-xl border border-gray-400 bg-gray-100"
+                className="w-full p-2 rounded-md border border-gray-400 bg-gray-100"
               />
             </div>
           ))}
         </div>
         <div className="w-full h-1 bg-gray-400 mx-auto mb-4"></div>
         {/* Onboarding Toggle */}
-        <div className="bg-white p-4 rounded-lg shadow-lg">
+        <div className="bg-white p-4 rounded-md shadow-lg">
           <div className="flex justify-between items-center py-2">
             <span> Skip Onboarding</span>
             <label className="relative inline-flex items-center cursor-pointer">
@@ -258,7 +258,7 @@ const [isOnboarded, setIsOnboarded] = useState(userState.isOnboarded);
         </div>
         <div className="w-full h-1 bg-gray-400 mx-auto mb-4"></div>
         {/* Password Update */}
-        <div className=" p-4 md:p-6 rounded-lg ">
+        <div className=" p-4 md:p-6 rounded-md ">
           <h2 className="text-lg font-semibold">Security</h2>
           {["currentPassword", "newPassword", "confirmPassword"].map(
             (field) => (
@@ -273,7 +273,7 @@ const [isOnboarded, setIsOnboarded] = useState(userState.isOnboarded);
                   onChange={(e) =>
                     setPasswords({ ...passwords, [field]: e.target.value })
                   }
-                  className="w-full p-2 rounded-xl border border-gray-400 bg-gray-100"
+                  className="w-full p-2 rounded-md border border-gray-400 bg-gray-100"
                 />
               </div>
             )
@@ -281,7 +281,7 @@ const [isOnboarded, setIsOnboarded] = useState(userState.isOnboarded);
           <button
             onClick={handlePasswordUpdate}
             disabled={userState.loading}
-            className={`bg-black text-white px-3 py-1 rounded-lg hover:bg-gray-600 cursor-pointer transition-all ${userState.loading ? "opacity-50 cursor-not-allowed" : ""
+            className={`bg-black text-white px-4 py-3 rounded-lg hover:bg-gray-600 cursor-pointer transition-all ${userState.loading ? "opacity-50 cursor-not-allowed" : ""
               }`}
           >
             {userState.loading ? "Updating..." : "Update Password"}
@@ -295,7 +295,7 @@ const [isOnboarded, setIsOnboarded] = useState(userState.isOnboarded);
         </div>
 
         {/* Notifications Toggle */}
-        <div className="bg-white p-4 rounded-lg shadow-lg">
+        <div className="bg-white p-4 rounded-md shadow-lg">
           <h2 className="text-lg font-semibold mb-4">Notifications Settings</h2>
           <NotificationToggle
             label="Expense alerts and notifications"

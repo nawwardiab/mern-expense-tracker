@@ -227,7 +227,7 @@ const SettleUpModal = ({ setShowModal }) => {
 
         <div className="mb-4 bg-gray-100 p-3 rounded-lg">
           <p className="font-medium">
-            <span className="text-blue-600">{formData.payerName}</span> is
+            <span className="text-indigo-600">{formData.payerName}</span> is
             paying
             <span className="text-green-600">
               {" "}

@@ -111,7 +111,6 @@ const FilteredTransactionList = () => {
   const filteredTransactions = React.useMemo(() => {
     if (!allTransactions || !Array.isArray(allTransactions)) return [];
 
-    // Filter by month
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
     const startOfMonth = new Date(year, month, 1);
@@ -122,7 +121,6 @@ const FilteredTransactionList = () => {
       return transactionDate >= startOfMonth && transactionDate <= endOfMonth;
     });
 
-    // Filter by type (private or group)
     if (filterType === "private") {
       filtered = filtered.filter(
         (transaction) => !transaction.groupId && !transaction.isPayment
@@ -168,7 +166,6 @@ const FilteredTransactionList = () => {
     }, {});
   }, [filteredTransactions]);
 
-  // Order sections with pending and today first
   const orderedSections = React.useMemo(() => {
     return [
       "Pending Transactions",
@@ -226,12 +223,11 @@ const FilteredTransactionList = () => {
             }
           >
             <FaChevronRight
-              className={`${
-                currentDate.getMonth() === new Date().getMonth() &&
+              className={`${currentDate.getMonth() === new Date().getMonth() &&
                 currentDate.getFullYear() === new Date().getFullYear()
-                  ? "text-gray-300"
-                  : "text-gray-600"
-              }`}
+                ? "text-gray-300"
+                : "text-gray-600"
+                }`}
             />
           </button>
         </div>
@@ -240,31 +236,28 @@ const FilteredTransactionList = () => {
       {/* Transaction Type Filter */}
       <div className="flex border-b mb-4">
         <button
-          className={`px-4 py-2 font-medium text-sm ${
-            filterType === "all"
-              ? "border-b-2 border-blue-500 text-blue-500"
-              : "text-gray-500"
-          }`}
+          className={`px-4 py-2 font-medium text-sm ${filterType === "all"
+            ? "border-b-2 border-indigo-600 text-indigo-600"
+            : "text-gray-500"
+            }`}
           onClick={() => setFilterType("all")}
         >
           All
         </button>
         <button
-          className={`px-4 py-2 font-medium text-sm ${
-            filterType === "private"
-              ? "border-b-2 border-blue-500 text-blue-500"
-              : "text-gray-500"
-          }`}
+          className={`px-4 py-2 font-medium text-sm ${filterType === "private"
+            ? "border-b-2 border-indigo-600 text-indigo-600"
+            : "text-gray-500"
+            }`}
           onClick={() => setFilterType("private")}
         >
           Private
         </button>
         <button
-          className={`px-4 py-2 font-medium text-sm ${
-            filterType === "group"
-              ? "border-b-2 border-blue-500 text-blue-500"
-              : "text-gray-500"
-          }`}
+          className={`px-4 py-2 font-medium text-sm ${filterType === "group"
+            ? "border-b-2 border-indigo-600 text-indigo-600"
+            : "text-gray-500"
+            }`}
           onClick={() => setFilterType("group")}
         >
           Group
@@ -284,14 +277,14 @@ const FilteredTransactionList = () => {
             </h3>
             <div className="space-y-2">
               {groupedTransactions[section] &&
-              groupedTransactions[section].length > 0 ? (
+                groupedTransactions[section].length > 0 ? (
                 groupedTransactions[section].map((expense) => (
                   <ExpenseItem
                     key={expense._id}
                     expense={expense}
                     transactionState={section}
                     isGroupExpense={!!expense.groupId}
-                    onClick={() => handleTransactionClick(expense)}
+
                   />
                 ))
               ) : section === "Today's Transactions" ? (

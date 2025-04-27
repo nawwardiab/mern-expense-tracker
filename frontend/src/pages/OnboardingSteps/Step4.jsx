@@ -13,12 +13,12 @@ function OnboardingStep4({ isOnboarded }) {
         </>
       ) : (
         <>
-          <h3 className="text-xl font-semibold text-purple-700 flex items-center justify-center gap-2">
+          <h3 className="text-xl font-semibold text-indigo-600 flex items-center justify-center gap-2">
             <FaInfoCircle /> Almost There!
           </h3>
           <p className="mt-2 text-gray-700">
             You’ve completed the basics. You can finish setting up your profile anytime from{" "}
-            <Link to="/settings" className="text-purple-700 underline hover:text-purple-900">
+            <Link to="/settings" className="text-indigo-600 underline hover:text-purple-900">
               Settings
             </Link>
             .

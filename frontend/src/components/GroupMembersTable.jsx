@@ -213,7 +213,7 @@ const GroupMembersTable = () => {
                 <td className="p-2 font-medium">
                   {balance.memberName}{" "}
                   {isCurrentUser && (
-                    <span className="text-xs bg-blue-100 text-blue-800 px-1 py-0.5 rounded">
+                    <span className="text-xs bg-indigo-100 text-indigo-600 px-1 py-0.5 rounded">
                       You
                     </span>
                   )}
@@ -227,13 +227,12 @@ const GroupMembersTable = () => {
                   </div>
                 </td>
                 <td
-                  className={`p-2 ${
-                    balance.netBalance > 0
+                  className={`p-2 ${balance.netBalance > 0
                       ? "text-green-600"
                       : balance.netBalance < 0
-                      ? "text-red-600"
-                      : ""
-                  }`}
+                        ? "text-red-600"
+                        : ""
+                    }`}
                 >
                   {balanceText}
                 </td>
