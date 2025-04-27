@@ -92,12 +92,7 @@ const ExpenseItem = ({ expense, transactionState, isGroupExpense, onClick }) => 
     >
       <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
         <div
-
           className={`${colorClass} text-white p-1 rounded-full text-xs sm:text-sm`}
-
-         // className={`${isGroupExpense ? "bg-indigo-600" : "bg-black"
-            } text-white p-1 rounded-full text-xs sm:text-sm`}
-
         >
           {itemIcon}
         </div>
@@ -106,14 +101,12 @@ const ExpenseItem = ({ expense, transactionState, isGroupExpense, onClick }) => 
           <h3 className="font-semibold text-base sm:text-lg">
             {expense.title}
           </h3>
+
           <div className="flex flex-wrap gap-2 text-xs sm:text-sm">
-
             {(isGroupExpense || isPayment) && groupName && (
-              <span className="text-blue-600 font-medium">{groupName}</span>
-
-          //  {isGroupExpense && (
-              <span className="text-indigo-600 font-medium">{groupName}</span>
-
+              <span className={`${isGroupExpense ? "text-indigo-600" : "text-blue-600"} font-medium`}>
+                {groupName}
+              </span>
             )}
             <p className="text-gray-500">
               {isPayment ? "Group Payment" : expense.category}
@@ -125,7 +118,7 @@ const ExpenseItem = ({ expense, transactionState, isGroupExpense, onClick }) => 
 
       <span
         className={`mt-2 sm:mt-0 text-base sm:text-lg font-bold
-        ${isPositiveIncomingPayment ? "text-green-500" : "text-red-500"}`}
+          ${isPositiveIncomingPayment ? "text-green-500" : "text-red-500"}`}
       >
         {expense.amount < 0 ? `-€${formattedAmount}` : `€${formattedAmount}`}
       </span>
@@ -134,4 +127,3 @@ const ExpenseItem = ({ expense, transactionState, isGroupExpense, onClick }) => 
 };
 
 export default ExpenseItem;
-

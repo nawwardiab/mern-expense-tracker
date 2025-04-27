@@ -112,10 +112,10 @@ const GroupSummaryCard = () => {
         </div>
       </div>
 
-     // <p className="text-sm font-medium mb-1">Group Expenses</p>
-     // <p className="text-2xl font-bold text-indigo-600 mb-2">
-      //  €{formatAmount(stats.totalExpenses)}
-    //  </p>
+      <p className="text-sm font-medium mb-1">Group Expenses</p>
+      <p className="text-2xl font-bold text-indigo-600 mb-2">
+       €{formatAmount(stats.totalExpenses)}
+      </p>
 
 
       <div className="flex justify-between mt-3 text-sm">
