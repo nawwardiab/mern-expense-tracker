@@ -51,8 +51,8 @@ const ExpenseItem = ({ expense, transactionState, isGroupExpense, onClick }) => 
     transactionState === "Pending Transactions"
       ? "border-dashed border-l-4 border-gray-500"
       : transactionState === "Today's Transactions"
-      ? "border-solid border-l-4 border-gray-500"
-      : "border-dotted border-l-4 border-gray-500";
+        ? "border-solid border-l-4 border-gray-500"
+        : "border-dotted border-l-4 border-gray-500";
 
   return (
     <div
@@ -63,9 +63,8 @@ const ExpenseItem = ({ expense, transactionState, isGroupExpense, onClick }) => 
     >
       <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
         <div
-          className={`${
-            isGroupExpense ? "bg-blue-600" : "bg-black"
-          } text-white p-1 rounded-full text-xs sm:text-sm`}
+          className={`${isGroupExpense ? "bg-indigo-600" : "bg-black"
+            } text-white p-1 rounded-full text-xs sm:text-sm`}
         >
           {isGroupExpense ? <TiGroupOutline size={24} /> : categoryIcon}
         </div>
@@ -76,7 +75,7 @@ const ExpenseItem = ({ expense, transactionState, isGroupExpense, onClick }) => 
           </h3>
           <div className="flex flex-wrap gap-2 text-xs sm:text-sm">
             {isGroupExpense && (
-              <span className="text-blue-600 font-medium">{groupName}</span>
+              <span className="text-indigo-600 font-medium">{groupName}</span>
             )}
             <p className="text-gray-500">{expense.category}</p>
             <p className="text-gray-400">{displayDate}</p>

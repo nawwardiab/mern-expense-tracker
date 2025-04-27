@@ -20,17 +20,25 @@ function AcceptInviteButton({ token }) {
   };
 
   return (
-    <div>
-      {loading && <p>Accepting invite...</p>}
-      {error && <p style={{ color: "red" }}>Error: {error}</p>}
-      {
-        acceptResult && (
-          <p>{acceptResult.message}</p>
-        ) /* e.g. "Joined successfully" */
-      }
+    <div className="flex flex-col items-center justify-center min-h-[10vh] bg-gradient-to-br from-purple-50 via-white to-blue-50 rounded-2xl shadow-xl p-8 border border-gray-100">
+      {loading && (
+        <p className="text-indigo-600 text-base font-medium animate-pulse mb-4">
+          Accepting invite...
+        </p>
+      )}
+      {error && (
+        <p className="text-red-500 bg-red-100 rounded px-4 py-2 mb-4 border border-red-200">
+          Error: {error}
+        </p>
+      )}
+      {acceptResult && (
+        <p className="text-green-700 bg-green-100 rounded px-4 py-2 mb-4 border border-green-200">
+          {acceptResult.message}
+        </p>
+      )}
 
       <button
-        className="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-600 cursor-pointer transition-all duration-300"
+        className="bg-black text-white px-8 py-3 rounded-lg shadow-lg hover:bg-gradient-to-r hover:from-gray-700 hover:to-gray-800 transition-all duration-300 font-semibold tracking-wide text-lg"
         onClick={handleAccept}
         disabled={loading}
       >

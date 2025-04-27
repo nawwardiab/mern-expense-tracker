@@ -66,11 +66,14 @@ const Navbar = () => {
         {/* App Logo */}
         <Link
           to="/homepage"
-          className="text-3xl font-bold text-black hover:text-purple-700 transition-colors duration-200"
+          className="flex items-center hover:opacity-75 transition-opacity duration-200"
         >
-          Track<span className="text-purple-500">$</span>
+          <img
+            src="/logo-b.png"
+            alt="Track$ Logo"
+            className="h-12 w-auto"
+          />
         </Link>
-
 
         {/* Desktop Menu */}
         <div className="hidden md:flex items-center gap-6 mr-76">

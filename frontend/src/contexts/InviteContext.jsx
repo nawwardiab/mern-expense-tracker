@@ -14,6 +14,7 @@ export const InviteProvider = ({ children }) => {
   // Expose state & actions
   return (
     <InviteContext.Provider
+
       value={{
         inviteState,
         inviteDispatch,
