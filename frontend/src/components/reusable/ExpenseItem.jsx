@@ -8,13 +8,7 @@ import { TbContract, TbDeviceUnknownFilled } from "react-icons/tb";
 import { GiTiedScroll } from "react-icons/gi";
 import { formatDate } from "../../utils/date";
 
-const ExpenseItem = ({
-  expense,
-  transactionState,
-  isGroupExpense,
-  onClick,
-}) => {
-  const { expenseDispatch } = useContext(ExpenseContext);
+const ExpenseItem = ({ expense, transactionState, isGroupExpense, onClick }) => {
   const { groupState } = useContext(GroupContext);
   const [groupName, setGroupName] = useState("");
 
@@ -30,6 +24,7 @@ const ExpenseItem = ({
     }
   }, [expense, groupState.groups]);
 
+  // Category icons mapping
   const categoryIcons = {
     Fixed: <GiTiedScroll />,
     "Group Expenses": <TiGroupOutline size={24} />,
@@ -42,12 +37,16 @@ const ExpenseItem = ({
   const categoryIcon = categoryIcons[expense.category] || (
     <TbDeviceUnknownFilled size={24} />
   );
+
+  // Format date and amount
   const displayDate = formatDate(
     expense.transactionDate,
     expense.isRecurring,
     expense.recurringFrequency
   );
+  const formattedAmount = Math.abs(expense.amount).toFixed(2);
 
+  // Border styles depending on transaction state
   const borderStyle =
     transactionState === "Pending Transactions"
       ? "border-dashed border-l-4 border-gray-500"
@@ -55,21 +54,12 @@ const ExpenseItem = ({
       ? "border-solid border-l-4 border-gray-500"
       : "border-dotted border-l-4 border-gray-500";
 
-  const handleClick = () => {
-    if (onClick) {
-      onClick(expense);
-    } else {
-      expenseDispatch({ type: "SET_SELECTED_EXPENSE", payload: expense });
-      expenseDispatch({ type: "OPEN_MODAL" });
-    }
-  };
-
-  const formattedAmount = Math.abs(expense.amount).toFixed(2);
-
   return (
     <div
-      onClick={handleClick}
-      className={`flex flex-col sm:flex-row justify-between items-start sm:items-center p-3 sm:p-4 bg-white rounded-lg shadow-md cursor-pointer hover:bg-gray-100 transition ${borderStyle}`}
+      onClick={onClick ? () => onClick(expense) : undefined}
+      className={`flex flex-col sm:flex-row justify-between items-start sm:items-center p-3 sm:p-4 bg-white rounded-lg shadow-md
+        ${onClick ? "cursor-pointer hover:bg-gray-100 transition" : ""}
+        ${borderStyle}`}
     >
       <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
         <div
@@ -103,4 +93,6 @@ const ExpenseItem = ({
     </div>
   );
 };
+
 export default ExpenseItem;
+

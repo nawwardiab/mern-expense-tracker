@@ -52,7 +52,6 @@ const FilteredTransactionList = () => {
   const filteredTransactions = React.useMemo(() => {
     if (!expenses || !Array.isArray(expenses)) return [];
 
-    // Filter by month
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
     const startOfMonth = new Date(year, month, 1);
@@ -63,7 +62,6 @@ const FilteredTransactionList = () => {
       return expenseDate >= startOfMonth && expenseDate <= endOfMonth;
     });
 
-    // Filter by type (private or group)
     if (filterType === "private") {
       filtered = filtered.filter((expense) => !expense.groupId);
     } else if (filterType === "group") {
@@ -105,7 +103,6 @@ const FilteredTransactionList = () => {
     }, {});
   }, [filteredTransactions]);
 
-  // Order sections with pending and today first
   const orderedSections = React.useMemo(() => {
     return [
       "Pending Transactions",
@@ -210,13 +207,6 @@ const FilteredTransactionList = () => {
                     expense={expense}
                     transactionState={section}
                     isGroupExpense={!!expense.groupId}
-                    onClick={() => {
-                      expenseDispatch({
-                        type: "SET_SELECTED_EXPENSE",
-                        payload: expense,
-                      });
-                      expenseDispatch({ type: "OPEN_MODAL" });
-                    }}
                   />
                 ))
               ) : section === "Today's Transactions" ? (
