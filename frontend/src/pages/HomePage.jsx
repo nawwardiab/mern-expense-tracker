@@ -5,17 +5,22 @@ import { ExpenseContext } from "../contexts/ExpenseContext.jsx";
 import { GroupContext } from "../contexts/GroupContext.jsx";
 import { getAllExpenses } from "../api/expenseApi.js";
 import { fetchUserGroups } from "../api/groupApi.js";
+import { fetchUserPayments } from "../api/paymentApi.js";
 import DashboardChat from "../components/Chart.jsx";
 import SummaryCards from "../components/SummaryCards.jsx";
 import GroupSummaryCard from "../components/GroupSummaryCard.jsx";
 import GroupExpenseAccordion from "../components/GroupExpenseAccordion.jsx";
 import FilteredTransactionList from "../components/FilteredTransactionList.jsx";
+import PaymentDetail from "../components/modal/PaymentDetail.jsx";
+import { PaymentContext } from "../contexts/PaymentContext.jsx";
 
 const HomePage = () => {
   const { userState } = useContext(AuthContext);
   const { expenseDispatch, expenseState } = useContext(ExpenseContext);
   const { groupDispatch } = useContext(GroupContext);
+  const { paymentDispatch, paymentState } = useContext(PaymentContext);
   const { isModalOpen, selectedExpense } = expenseState;
+  const { isPaymentModalOpen, selectedPayment } = paymentState;
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -27,6 +32,7 @@ const HomePage = () => {
         setLoading(true);
         await getAllExpenses(expenseDispatch);
         await fetchUserGroups(groupDispatch);
+        await fetchUserPayments(userState.user._id, paymentDispatch);
       } catch (err) {
         setError("Failed to load data.");
         console.error(err);
@@ -36,7 +42,7 @@ const HomePage = () => {
     };
 
     fetchData();
-  }, [expenseDispatch, groupDispatch]);
+  }, [expenseDispatch, groupDispatch, paymentDispatch]);
 
   const handleRefresh = () => {
     getAllExpenses(expenseDispatch);
@@ -111,6 +117,14 @@ const HomePage = () => {
           expense={selectedExpense}
           onClose={() => expenseDispatch({ type: "CLOSE_MODAL" })}
           onRefresh={handleRefresh}
+        />
+      )}
+
+      {/* Payment Details Modal */}
+      {isPaymentModalOpen && selectedPayment && (
+        <PaymentDetail
+          paymentId={selectedPayment}
+          onClose={() => paymentDispatch({ type: "CLOSE_PAYMENT_MODAL" })}
         />
       )}
     </div>

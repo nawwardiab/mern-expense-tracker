@@ -7,6 +7,7 @@ import { MdRestaurant } from "react-icons/md";
 import { TbContract, TbDeviceUnknownFilled } from "react-icons/tb";
 import { GiTiedScroll } from "react-icons/gi";
 import { formatDate } from "../../utils/date";
+import { FaArrowDown, FaArrowUp } from "react-icons/fa";
 
 const ExpenseItem = ({ expense, transactionState, isGroupExpense, onClick }) => {
   const { groupState } = useContext(GroupContext);
@@ -54,6 +55,34 @@ const ExpenseItem = ({ expense, transactionState, isGroupExpense, onClick }) => 
         ? "border-solid border-l-4 border-gray-500"
         : "border-dotted border-l-4 border-gray-500";
 
+  // Check if this item is a payment transaction
+  const isPayment = expense.isPayment || false;
+  const isIncoming = expense.amount > 0 && isPayment;
+
+  // Get appropriate icon and styling
+  let itemIcon;
+  let colorClass;
+
+  if (isPayment) {
+    itemIcon = isIncoming ? (
+      <FaArrowDown size={24} /> // Incoming payment
+    ) : (
+      <FaArrowUp size={24} />
+    ); // Outgoing payment
+
+    colorClass = isIncoming
+      ? "bg-green-600" // Green for incoming
+      : "bg-red-600"; // Red for outgoing
+  } else {
+    // Regular expense logic
+    itemIcon = isGroupExpense ? <TiGroupOutline size={24} /> : categoryIcon;
+
+    colorClass = isGroupExpense ? "bg-blue-600" : "bg-black";
+  }
+
+  // Determine if this is a positive incoming payment (the only case that should be green)
+  const isPositiveIncomingPayment = isPayment && expense.amount > 0;
+
   return (
     <div
       onClick={onClick ? () => onClick(expense) : undefined}
@@ -63,10 +92,14 @@ const ExpenseItem = ({ expense, transactionState, isGroupExpense, onClick }) => 
     >
       <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
         <div
-          className={`${isGroupExpense ? "bg-indigo-600" : "bg-black"
+
+          className={`${colorClass} text-white p-1 rounded-full text-xs sm:text-sm`}
+
+         // className={`${isGroupExpense ? "bg-indigo-600" : "bg-black"
             } text-white p-1 rounded-full text-xs sm:text-sm`}
+
         >
-          {isGroupExpense ? <TiGroupOutline size={24} /> : categoryIcon}
+          {itemIcon}
         </div>
 
         <div>
@@ -74,10 +107,17 @@ const ExpenseItem = ({ expense, transactionState, isGroupExpense, onClick }) => 
             {expense.title}
           </h3>
           <div className="flex flex-wrap gap-2 text-xs sm:text-sm">
-            {isGroupExpense && (
+
+            {(isGroupExpense || isPayment) && groupName && (
+              <span className="text-blue-600 font-medium">{groupName}</span>
+
+          //  {isGroupExpense && (
               <span className="text-indigo-600 font-medium">{groupName}</span>
+
             )}
-            <p className="text-gray-500">{expense.category}</p>
+            <p className="text-gray-500">
+              {isPayment ? "Group Payment" : expense.category}
+            </p>
             <p className="text-gray-400">{displayDate}</p>
           </div>
         </div>
@@ -85,7 +125,7 @@ const ExpenseItem = ({ expense, transactionState, isGroupExpense, onClick }) => 
 
       <span
         className={`mt-2 sm:mt-0 text-base sm:text-lg font-bold
-        ${expense.amount < 0 ? "text-red-500" : "text-green-500"}`}
+        ${isPositiveIncomingPayment ? "text-green-500" : "text-red-500"}`}
       >
         {expense.amount < 0 ? `-€${formattedAmount}` : `€${formattedAmount}`}
       </span>

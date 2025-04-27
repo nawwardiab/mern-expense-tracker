@@ -215,3 +215,20 @@ export const updatePaymentStatus = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
+// Get payments received by a user
+export const getAllReceivedPayments = async (req, res) => {
+  try {
+    const { userId } = req.query;
+
+    // Find payments where user is the payee
+    const payments = await Payment.find({
+      payee: userId,
+    }).populate("payer payee groupId");
+
+    res.status(200).json({ success: true, data: payments });
+  } catch (error) {
+    console.error("Error fetching received payments:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
