@@ -55,16 +55,6 @@ const PaymentList = ({ groupId }) => {
     <div className="mt-6 bg-white rounded-lg shadow-md p-6">
       <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4">
         <h2 className="text-xl font-bold">Payments</h2>
-        {/* Payment Status Filter */}
-        <select
-          className="border border-gray-300 rounded-md px-3 py-1 text-sm"
-          value={statusFilter}
-          onChange={handleFilterChange}
-        >
-          <option value="all">All Statuses</option>
-          <option value="pending">Pending</option>
-          <option value="completed">Completed</option>
-        </select>
       </div>
 
       {!filteredPayments || filteredPayments.length === 0 ? (
@@ -78,24 +68,31 @@ const PaymentList = ({ groupId }) => {
                 onClick={handleSortDate}
               >
                 Date
-                <span className="ml-1 text-black">{dateSortOrder === "asc" ? "▲" : "▼"}</span>
+                <span className="ml-1 text-black">
+                  {dateSortOrder === "asc" ? "▲" : "▼"}
+                </span>
               </th>
-              <th className="border border-gray-300 px-4 py-2 text-left">Payer</th>
-              <th className="border border-gray-300 px-4 py-2 text-left">Payee</th>
-              <th className="border border-gray-300 px-4 py-2 text-left">Amount</th>
-              <th className="border border-gray-300 px-4 py-2 text-left">Notes</th>
+              <th className="border border-gray-300 px-4 py-2 text-left">
+                Payer
+              </th>
+              <th className="border border-gray-300 px-4 py-2 text-left">
+                Payee
+              </th>
+              <th className="border border-gray-300 px-4 py-2 text-left">
+                Amount
+              </th>
+              <th className="border border-gray-300 px-4 py-2 text-left">
+                Notes
+              </th>
             </tr>
           </thead>
           <tbody>
             {[...filteredPayments]
               .filter((pmt) => !!pmt.createdAt)
               .sort((a, b) => {
-
                 const aDate = a.createdAt ? new Date(a.createdAt) : new Date(0);
                 const bDate = b.createdAt ? new Date(b.createdAt) : new Date(0);
-                return dateSortOrder === "asc"
-                  ? aDate - bDate
-                  : bDate - aDate;
+                return dateSortOrder === "asc" ? aDate - bDate : bDate - aDate;
               })
               .map((pmt) => (
                 <tr key={pmt._id} className="hover:bg-gray-50">
@@ -115,7 +112,9 @@ const PaymentList = ({ groupId }) => {
                   </td>
                   <td className="border border-gray-300 px-4 py-2">
                     {pmt.notes && (
-                      <div className="text-s text-gray-800 italic mt-1">{pmt.notes}</div>
+                      <div className="text-s text-gray-800 italic mt-1">
+                        {pmt.notes}
+                      </div>
                     )}
                   </td>
                 </tr>

@@ -9,7 +9,7 @@ import {
   fetchGroupBalances,
 } from "../../api/balanceApi";
 
-const SettleUpModal = ({ setShowModal }) => {
+const SettleUpModal = ({ setShowModal, onPaymentComplete }) => {
   const { userState } = useContext(AuthContext);
   const { user } = userState;
   const { groupState, groupDispatch } = useContext(GroupContext);
@@ -188,6 +188,11 @@ const SettleUpModal = ({ setShowModal }) => {
         await fetchGroupBalances(selectedGroup._id, balanceDispatch);
       } catch (error) {
         console.error("Failed to refresh balances:", error);
+      }
+
+      // Call the callback to refresh payments
+      if (onPaymentComplete) {
+        onPaymentComplete();
       }
 
       // Use the setShowModal prop to close the modal (passed from parent)
