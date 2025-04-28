@@ -135,7 +135,7 @@ const DashboardChart = () => {
           hidden: activeView !== "breakdown",
         },
         {
-          label: "Monthly Incoming Payments",
+          label: "Payment Income",
           data: [monthlyIncomingPayments, 0],
           backgroundColor: "rgba(153, 102, 255, 0.7)",
           barPercentage: 0.5,
@@ -209,7 +209,7 @@ const DashboardChart = () => {
                 </div>
                 <div className="flex items-center">
                   <span className="inline-block w-3 h-3 bg-[rgba(153,102,255,0.7)] rounded-full mr-1"></span>
-                  <span>Income</span>
+                  <span>Payment Income</span>
                 </div>
                 <div className="flex items-center">
                   <span className="inline-block w-3 h-3 bg-[rgba(255,99,132,0.7)] rounded-full mr-1"></span>
