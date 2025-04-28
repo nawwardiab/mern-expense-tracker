@@ -6,17 +6,20 @@ import React, {
   useRef,
 } from "react";
 import { GroupContext } from "../contexts/GroupContext";
+import { PaymentContext } from "../contexts/PaymentContext";
 import SettleUpModal from "./modal/SettleUpModal";
 import { AuthContext } from "../contexts/AuthContext";
 import { useBalance } from "../contexts/BalanceContext";
 import { fetchGroupBalances } from "../api/balanceApi";
+import { fetchPayments } from "../api/paymentApi";
 
-const GroupMembersTable = () => {
+const GroupMembersTable = ({ groupId }) => {
   const { groupState } = useContext(GroupContext);
   const { selectedGroup } = groupState;
   const { userState } = useContext(AuthContext);
   const { user } = userState;
   const { balanceState, balanceDispatch } = useBalance();
+  const { paymentDispatch } = useContext(PaymentContext);
 
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -120,6 +123,13 @@ const GroupMembersTable = () => {
     setTimeout(() => {
       loadGroupBalances();
     }, 500);
+  };
+
+  const handlePaymentComplete = () => {
+    // Refresh the payment list
+    if (groupId) {
+      fetchPayments(groupId, paymentDispatch);
+    }
   };
 
   // Toggle auto-refresh
@@ -227,12 +237,13 @@ const GroupMembersTable = () => {
                   </div>
                 </td>
                 <td
-                  className={`p-2 ${balance.netBalance > 0
+                  className={`p-2 ${
+                    balance.netBalance > 0
                       ? "text-green-600"
                       : balance.netBalance < 0
-                        ? "text-red-600"
-                        : ""
-                    }`}
+                      ? "text-red-600"
+                      : ""
+                  }`}
                 >
                   {balanceText}
                 </td>
@@ -253,7 +264,12 @@ const GroupMembersTable = () => {
         </tbody>
       </table>
 
-      {showModal && <SettleUpModal setShowModal={handleModalClose} />}
+      {showModal && (
+        <SettleUpModal
+          setShowModal={handleModalClose}
+          onPaymentComplete={handlePaymentComplete}
+        />
+      )}
     </div>
   );
 };

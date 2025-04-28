@@ -1,150 +1,177 @@
 # Fullstack MERN Expense Tracker
 
-This is the final full-stack group project
+A comprehensive expense management application built with the MERN stack (MongoDB, Express, React, Node.js).
 
-## 1. Project Workflow
+## 1. Project Features
 
 - **User Authentication (Register/Login/Logout)**
-- **Add Expenses with Category Selection**
-- **View Expense Summary and Statistics**
-- **Edit/Delete Expenses**
-- **Filter Expenses by Date, Category, or Amount**
-- **Generate Monthly Reports**
+- **User Profile Management with Profile Picture Upload**
+- **Customizable User Notifications**
+- **Onboarding Experience for New Users**
+- **Personal Expense Management**
+  - Add, Edit, Delete Expenses
+  - Filter Expenses by Date, Category, or Search Term
+  - Recurring Expense Support
+  - Expense Attachments
+- **Group Expense Management**
+  - Create and Manage Groups
+  - Add Members to Groups via Invite System
+  - Add Group Expenses with Automatic Split
+  - Track Settlement Status
+- **Financial Overview**
+  - Visual Expense Breakdown (Charts)
+  - Expense Summary and Statistics
+  - Monthly Reports
 
----
-
-## 2. Define Core Features & User Stories
+## 2. Core Features & User Stories
 
 - As a guest user, I want to create an account to track my expenses.
 - As a user, I want to log in and out securely.
-- As a user, I want to be able to set up my account with a few steps.
-- As a user, I want to add an expense with a category and amount.
-- As a user, I want to add an expense with the possibility to split it with my friends.
+- As a user, I want to be able to set up my account with an onboarding process.
+- As a user, I want to add expenses with a category and amount.
+- As a user, I want to manage recurring expenses.
+- As a user, I want to add an expense with the possibility to split it with group members.
 - As a user, I want to edit or delete an existing expense.
-- As a user, I want to filter expenses by category and occurrence.
-- As a user, I want to see a monthly report of my expenses.
+- As a user, I want to filter expenses by category, occurrence, and search terms.
+- As a user, I want to see a visual breakdown of my expenses.
+- As a user, I want to create and manage expense groups with my friends.
+- As a user, I want to manage settlements within my expense groups.
 
----
+## 3. Database Schemas
 
-## 3. Wireframe Planning
-
-Before coding, we designed a wireframe to visualize the application's layout and flow.
-
-[Wireframe](https://app.uizard.io/prototypes/8XOjoGGVb4fqwP1wRdqz)
-
-### Main Pages and UI Elements
-
-- Landing Page with the possibility to either sign up and login
-- Home (Dashboard with expense summary and statistics)
-- Sign-up page
-- Login page
-- Onboarding page
-- User profile page
-- Group Expense page
-- Expense Manager page (with filters and search)
-- Specific expense overview
-- Add Expenses Modal
-- Split Expenses Modal
-
----
-
-## 4. Database Schemas
-
-### 1. User Schema (User.js):
+### User Schema
 
 ```js
 {
   fullName: { type: String, required: true },
   email: { type: String, required: true, unique: true },
+  dateOfBirth: { type: Date, default: "" },
   password: { type: String, required: true },
   profilePicture: { type: String, default: "" },
-  createdAt: { type: Date, default: Date.now },
-  income: { type: String, default: 0 },
-  // paymentMethod: { type: String } -> optional
-},
-  {timestamp:true}
-
-
+  location: { type: String, default: "" },
+  currency: { type: String, default: 0 },
+  income: { type: Number, default: "" },
+  paymentMethod: { type: String, default: "" },
+  username: { type: String, sparse: true },
+  isOnboarded: { type: Boolean, default: false },
+  notificationSettings: {
+    expenseAlerts: { type: Boolean, default: false },
+    communityUpdates: { type: Boolean, default: false },
+    paymentReminders: { type: Boolean, default: false },
+    featureAnnouncements: { type: Boolean, default: false },
+  },
+}
 ```
 
-### 2. Expense Collection Schema:
+### Expense Schema
 
 ```js
 {
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-  groupId: { type: mongoose.Schema.Types.ObjectId, ref: "Group", default: null }, // Optional, only if shared
+  groupId: { type: mongoose.Schema.Types.ObjectId, ref: "Group", default: null },
   title: { type: String, required: true },
+  description: { type: String, default: "" },
   amount: { type: Number, required: true },
-  category: { type: String, required: true, enum: ["Fixed", "Group Expenses", "Food&Drinks", "Enternainment", “Subscriptions”, "Others"] },
-  transactionDate: { type: Date, required: true },
+  category: {
+    type: String,
+    required: true,
+    enum: [
+      "Fixed",
+      "Group Expenses",
+      "Food&Drinks",
+      "Entertainment",
+      "Subscriptions",
+      "Others",
+    ],
+  },
+  transactionDate: { type: Date, required: function () { return !this.isRecurring; } },
+  startDate: { type: Date, required: function () { return this.isRecurring; } },
+  endDate: { type: Date, required: function () { return this.isRecurring; } },
   isRecurring: { type: Boolean, default: false },
-  recurringFrequency: { type: String, enum: ["daily", "weekly", "monthly", "one-time"], default: null }, // If recurring
-  notes: { type: String, default: "" }, //Extra optional details about the expense.
-  createdAt: { type: Date, default: Date.now },
-  // nextRecurringDate: { type: Date, default: null}, //Optional
-  // lastRecurringDate: { type: Date, default: null}, // Optional
-
+  recurringFrequency: {
+    type: String,
+    enum: ["weekly", "monthly", "yearly", "one-time"],
+    required: function () { return this.isRecurring; },
+  },
   notes: { type: String, default: "" },
-
-// Optional
- /** attachments: [
+  attachments: [
     {
       fileName: { type: String },
       url: { type: String },
-      uploadedAt: { type: Date, default: Date.now }
-    }
+      uploadedAt: { type: Date, default: Date.now },
+    },
   ],
-};
-**/
-  {timestamp:true}
 }
-
-
 ```
 
-### 3. Group Expense (groups) Schema:
+### Group Schema
 
 ```js
 {
-  name: { type: String, required: true },
-  members: [{ type: String, required: true }],
+  name: { type: String, required: true, trim: true },
   description: { type: String, default: "" },
-  totalAmount: { type: Number, required: true },
+  members: [
+    {
+      groupMember: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    },
+  ],
+  totalAmount: { type: Number, default: 0 },
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-
-  {timestamp:true}
-
+  expenses: [{ type: mongoose.Schema.Types.ObjectId, ref: "Expense" }],
+  isDeleted: { type: Boolean, default: false },
 }
 ```
 
-### 3.1 Payment Sub-Collection Schema:
+### Payment Schema
 
 ```js
 {
   groupId: { type: mongoose.Schema.Types.ObjectId, ref: "Group", required: true },
   payer: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   payee: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-  amount: { type: Number, required: true },
-  paymentMethod: { type: String, default: "cash" },
-  //transactionId: { type: String, default: "" }, // For external payment gateways
-  status: { type: String, enum: ["pending", "completed", "failed"], default: "pending" },
-  createdAt: { type: Date, default: Date.now }
+  amount: { type: Number, required: true, min: 0.01 },
+  expenseId: { type: mongoose.Schema.Types.ObjectId, ref: "Expense", required: false },
+  paymentMethod: {
+    type: String,
+    enum: ["cash", "bank_transfer", "stripe", "paypal"],
+    default: "cash",
+  },
+  status: {
+    type: String,
+    enum: ["pending", "completed", "failed"],
+    default: "pending",
+  },
+  notes: { type: String, default: "" },
 }
 ```
 
----
+### Invite Schema
 
-## 5. Backend API Design
+```js
+{
+  email: { type: String, required: true },
+  groupId: { type: mongoose.Schema.Types.ObjectId, ref: "Group", required: true },
+  status: { type: String, enum: ["pending", "accepted", "rejected"], default: "pending" },
+  invitedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+}
+```
+
+## 4. Backend API Structure
 
 ### User Routes (`/users`)
 
-| Method | Endpoint    | Description                    | Auth Required? |
-| ------ | ----------- | ------------------------------ | -------------- |
-| POST   | `/register` | Create a new user              | No             |
-| POST   | `/login`    | Authenticate user & return JWT | No             |
-| GET    | `/logout`   | Log out user                   | Yes            |
-| GET    | `/profile`  | Get user profile details       | Yes            |
-| PATCH  | `/profile`  | Update user profile            | Yes            |
+| Method | Endpoint                | Description                    | Auth Required? |
+| ------ | ----------------------- | ------------------------------ | -------------- |
+| GET    | `/`                     | Get all users                  | No             |
+| POST   | `/register`             | Create a new user              | No             |
+| POST   | `/login`                | Authenticate user & return JWT | No             |
+| GET    | `/logout`               | Log out user                   | No             |
+| GET    | `/me`                   | Get current user profile       | Yes            |
+| PATCH  | `/profile`              | Update user profile            | Yes            |
+| PATCH  | `/onboarding`           | Complete onboarding            | Yes            |
+| PATCH  | `/update-profile`       | Update profile with picture    | Yes            |
+| PATCH  | `/update-password`      | Change password                | Yes            |
+| PATCH  | `/update-notifications` | Update notification settings   | Yes            |
 
 ### Expense Routes (`/expenses`)
 
@@ -160,127 +187,142 @@ Before coding, we designed a wireframe to visualize the application's layout and
 
 ### Group Routes (`/groups`)
 
-| Method | Endpoint             | Description                  | Auth Required? |
-| ------ | -------------------- | ---------------------------- | -------------- |
-| GET    | `/`                  | Get all groups for the user  | Yes            |
-| POST   | `/create`            | Create a new group           | Yes            |
-| PATCH  | `/:groupId`          | Edit an existing group       | Yes            |
-| DELETE | `/:groupId`          | Delete a group (by Creator)  | Yes            |
-| POST   | `/:groupId/add`      | Add a member to a group      | Yes            |
-| DELETE | `/:groupId/remove`   | Remove a member from a group | Yes            |
-| GET    | `/:groupId/expenses` | Get all expenses in a group  | Yes            |
-| POST   | `/:groupId/add-expense`| Add a new expense in a group  | Yes            |
-| PATCH  | `/:groupId/edit-expense/:expenseId`| Modify an expense in a group  | Yes            |
-| DELETE | `/:groupId/delete-expense/:expenseId`| Delete an expense in a group if all payments are completed  | Yes            |
-
-
+| Method | Endpoint             | Description          | Auth Required? |
+| ------ | -------------------- | -------------------- | -------------- |
+| GET    | `/`                  | Get all user groups  | Yes            |
+| GET    | `/:groupId`          | Get specific group   | Yes            |
+| POST   | `/create`            | Create a new group   | Yes            |
+| PATCH  | `/:groupId`          | Update group details | Yes            |
+| DELETE | `/:groupId`          | Delete a group       | Yes            |
+| GET    | `/:groupId/expenses` | Get group expenses   | Yes            |
+| POST   | `/:groupId/expense`  | Add expense to group | Yes            |
 
 ### Payment Routes (`/payments`)
 
-| Method | Endpoint      | Description               | Auth Required? |
-| ------ | ------------- | ------------------------- | -------------- |
-| GET    | `/`           | Get all payments          | Yes            |
-| POST   | `/create`     | Create a new payment      | Yes            |
-| PATCH  | `/:paymentId` | Update a payment status   | Yes            |
-| GET    | `/:paymentId` | Get payment details by ID | Yes            |
+| Method | Endpoint          | Description           | Auth Required? |
+| ------ | ----------------- | --------------------- | -------------- |
+| GET    | `/`               | Get all user payments | Yes            |
+| GET    | `/group/:groupId` | Get payments by group | Yes            |
+| POST   | `/create`         | Create a new payment  | Yes            |
+| PATCH  | `/:paymentId`     | Update payment status | Yes            |
+| GET    | `/:paymentId`     | Get payment details   | Yes            |
 
----
+### Invite Routes (`/invites`)
 
-## 6. Frontend Structure (React)
+| Method | Endpoint     | Description          | Auth Required? |
+| ------ | ------------ | -------------------- | -------------- |
+| POST   | `/`          | Create a new invite  | Yes            |
+| GET    | `/`          | Get user's invites   | Yes            |
+| PATCH  | `/:inviteId` | Accept/reject invite | Yes            |
 
-### Components
-
-| Component         | Purpose                                                 |
-| ----------------- | ------------------------------------------------------- |
-| `Navbar.jsx`      | Displays navigation links, login/logout status (Global) |
-| `Footer.jsx`      | Displays footer links and info (Global)                 |
-| `ExpenseCard.jsx` | Displays an individual expense                          |
-| `ExpenseList.jsx` | Lists all expenses                                      |
-| `Filter.jsx`      | Filters expenses by category/date/amount                |
-| `Summary.jsx`     | Displays expense summary and statistics                 |
-
-### Reusable Components 
-
-Global: (Except Login, Signup, Onboarding)
-
-Navbar
-Sidebar
-Icons
-(footer)
-
-
-Login/Sign Up/
-Onboarding Pages:
-Form (With Rendering Logic)
-image
- 
-
-HomePage:
-Cards
-List
-Icons
-
-Expense Manager:
-List items
-Buttons
-
-Group Expense Management:
-Event Details (Group expense info)
- List icons
-
-Settings:
-Buttons
-Icons
-
-Modals:
-Form
-(Suggestions for buttons)
-
-
-### Usable Components
-
-Onboarding:
-- Steps
-
-Home:
-Chart
-Expense Chart Modal
-
-Group Expense Management:
-List
-Button
-
+## 5. Frontend Structure
 
 ### Pages
 
-| Page                 | Purpose                                                  |
-| -------------------- | -------------------------------------------------------- |
-| `LandingPage.jsx`    | Overview of the services offered                         |
-| `Home.jsx`           | Displays dashboard with expense summary                  |
-| `LoginPage.jsx`      | User login form                                          |
-| `SignupPage.jsx`     | User registration form                                   |
-| `OnboardingPage.jsx` | User quick setup                                         |
-| `Settings.jsx`       | User profile                                             |
-| `ExpenseManager.jsx` | Allows users to search an expense by categories and occ. |
-| `GroupExpense.jsx`   | Allows users to have an overview of the group expenses   |
+| Page                 | Purpose                                            |
+| -------------------- | -------------------------------------------------- |
+| `LandingPage.jsx`    | Welcome page with app description and auth options |
+| `LoginPage.jsx`      | User login form                                    |
+| `SignupPage.jsx`     | User registration form                             |
+| `OnboardingPage.jsx` | Step-by-step user setup wizard                     |
+| `ForgotPassword.jsx` | Password recovery flow                             |
+| `HomePage.jsx`       | Main dashboard with expense overview & charts      |
+| `ExpenseManager.jsx` | Detailed expense filtering and management          |
+| `GroupExpenses.jsx`  | Group expense management interface                 |
+| `SettingPage.jsx`    | User settings and profile management               |
+| `PageNotFound.jsx`   | 404 error page                                     |
 
-### Modals
+### Key Components
 
-| Modal                    | Purpose                                                    |
-| ------------------------ | ---------------------------------------------------------- |
-| `AddExpenseModal.jsx`    | Allows users to add and view expenses                      |
-| `SplitExpenseModal.jsx`  | Allows users to add and split the expenses                 |
-| `DetailExpenseModal.jsx` | Allows users to view, modify and delete a specific expense |
+| Component                 | Purpose                                      |
+| ------------------------- | -------------------------------------------- |
+| `ExpenseList.jsx`         | Lists user expenses with filtering           |
+| `ExpenseTable.jsx`        | Tabular view of expenses                     |
+| `FilteredTransactionList` | Advanced filtering of transactions           |
+| `GroupList.jsx`           | Lists user's groups                          |
+| `GroupDetail.jsx`         | Shows details for a specific group           |
+| `GroupExpenseAccordion`   | Expandable interface for group expenses      |
+| `GroupMembersTable`       | Lists and manages group members              |
+| `SummaryCards.jsx`        | Visual overview of expense metrics           |
+| `Chart.jsx`               | Graphical representations of expense data    |
+| `PaymentList.jsx`         | Lists and manages pending/completed payments |
+
+### Modal Components
+
+| Modal                  | Purpose                                          |
+| ---------------------- | ------------------------------------------------ |
+| `AddExpense.jsx`       | Create or edit personal expenses                 |
+| `ExpenseDetail.jsx`    | View expense details with options to edit/delete |
+| `AddGroupModal.jsx`    | Create a new expense group                       |
+| `EditGroupModal.jsx`   | Modify group details                             |
+| `AddGroupExpenseModal` | Add expense to a group with automatic splitting  |
+| `SettleUpModal.jsx`    | Create settlement payments between group members |
+| `PaymentDetail.jsx`    | View payment details                             |
+| `InviteModal.jsx`      | Send invites to join a group                     |
 
 ### State Management
 
-| Context Name                       | Description                                                                         |
-| ---------------------------------- | ----------------------------------------------------------------------------------- |
-| **Users** (`userReducer.js`)       | Manages authentication, user profile, and login/logout state.                       |
-| **Expenses** (`expenseReducer.js`) | Handles expense creation, updates, deletions, and filtering.                        |
-| **Filters** (`filterReducer.js`)   | Manages state for expense category and occurrence filters.                          |
-| **Groups** (`groupReducer.js`)     | Manages shared expense groups, members, and split tracking.                         |
-| **Payments** (`paymentReducer.js`) | Tracks pending and completed payments within expense groups.                        |
-| **Global Context** (`Context.jsx`) | Provides a centralized store to manage and distribute state across the application. |
+The application uses React's Context API for state management:
 
----
+| Context          | Purpose                                 |
+| ---------------- | --------------------------------------- |
+| `AuthContext`    | Handles user authentication and profile |
+| `ExpenseContext` | Manages personal expense operations     |
+| `GroupContext`   | Manages group data and operations       |
+| `PaymentContext` | Tracks payments and settlements         |
+| `BalanceContext` | Manages group balances                  |
+| `InviteContext`  | Manages group invitations               |
+
+## 6. Technologies Used
+
+### Frontend
+
+- React (with Context API for state management)
+- React Router for navigation
+- Tailwind CSS for styling
+- Chart.js for data visualization
+
+### Backend
+
+- Node.js with Express
+- MongoDB with Mongoose for data modeling
+- JWT for authentication
+- Multer for file uploads
+
+## 7. Getting Started
+
+### Prerequisites
+
+- Node.js and npm
+- MongoDB
+
+### Installation
+
+1. Clone the repository
+2. Install backend dependencies:
+   ```
+   cd backend
+   npm install
+   ```
+3. Install frontend dependencies:
+   ```
+   cd frontend
+   npm install
+   ```
+4. Start the backend server:
+   ```
+   cd backend
+   npm start
+   ```
+5. Start the frontend development server:
+   ```
+   cd frontend
+   npm run dev
+   ```
+
+## 8. Contributors
+
+- [github.com/HMusenja]
+- [github.com/nawwardiab]
+- [github.com/Manudd25]
+- [github.com/irinaholler]

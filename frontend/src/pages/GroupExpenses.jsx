@@ -54,12 +54,14 @@ const GroupExpenses = () => {
             {selectedGroup ? (
               <>
                 <GroupDetail />
-                <GroupMembersTable />
+                <GroupMembersTable groupId={selectedGroup?._id} />
                 <ExpenseTable />
                 <PaymentList groupId={selectedGroup?._id} />
               </>
             ) : (
-              <p className="text-center text-gray-500 py-20">No group selected.</p>
+              <p className="text-center text-gray-500 py-20">
+                No group selected.
+              </p>
             )}
           </div>
         </main>
@@ -70,7 +72,7 @@ const GroupExpenses = () => {
         <AddGroupExpense
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
-        // onGroupAdded={handleGroupAdded}
+          // onGroupAdded={handleGroupAdded}
         />
       )}
     </div>
