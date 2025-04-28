@@ -55,10 +55,16 @@ const DashboardChart = () => {
       return date >= startOfMonth;
     };
 
-    // Regular Expenses
-    const monthlyExpenses = expenses
-      .filter((e) => isInCurrentMonth(e.transactionDate))
+    // Regular Expenses - separate recurring and one-time
+    const recurringExpenses = expenses
+      .filter((e) => e.isRecurring)
       .reduce((sum, e) => sum + Math.abs(Number(e.amount || 0)), 0);
+
+    const oneTimeMonthlyExpenses = expenses
+      .filter((e) => !e.isRecurring && isInCurrentMonth(e.transactionDate))
+      .reduce((sum, e) => sum + Math.abs(Number(e.amount || 0)), 0);
+
+    const monthlyExpenses = recurringExpenses + oneTimeMonthlyExpenses;
 
     const totalExpenses = expenses.reduce(
       (sum, e) => sum + Math.abs(Number(e.amount || 0)),
@@ -137,9 +143,17 @@ const DashboardChart = () => {
           hidden: activeView !== "breakdown",
         },
         {
-          label: "Monthly Expenses",
-          data: [0, monthlyExpenses],
+          label: "One-Time Expenses",
+          data: [0, oneTimeMonthlyExpenses],
           backgroundColor: "rgba(255, 99, 132, 0.7)",
+          barPercentage: 0.5,
+          stack: "monthly_breakdown",
+          hidden: activeView !== "breakdown",
+        },
+        {
+          label: "Recurring Expenses",
+          data: [0, recurringExpenses],
+          backgroundColor: "rgba(255, 99, 132, 0.4)",
           barPercentage: 0.5,
           stack: "monthly_breakdown",
           hidden: activeView !== "breakdown",
@@ -199,7 +213,11 @@ const DashboardChart = () => {
                 </div>
                 <div className="flex items-center">
                   <span className="inline-block w-3 h-3 bg-[rgba(255,99,132,0.7)] rounded-full mr-1"></span>
-                  <span>Expenses</span>
+                  <span>One-Time</span>
+                </div>
+                <div className="flex items-center">
+                  <span className="inline-block w-3 h-3 bg-[rgba(255,99,132,0.4)] rounded-full mr-1"></span>
+                  <span>Recurring</span>
                 </div>
                 <div className="flex items-center">
                   <span className="inline-block w-3 h-3 bg-[rgba(255,159,64,0.7)] rounded-full mr-1"></span>
