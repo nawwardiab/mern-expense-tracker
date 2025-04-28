@@ -197,7 +197,7 @@ const FilteredTransactionList = () => {
     }, {});
   }, [filteredTransactions]);
 
-  // Order sections with pending and today first
+  // Order sections with recurring, pending and today first
   const orderedSections = React.useMemo(() => {
     return [
       "Recurring Expenses",
