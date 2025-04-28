@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { ExpenseContext } from "../../contexts/ExpenseContext";
 import { GroupContext } from "../../contexts/GroupContext";
 import { LuPartyPopper } from "react-icons/lu";
@@ -14,9 +15,12 @@ const ExpenseItem = ({
   transactionState,
   isGroupExpense,
   onClick,
+  inExpenseManager = false, // New prop to determine if it's in expense manager
 }) => {
+  const { expenseDispatch } = useContext(ExpenseContext);
   const { groupState } = useContext(GroupContext);
   const [groupName, setGroupName] = useState("");
+  const navigate = useNavigate();
 
   // Find group name if it's a group expense
   useEffect(() => {
@@ -60,15 +64,6 @@ const ExpenseItem = ({
       ? "border-solid border-l-4 border-gray-500"
       : "border-dotted border-l-4 border-gray-500";
 
-  const handleClick = () => {
-    if (onClick) {
-      onClick(expense);
-    } else {
-      expenseDispatch({ type: "SET_SELECTED_EXPENSE", payload: expense });
-      expenseDispatch({ type: "OPEN_MODAL" });
-    }
-  };
-
   // Check if this item is a payment transaction or income
   const isPayment = expense.isPayment || false;
   const isIncome = expense.isIncome || false; // Only true if explicitly tagged as income
@@ -105,12 +100,30 @@ const ExpenseItem = ({
     ? "text-green-500"
     : "text-red-500";
 
+  // Handle clicks differently based on location
+  const handleItemClick = () => {
+    if (inExpenseManager && onClick) {
+      // If in expense manager and has onClick handler, use it
+      onClick(expense);
+    } else if (!inExpenseManager && !isPayment) {
+      // If not in expense manager and not a payment, navigate to expense manager
+      navigate("/expense-manager");
+    } else if (isPayment && onClick) {
+      // If payment and has onClick, handle payment clicks
+      onClick(expense);
+    }
+  };
+
+  // Determine cursor style based on clickability
+  const cursorStyle =
+    inExpenseManager || isPayment
+      ? "cursor-pointer hover:bg-gray-100"
+      : "cursor-default";
+
   return (
     <div
-      onClick={onClick ? () => onClick(expense) : undefined}
-      className={`flex flex-col sm:flex-row justify-between items-start sm:items-center p-3 sm:p-4 bg-white rounded-lg shadow-md
-        ${onClick ? "cursor-pointer hover:bg-gray-100 transition" : ""}
-        ${borderStyle}`}
+      onClick={handleItemClick}
+      className={`flex flex-col sm:flex-row justify-between items-start sm:items-center p-3 sm:p-4 bg-white rounded-lg shadow-md transition ${cursorStyle} ${borderStyle}`}
     >
       <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
         <div

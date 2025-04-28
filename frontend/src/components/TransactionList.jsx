@@ -100,13 +100,7 @@ const TransactionList = () => {
                   key={expense._id}
                   expense={expense}
                   transactionState={section}
-                  onClick={() => {
-                    expenseDispatch({
-                      type: "SET_SELECTED_EXPENSE",
-                      payload: expense,
-                    });
-                    expenseDispatch({ type: "OPEN_MODAL" });
-                  }}
+                  inExpenseManager={false}
                 />
               ))
             ) : section === "Today's Transactions" ? (

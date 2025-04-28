@@ -322,7 +322,12 @@ const FilteredTransactionList = () => {
                     expense={expense}
                     transactionState={section}
                     isGroupExpense={!!expense.groupId}
-                    onClick={() => handleTransactionClick(expense)}
+                    inExpenseManager={false}
+                    onClick={
+                      expense.isPayment
+                        ? () => handleTransactionClick(expense)
+                        : undefined
+                    }
                   />
                 ))
               ) : section === "Today's Transactions" ? (
