@@ -99,7 +99,7 @@ const ForgotPassword = () => {
                 placeholder="Enter new password"
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-600"
               />
             </div>
 
@@ -113,7 +113,7 @@ const ForgotPassword = () => {
                 placeholder="Confirm new password"
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-600"
               />
             </div>
 

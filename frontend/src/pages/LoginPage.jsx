@@ -95,7 +95,7 @@ const Login = () => {
                 placeholder="Enter Email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-600"
               />
             </div>
 
@@ -107,12 +107,12 @@ const Login = () => {
                 placeholder="Enter Password"
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-600"
               />
               <div className="text-left mt-1">
                 <button
                   onClick={() => navigate("/forgot-password")}
-                  className="text-blue-500 hover:underline text-sm"
+                  className="text-indigo-600 hover:underline text-sm"
                 >
                   Forgot your password?
                 </button>
@@ -137,7 +137,7 @@ const Login = () => {
               onClick={() => navigate("/signup")}
               className="w-full flex items-center justify-center border border-gray-300 py-3 rounded-md hover:bg-gray-100 transition"
             >
-              <FaEnvelope className="mr-2 text-blue-500" /> Sign up with a
+              <FaEnvelope className="mr-2 text-indigo-600" /> Sign up with a
               different email
             </button>
           </div>

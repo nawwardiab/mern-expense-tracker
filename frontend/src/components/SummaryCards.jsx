@@ -4,12 +4,15 @@ import { ExpenseContext } from "../contexts/ExpenseContext";
 import { PaymentContext } from "../contexts/PaymentContext";
 import { AuthContext } from "../contexts/AuthContext";
 import { getAllExpenses } from "../api/expenseApi";
+import { fetchUserPayments } from "../api/paymentApi";
+import { FaArrowDown, FaArrowUp, FaExchangeAlt } from "react-icons/fa";
 
 const SummaryCards = () => {
   const { expenseState, expenseDispatch } = useContext(ExpenseContext);
   const { expenses } = expenseState;
 
-  const { payments, loadPayments } = useContext(PaymentContext);
+  const { paymentState, paymentDispatch } = useContext(PaymentContext);
+  const { payments } = paymentState;
   const { userState } = useContext(AuthContext);
   const user = userState?.user;
 
@@ -19,14 +22,14 @@ const SummaryCards = () => {
   useEffect(() => {
     if (user) {
       getAllExpenses(expenseDispatch);
+      fetchUserPayments(user._id, paymentDispatch);
     }
-  }, [user]);
+  }, [user, expenseDispatch, paymentDispatch]);
 
   useEffect(() => {
     if (!user) return;
-    console.log("User:", user);
+
     const monthlySalary = user.income || 0;
-    console.log("Monthly Salary:", monthlySalary);
     const createdAt = user.createdAt ? new Date(user.createdAt) : null;
     const today = new Date();
 
@@ -44,35 +47,76 @@ const SummaryCards = () => {
     };
 
     const calculateStats = (isMonthly = false) => {
+      // Filter expenses for the period - include all recurring expenses regardless of date
       const filteredExpenses = isMonthly
-        ? expenses.filter((e) => isInCurrentMonth(e.transactionDate))
+        ? expenses.filter(
+            (e) => e.isRecurring || isInCurrentMonth(e.transactionDate)
+          )
         : expenses;
 
+      // Filter payments for the period
       const filteredPayments = isMonthly
-        ? expenses?.filter((p) => isInCurrentMonth(p.createdAt))
-        : expenses;
-      // console.log("payments", payments);
-      console.log("filteredPayments:", filteredPayments);
-      const totalOutgoing = filteredExpenses.reduce(
+        ? payments?.filter((p) => isInCurrentMonth(p.createdAt))
+        : payments;
+
+      // Calculate total outgoing from expenses
+      const totalExpensesOutgoing = filteredExpenses.reduce(
         (sum, e) => sum + Math.abs(Number(e.amount || 0)),
         0
       );
 
-      const totalIncomingFromPayments = filteredPayments?.reduce(
-        (acc, curr) => acc + Number(curr.amount || 0),
+      // Calculate outgoing payments (payments made to others)
+      const outgoingPayments =
+        filteredPayments?.filter((payment) => {
+          const payerId =
+            typeof payment.payer === "object"
+              ? payment.payer?._id
+              : payment.payer;
+          return payerId === user._id;
+        }) || [];
+
+      // Calculate incoming payments (payments received from others)
+      const incomingPayments =
+        filteredPayments?.filter((payment) => {
+          const payeeId =
+            typeof payment.payee === "object"
+              ? payment.payee?._id
+              : payment.payee;
+          return payeeId === user._id;
+        }) || [];
+
+      // Sum of outgoing payments
+      const totalOutgoingPayments = outgoingPayments.reduce(
+        (sum, p) => sum + Number(p.amount || 0),
         0
       );
 
-      console.log("totalIncomingFromPayments", totalIncomingFromPayments);
+      // Sum of incoming payments
+      const totalIncomingPayments = incomingPayments.reduce(
+        (sum, p) => sum + Number(p.amount || 0),
+        0
+      );
 
-      const totalIncoming = monthlySalary || 0;
-      console.log("totalIncoming", totalIncoming);
-      const totalTransactions = filteredExpenses.length;
+      // Total outgoing = expenses + outgoing payments
+      const totalOutgoing = totalExpensesOutgoing + totalOutgoingPayments;
+
+      // Total incoming = salary + incoming payments
+      const totalIncoming =
+        (isMonthly ? monthlySalary : monthlySalary * monthsSinceCreation) +
+        totalIncomingPayments;
+
+      // Count total transactions (expenses + payments)
+      const totalTransactions =
+        filteredExpenses.length + (filteredPayments?.length || 0);
 
       return {
         totalTransactions,
         totalOutgoing,
         totalIncoming,
+        totalExpensesOutgoing,
+        totalOutgoingPayments,
+        totalIncomingPayments,
+        salary: isMonthly ? monthlySalary : monthlySalary * monthsSinceCreation,
         balance: totalIncoming - totalOutgoing,
       };
     };
@@ -96,39 +140,79 @@ const SummaryCards = () => {
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bg-gray-200 rounded-xl p-4">
-          <p className="text-sm font-medium mb-1">All Transactions</p>
-          <p className="text-md">
-            <strong>{monthlyStats.totalTransactions || 0}</strong>
-            <span className="text-xs font-thin text-gray-800"> /Month</span>
-          </p>
-          <p className="text-md">
-            <strong>{totalStats.totalTransactions || 0}</strong>
-            <span className="text-xs font-thin text-gray-800"> /total</span>
-          </p>
+          <div className="flex items-center mb-2">
+            <FaExchangeAlt className="text-gray-600 mr-2" />
+            <p className="text-sm font-medium">Transactions</p>
+          </div>
+
+          <div className="flex justify-between items-center">
+            <div>
+              <p className="text-xs text-gray-500">This Month</p>
+              <p className="text-2xl font-bold">
+                {monthlyStats.totalTransactions || 0}
+              </p>
+            </div>
+            <div className="text-right">
+              <p className="text-xs text-gray-500">All Time</p>
+              <p className="text-lg font-semibold">
+                {totalStats.totalTransactions || 0}
+              </p>
+            </div>
+          </div>
         </div>
 
         <div className="bg-gray-200 rounded-xl p-4">
-          <p className="text-sm font-medium mb-1">Total Outgoing</p>
-          <p className="text-md text-red-500">
-            €{formatAmount(monthlyStats.totalOutgoing)}
-            <span className="text-xs font-thin text-gray-800"> /Month</span>
-          </p>
-          <p className="text-sm text-red-700 mt-4">
-            €{formatAmount(totalStats.totalOutgoing)}
-            <span className="text-xs font-thin text-gray-800"> /total</span>
-          </p>
+          <div className="flex items-center mb-2">
+            <FaArrowUp className="text-red-500 mr-2" />
+            <p className="text-sm font-medium">Money Out</p>
+          </div>
+
+          <div className="flex justify-between mb-3">
+            <div>
+              <p className="text-xs text-gray-500">This Month</p>
+              <p className="text-2xl font-bold text-red-500">
+                €{formatAmount(monthlyStats.totalOutgoing)}
+              </p>
+            </div>
+          </div>
+
+          <div className="text-xs space-y-1 mt-1 border-t pt-2 border-gray-300">
+            <div className="flex justify-between">
+              <span>Expenses:</span>
+              <span>€{formatAmount(monthlyStats.totalExpensesOutgoing)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Payments:</span>
+              <span>€{formatAmount(monthlyStats.totalOutgoingPayments)}</span>
+            </div>
+          </div>
         </div>
 
         <div className="bg-gray-200 rounded-xl p-4">
-          <p className="text-sm font-medium mb-1">Total Incoming</p>
-          <p className="text-md text-green-600">
-            €{formatAmount(monthlyStats.totalIncoming)}
-            <span className="text-xs font-thin text-gray-800"> /Month</span>
-          </p>
-          <p className="text-sm text-green-700 mt-4">
-            €{formatAmount(totalStats.totalIncoming)}
-            <span className="text-xs font-thin text-gray-800"> /total</span>
-          </p>
+          <div className="flex items-center mb-2">
+            <FaArrowDown className="text-green-500 mr-2" />
+            <p className="text-sm font-medium">Money In</p>
+          </div>
+
+          <div className="flex justify-between mb-3">
+            <div>
+              <p className="text-xs text-gray-500">This Month</p>
+              <p className="text-2xl font-bold text-green-500">
+                €{formatAmount(monthlyStats.totalIncoming)}
+              </p>
+            </div>
+          </div>
+
+          <div className="text-xs space-y-1 mt-1 border-t pt-2 border-gray-300">
+            <div className="flex justify-between">
+              <span>Income:</span>
+              <span>€{formatAmount(monthlyStats.salary)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Payments:</span>
+              <span>€{formatAmount(monthlyStats.totalIncomingPayments)}</span>
+            </div>
+          </div>
         </div>
       </div>
     </section>

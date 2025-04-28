@@ -42,21 +42,21 @@ const GroupDetail = () => {
       {/* Group Name & Edit Button */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
             {selectedGroup?.name}
           </h1>
           <p className="text-gray-600 mt-2">{selectedGroup?.description}</p>
         </div>
 
-        <div className="flex gap-3">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto mt-4 sm:mt-0">
           <button
-            className="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-600 cursor-pointer transition-all duration-300"
+            className="bg-black text-white px-4 py-3 rounded-lg w-full sm:w-auto text-sm font-semibold hover:bg-gray-800 transition-all duration-200 flex items-center justify-center gap-2"
             onClick={() => setEditModalOpen(true)}
           >
             ✏️ Edit Group
           </button>
           <button
-            className="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-600 cursor-pointer transition-all duration-300"
+            className="bg-black text-white px-4 py-3 rounded-lg w-full sm:w-auto text-sm font-semibold hover:bg-gray-800 transition-all duration-200"
             onClick={handleInviteClick}
           >
             Invite Friends

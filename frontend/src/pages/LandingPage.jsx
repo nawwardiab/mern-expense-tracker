@@ -42,9 +42,11 @@ const LandingPage = () => {
           <source src="/videohero.mp4" type="video/mp4" />
         </video>
         <div className="absolute inset-0 flex flex-col justify-center items-center px-6 bg-black opacity-60">
-          <h1 className="text-6xl font-extrabold text-white mb-4 tracking-wide drop-shadow-lg">
-            TRACK$
-          </h1>
+          <img
+            src="/Logo_w.png"
+            alt="Track$ Logo"
+            className="w-60 h-auto mb-4 drop-shadow-lg"
+          />
           <p className="text-2xl text-gray-200 font-light mb-8">
             Managing Expenses Like a Pro
           </p>
@@ -87,16 +89,16 @@ const LandingPage = () => {
               description:
                 "Set clear financial goals, monitor your cash flow, and optimize your monthly budget.",
               icon: (
-                <FaChartPie className="text-6xl text-blue-500 mb-6 mx-auto" />
+                <FaChartPie className="text-6xl text-indigo-600 mb-6 mx-auto" />
               ), // Centered Icon
-              bgColor: "bg-blue-50",
+              bgColor: "bg-indigo-50",
             },
             {
               title: "Reports & Insights",
               description:
                 "Make informed financial decisions with AI-powered analytics and visual reports.",
               icon: (
-                <FaClipboardList className="text-6xl text-purple-500 mb-6 mx-auto" />
+                <FaClipboardList className="text-6xl text-indigo-600 mb-6 mx-auto" />
               ), // Centered Icon
               bgColor: "bg-purple-50",
             },
@@ -139,13 +141,13 @@ const LandingPage = () => {
             {
               plan: "Pro",
               price: "€50",
-              color: "text-blue-500",
+              color: "text-indigo-600",
               features: [
                 "Advanced Expense Tracking",
                 "Budget Planning Tools",
                 "Priority Support",
               ],
-              bgColor: "bg-blue-50",
+              bgColor: "bg-indigo-50",
             },
             {
               plan: "Enterprise",
