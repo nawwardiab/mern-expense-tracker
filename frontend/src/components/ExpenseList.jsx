@@ -1,101 +1,86 @@
-import React, { useState } from "react";
-import ExpenseDetail from "../components/modal/ExpenseDetail.jsx";
+import React, { useContext, useEffect, useState } from "react";
+import { ExpenseContext } from "../contexts/ExpenseContext";
+import ExpenseDetail from "./modal/ExpenseDetail";
+import ExpenseItem from "./reusable/ExpenseItem";
 
-const ExpenseList = ({ expenses }) => {
-  const [selectedExpense, setSelectedExpense] = useState(null);
+const ExpenseList = ({ search, category, occurrence }) => {
+  // 1) Pull out context for global state/dispatch if needed
+  const { expenseState, expenseDispatch } = useContext(ExpenseContext);
+  const { selectedExpense, expenses, isModalOpen } = expenseState;
+
+  // Derived states: the filtered list and the total
+  const [filteredExpenses, setFilteredExpenses] = useState([]);
+
+  // 2) Local state for controlling the detail modal visibility
+  const [showDetail, setShowDetail] = useState(false);
+
+  useEffect(() => {
+    let filtered = expenses;
+
+    // Search by title
+    if (search) {
+      filtered = filtered.filter((exp) =>
+        exp.title.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+
+    // Category filter
+    if (category) {
+      filtered = filtered.filter((exp) => exp.category === category);
+    }
+
+    // Occurrence filter (note: we compare to .toLowerCase())
+    if (occurrence) {
+      filtered = filtered.filter(
+        (exp) => exp.recurringFrequency === occurrence.toLowerCase()
+      );
+    }
+
+    // Sort by newest first (assuming createdAt is a Date or ISO string)
+    filtered.sort(
+      (a, b) => new Date(b.transactionDate) - new Date(a.transactionDate)
+    );
+
+    // Update local state
+    setFilteredExpenses(filtered);
+
+    if (filtered.length > 0) {
+      // Calculate the total for the filtered list
+      const total = filtered.reduce((sum, exp) => sum + exp.amount, 0);
+      expenseDispatch({ type: "SET_TOTAL_FILTERED_EXPENSES", payload: total });
+    }
+  }, [expenses, search, category, occurrence]);
+
+  // 3) When the user clicks an expense item, select it in global context
+  const handleSelectExpense = (expense) => {
+    expenseDispatch({ type: "SET_SELECTED_EXPENSE", payload: expense });
+    setShowDetail(true);
+  };
+
+  // 4) If no expenses, show a fallback
+  if (filteredExpenses.length === 0) {
+    return <p className="text-gray-500">No expenses found.</p>;
+  }
 
   return (
     <div className="mt-10 w-full max-w-5xl mx-auto px-2 sm:px-4">
-      <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6">
-        Expense List
-      </h2>
-
-      {/* Expense Table */}
-      <div className="border rounded-xl shadow-lg overflow-hidden bg-white">
-        <table className="w-full text-left border-collapse hidden sm:table">
-          {/* Table Header */}
-          <thead className="bg-gray-100 border-b-2 border-gray-300">
-            <tr className="text-gray-600 uppercase text-xs sm:text-sm tracking-wider">
-              <th className="px-4 sm:px-6 py-3">Title</th>
-              <th className="px-4 sm:px-6 py-3">Amount</th>
-              <th className="px-4 sm:px-6 py-3 text-center">Category</th>
-              <th className="px-4 sm:px-6 py-3 text-right">Date</th>
-            </tr>
-          </thead>
-
-          {/* Table Body */}
-          <tbody>
-            {expenses.length > 0 ? (
-              expenses.map((expense) => (
-                <tr
-                  key={expense._id}
-                  className="border-t text-gray-800 hover:bg-gray-50 transition"
-                >
-                  <td
-                    className="px-4 sm:px-6 py-4 text-gray-600 cursor-pointer hover:underline"
-                    onClick={() => setSelectedExpense(expense)}
-                  >
-                    {expense.title}
-                  </td>
-                  <td className="px-4 sm:px-6 py-4 font-bold text-green-600">
-                    €{expense.amount.toFixed(2)}
-                  </td>
-                  <td className="px-4 sm:px-6 py-4 text-center">
-                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-200 text-gray-700">
-                      {expense.category}
-                    </span>
-                  </td>
-                  <td className="px-4 sm:px-6 py-4 text-right">
-                    {new Date(expense.transactionDate).toLocaleDateString()}
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="4" className="text-center py-6 text-gray-500">
-                  No expenses found.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-
-        {/* ✅ Mobile View (Cards) */}
-        <div className="sm:hidden">
-          {expenses.length > 0 ? (
-            expenses.map((expense) => (
-              <div
-                key={expense._id}
-                className="border-b py-4 px-4 flex flex-col gap-2 bg-white"
-              >
-                <div
-                  className="text-gray-700 font-semibold text-lg cursor-pointer hover:underline"
-                  onClick={() => setSelectedExpense(expense)}
-                >
-                  {expense.title}
-                </div>
-                <div className="flex justify-between text-sm text-gray-600">
-                  <span className="font-bold text-green-600">
-                    €{expense.amount.toFixed(2)}
-                  </span>
-                  <span className="text-xs bg-gray-200 px-2 py-1 rounded-full">
-                    {expense.category}
-                  </span>
-                  <span>{new Date(expense.transactionDate).toLocaleDateString()}</span>
-                </div>
-              </div>
-            ))
-          ) : (
-            <p className="text-center py-6 text-gray-500">No expenses found.</p>
-          )}
-        </div>
+      {/* 5) Render a list of ExpenseItem components */}
+      <div className="flex flex-col gap-4">
+        {filteredExpenses.map((exp) => (
+          <ExpenseItem
+            key={exp._id}
+            expense={exp}
+            onClick={() => handleSelectExpense(exp)}
+            inExpenseManager={true}
+          />
+        ))}
       </div>
 
-      {/* ✅ Show Modal when an expense is selected */}
-      {selectedExpense && (
+      {/* 6) Show the detail modal if the user selected an expense */}
+      {isModalOpen && selectedExpense && (
         <ExpenseDetail
           expense={selectedExpense}
-          onClose={() => setSelectedExpense(null)}
+          onClose={() => expenseDispatch({ type: "CLOSE_MODAL" })}
         />
       )}
     </div>
@@ -103,4 +88,3 @@ const ExpenseList = ({ expenses }) => {
 };
 
 export default ExpenseList;
-

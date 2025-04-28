@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import "dotenv/config";
 
-
+//! Create and send token for registration and send it with the cookies
 export const createSendToken = (res, status, user) => {
   const { JWT_EXP, JWT_SECRET } = process.env;
   //! Sign jwt token
@@ -11,11 +11,10 @@ export const createSendToken = (res, status, user) => {
 
   //! Set cookie option
   const cookieOptions = {
-
-    maxAge: 1 * 24 * 60 * 60 * 1000, // 1 day instead of 10 mins for testing 
+    maxAge: 1 * 24 * 60 * 60 * 1000, // 1 day instead of 10 mins for testing
 
     httpOnly: true,
-    };
+  };
 
   //! Send token using cookie
   res.cookie("jwtToken", jwtToken, cookieOptions);

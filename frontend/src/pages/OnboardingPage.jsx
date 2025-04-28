@@ -1,21 +1,17 @@
-import { useState, useEffect, useContext } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import {
-  FaArrowLeft,
-  FaUser,
-  FaMapMarkerAlt,
-  FaEnvelope,
-  FaDollarSign,
-  FaCheckCircle,
-  FaCamera,
-  FaMoneyBillWave,
-} from "react-icons/fa";
-import { AuthContext } from "../contexts/AuthContext";
-
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import useUserProfile from "../hooks/useUserProfile";
+import OnboardingStep1 from "./OnboardingSteps/Step1";
+import OnboardingStep2 from "./OnboardingSteps/Step2";
+import OnboardingStep3 from "./OnboardingSteps/Step3";
+import OnboardingStep4 from "./OnboardingSteps/Step4";
 const Onboarding = () => {
   const navigate = useNavigate();
-  const { checkAuth } = useContext(AuthContext);
-  const [searchParams, setSearchParams] = useSearchParams();
+  // 1) Load the user's profile once here
+  const { profile, loading, error } = useUserProfile();
+  // 2) Local state for multi-step form
+  const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -24,161 +20,85 @@ const Onboarding = () => {
     income: "",
     currency: "",
     profilePicture: "",
+    isOnboarded: false,
   });
-
-  const steps = Number(searchParams.get("step")) || 1; // Get step from URL
-
+  // 3) When `profile` is loaded, populate our form data
   useEffect(() => {
-    if (!searchParams.get("step")) {
-      setSearchParams({ step: 1 }); // Ensures step is always defined in URL
+    if (profile) {
+      setFormData((prev) => ({
+        ...prev,
+        fullName: profile.fullName || "",
+        email: profile.email || "",
+        username: profile.username || "",
+        location: profile.location || "",
+        income: profile.income || "",
+        currency: profile.currency || "",
+        profilePicture: profile.profilePicture || "",
+        isOnboarded: profile.isOnboarded || false,
+      }));
     }
-  }, [searchParams, setSearchParams]);
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const response = await fetch("http://localhost:8000/users/profile", {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-        });
-
-        if (!response.ok) {
-          console.error("Authentication failed:", response.statusText);
-          return;
-        }
-
-        const data = await response.json();
-
-        const userData = data.user || data.data || {};
-
-        setFormData((prev) => ({
-          ...prev,
-          fullName: userData.fullName || "",
-          email: userData.email || "",
-          username: userData.username || "",
-          location: userData.location || "",
-          income: userData.income || "",
-          currency: userData.currency || "",
-          profilePicture: userData.profilePicture || "",
-        }));
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      }
-    };
-
-    fetchUserData();
-  }, []);
-
+  }, [profile]);
+  // 4) If user is already onboarded, skip
   useEffect(() => {
     if (formData.isOnboarded) {
       navigate("/homepage");
     }
   }, [formData.isOnboarded, navigate]);
-
+  // 5) Optionally handle loading/error states
+  if (loading) {
+    return <div className="p-8 text-center">Loading your profile...</div>;
+  }
+  if (error) {
+    return (
+      <div className="p-8 text-center text-red-600">
+        Error loading user data: {error.message}
+      </div>
+    );
+  }
+  // 6) Single change handler for multi-step form
   const handleChange = (e) => {
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value || "",
+      [name]: value,
     }));
   };
-
-  const handleProfilePicture = async (e) => {
-    const file = e.target.files[0];
+  // 7) Handle profile picture upload (if you want it separate)
+  const handleProfilePictureChange = async (file) => {
     if (!file) return;
-
-    const imageData = new FormData();
-    imageData.append("profilePicture", file);
-
     try {
-      const response = await fetch("http://localhost:8000/users/profile", {
-        method: "PATCH",
-        body: imageData,
-        credentials: "include",
-      });
-
-      const data = await response.json();
-      if (response.ok) {
-        setFormData((prev) => ({ ...prev, profilePicture: data.filePath }));
+      const imageData = new FormData();
+      imageData.append("profilePicture", file);
+      const response = await axios.patch("/users/profile", imageData);
+      if (response.status === 200) {
+        // Suppose the server returns { profilePicture: "/uploads/..." }
+        const updatedPicturePath =
+          response.data.profilePicture || response.data.filePath;
+        setFormData((prev) => ({
+          ...prev,
+          profilePicture: updatedPicturePath,
+        }));
       } else {
-        console.error("Profile picture upload failed:", data);
+        console.error("Profile picture upload failed:", response.data);
       }
     } catch (error) {
       console.error("Error uploading profile picture:", error);
     }
   };
-
-  const handleNext = () => {
-    const nextStep = Math.min(steps + 1, 4);
-    setSearchParams({ step: nextStep }); // Update step in URL
-  };
-
-  const handleBack = () => {
-    const prevStep = Math.max(steps - 1, 1);
-    setSearchParams({ step: prevStep });
-  };
-
-  // Submitteing the onboardin form
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const updatedData = {
-      fullName: formData.fullName || "",
-      email: formData.email || "",
-      username: formData.username || "",
-      location: formData.location || "",
-      income: formData.income || "",
-      currency: formData.currency || "",
-      profilePicture: formData.profilePicture || "",
-      isOnboarded: true,
-    };
-
+  // 8) Step navigation
+  const handleNext = () => setStep((prev) => Math.min(prev + 1, 4));
+  const handleBack = () => setStep((prev) => Math.max(prev - 1, 1));
+  // 9) Final submit (Finish button)
+  const handleSubmit = async () => {
+    const updatedData = { ...formData, isOnboarded: true };
     try {
-      const response = await fetch("http://localhost:8000/users/onboarding", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(updatedData),
-      });
-      const data = await response.json();
-
-      if (!response.ok) {
-        console.error("Onboarding request failed:", data);
-        return;
-      }
-
-      await checkAuth();
-
+      await axios.patch("/users/onboarding", updatedData);
       navigate("/homepage");
-    } catch (error) {
-      console.error("Onboarding error:", error);
+    } catch (err) {
+      console.error("Onboarding error:", err);
     }
   };
-
-  // Handle Skip Button
-  const handleSkip = async () => {
-    try {
-      const response = await fetch("http://localhost:8000/users/onboarding", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ isOnboarded: true }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        console.error("Skipping onboarding failed:", data);
-        return;
-      }
-
-      await checkAuth();
-      navigate("/homepage");
-    } catch (error) {
-      console.error("Skipping error:", error);
-    }
-  };
-
+  // 10) Render the UI with step indicators, skip/home buttons, etc.
   return (
     <div
       className="flex items-center justify-center min-h-screen bg-contain bg-center bg-no-repeat p-6"
@@ -189,187 +109,78 @@ const Onboarding = () => {
           onClick={() => navigate("/")}
           className="absolute top-4 left-4 text-gray-600 hover:text-black flex items-center"
         >
-          <FaArrowLeft className="mr-2" /> Home
+          Home
         </button>
-
-        {/* Skip Button*/}
         <button
-          onClick={handleSkip}
+          onClick={() => navigate("/homepage")}
           className="absolute top-4 right-4 text-gray-600 hover:text-black font-bold"
         >
           Skip
         </button>
-
+        {/* Step Indicators */}
         <div className="flex justify-center space-x-2 mb-6">
           {[1, 2, 3, 4].map((num) => (
             <div
               key={num}
-              className={`w-8 h-2 rounded-full ${
-                steps >= num ? "bg-black" : "bg-gray-300"
-              }`}
+              className={`w-8 h-2 rounded-full ${step >= num ? "bg-black" : "bg-gray-300"
+                }`}
             />
           ))}
         </div>
-        <h2 className="text-2xl font-bold mb-6">Step {steps} of 4</h2>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {steps === 1 && (
-            <>
-              <h3 className="text-lg font-semibold">Basic Info</h3>
-              <div className="flex items-center border p-3 rounded-md bg-gray-100">
-                <FaUser className="text-gray-500 mr-3" />
-                <input
-                  type="text"
-                  name="fullName"
-                  value={formData.fullName}
-                  onChange={handleChange}
-                  placeholder="Enter your full name"
-                  className="w-full bg-transparent outline-none"
-                />
-              </div>
-              <div className="flex items-center border p-3 rounded-md bg-gray-100">
-                <FaEnvelope className="text-gray-500 mr-3" />
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="Enter your email"
-                  className="w-full bg-transparent outline-none"
-                />
-              </div>
-            </>
+        <h2 className="text-2xl font-bold mb-6">Step {step} of 4</h2>
+        {step === 1 && (
+          <OnboardingStep1 formData={formData} handleChange={handleChange} />
+        )}
+        {step === 2 && (
+          <OnboardingStep2
+            formData={formData}
+            handleChange={handleChange}
+            onProfilePicChange={handleProfilePictureChange}
+          />
+        )}
+        {step === 3 && (
+          <OnboardingStep3 formData={formData} handleChange={handleChange} />
+        )}
+        {step === 4 && <OnboardingStep4 formData={formData} />}
+        <div className="flex justify-between mt-6">
+          {step > 1 && (
+            <button
+              type="button"
+              onClick={handleBack}
+              className="px-6 py-3 border rounded-md"
+            >
+              Back
+            </button>
           )}
-
-          {steps === 2 && (
-            <>
-              <h3 className="text-lg font-semibold">
-                Profile Picture & Username
-              </h3>
-              <div className="relative w-20 h-20 mx-auto mb-4">
-                <img
-                  src={formData.profilePicture || "/avatar.png"}
-                  alt="Profile"
-                  className="w-full h-full rounded-full object-cover border-2 border-gray-300"
-                />
-                <label
-                  htmlFor="file-upload"
-                  className="absolute bottom-0 right-0 bg-black text-white p-2 rounded-full cursor-pointer"
-                >
-                  <FaCamera />
-                </label>
-                <input
-                  id="file-upload"
-                  type="file"
-                  className="hidden"
-                  onChange={handleProfilePicture}
-                />
-              </div>
-              <div className="flex items-center border p-3 rounded-md bg-gray-100">
-                <FaUser className="text-gray-500 mr-3" />
-                <input
-                  type="text"
-                  name="username"
-                  value={formData.username}
-                  onChange={handleChange}
-                  placeholder="Create a username"
-                  className="w-full bg-transparent outline-none"
-                />
-              </div>
-            </>
+          {step < 4 ? (
+            <button
+              type="button"
+              onClick={handleNext}
+              className="px-6 py-3 bg-black text-white rounded-md"
+            >
+              Next
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={handleSubmit}
+              className="px-6 py-3 bg-green-600 text-white rounded-md"
+            >
+              Finish
+            </button>
           )}
-
-          {steps === 3 && (
-            <>
-              <h3 className="text-lg font-semibold">Preferences</h3>
-              <div className="flex items-center border p-3 rounded-md bg-gray-100">
-                <FaMapMarkerAlt className="text-gray-500 mr-3" />
-                <input
-                  type="text"
-                  name="location"
-                  value={formData.location}
-                  onChange={handleChange}
-                  placeholder="Select your location"
-                  className="w-full bg-transparent outline-none"
-                />
-              </div>
-              <div className="flex items-center border p-3 rounded-md bg-gray-100">
-                <FaDollarSign className="text-gray-500 mr-3" />
-                <select
-                  name="currency"
-                  value={formData.currency}
-                  onChange={handleChange}
-                  className="w-full bg-transparent outline-none"
-                >
-                  <option value="">Select your currency</option>
-                  <option value="USD">USD ($)</option>
-                  <option value="EUR">EUR (€)</option>
-                  <option value="GBP">GBP (£)</option>
-                </select>
-              </div>xs
-
-              <div className="flex items-center border p-3 rounded-md bg-gray-100">
-                <FaMoneyBillWave className="text-gray-500 mr-3" />
-                <input
-                  type="text"
-                  name="income"
-                  value={formData.income}
-                  onChange={handleChange}
-                  placeholder="Insert your income"
-                  className="w-full bg-transparent outline-none"
-                />
-                </div>
-            </>
-          )}
-
-          {steps === 4 && (
-            <>
-              <h3 className="text-lg font-semibold">Review & Complete</h3>
-              <ul className="text-left text-gray-800 mt-4 border p-4 rounded-md bg-gray-100">
-                {Object.entries(formData).map(([key, value]) => (
-                  <li key={key} className="mb-2">
-                    <FaCheckCircle className="text-green-500 inline-block mr-2" />
-                    <strong className="capitalize">
-                      {key.replace(/([A-Z])/g, " $1")}:
-                    </strong>{" "}
-                    {value || "Not set"}
-                  </li>
-                ))}
-              </ul>
-            </>
-          )}
-
-          <div className="flex justify-between mt-6">
-            {steps > 1 && (
-              <button
-                type="button"
-                onClick={handleBack}
-                className="px-6 py-3 border rounded-md"
-              >
-                Back
-              </button>
-            )}
-            {steps < 4 ? (
-              <button
-                type="button"
-                onClick={handleNext}
-                className="px-6 py-3 bg-black text-white rounded-md"
-              >
-                Next
-              </button>
-            ) : (
-              <button
-                type="submit"
-                className="px-6 py-3 bg-green-600 text-white rounded-md"
-              >
-                Finish
-              </button>
-            )}
-          </div>
-        </form>
+        </div>
       </div>
     </div>
   );
 };
-
 export default Onboarding;
+
+
+
+
+
+
+
+
+

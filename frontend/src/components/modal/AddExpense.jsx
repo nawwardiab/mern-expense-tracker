@@ -1,7 +1,21 @@
+/**
+ * AddExpense.jsx
+ *
+ * This component renders a modal form for creating a new expense.
+ * It calls the `createExpense` function from `expenseApi.js` directly,
+ * and then dispatches an action to the global Expense context reducer
+ * to update local state. This keeps the context "lean" and places the
+ * action (i.e., the API call) in the file where it's actually used.
+ */
+
 import { useState, useContext, useEffect } from "react";
 import { FaTimes } from "react-icons/fa";
-import axios from "axios";
+// We don't need axios in this component, because we call createExpense directly from expenseApi
+// import axios from "axios";
+
 import { AuthContext } from "../../contexts/AuthContext";
+import { ExpenseContext } from "../../contexts/ExpenseContext";
+import { createExpense } from "../../api/expenseApi";
 
 // Default Categories & Occurrences
 const categories = [
@@ -15,14 +29,29 @@ const categories = [
 const occurrences = ["Weekly", "Monthly", "Yearly"];
 
 const AddExpense = ({ isOpen, onClose }) => {
+  /**
+   * We pull in user data from AuthContext just to default
+   * the currency in the new expense (if the user has a preferred currency).
+   */
   const { user } = useContext(AuthContext);
+
+  /**
+   * We only need dispatch from the ExpenseContext so we can
+   * update the global expense state after a successful creation.
+   */
+  const { expenseDispatch } = useContext(ExpenseContext);
+
+  /**
+   * Local state to track the expense form inputs and UI logic
+   * (suggested categories, loading state, error/success messages, etc.)
+   */
   const [filteredCategories, setFilteredCategories] = useState([]);
   const [expense, setExpense] = useState({
     title: "",
     amount: "",
     category: "",
     occurrence: "monthly",
-    transactionDate: "", // Used for one-time expenses
+    transactionDate: "", // For one-time expenses
     startDate: "",
     endDate: "",
     notificationsEnabled: false, // Toggle for notifications
@@ -34,43 +63,54 @@ const AddExpense = ({ isOpen, onClose }) => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
 
+  /**
+   * If the user object includes a currency, set it
+   * as the default for this expense.
+   */
   useEffect(() => {
     if (user?.currency) {
       setExpense((prev) => ({ ...prev, currency: user.currency }));
     }
   }, [user]);
 
-  if (!isOpen) return null; // Prevent rendering if modal is closed
+  /**
+   * If the modal isn't open, don't render anything.
+   * This prevents the modal from showing at all in the DOM.
+   */
+  if (!isOpen) return null;
 
-  // Normalize input: Match even if user types lowercase
+  /**
+   * A small helper that tries to match the user input to one of the
+   * known items in a provided list (case-insensitive). If found,
+   * it returns the canonical form; otherwise, it returns the input as-is.
+   */
   const normalizeInput = (input, list) => {
     const found = list.find(
       (item) => item.toLowerCase() === input.toLowerCase()
     );
-    return found || input; // Return correct case if found, else return original input
+    return found || input;
   };
 
+  /**
+   * Updates the local `expense` object whenever an input changes.
+   * Special handling for:
+   *  - Dates: set them directly
+   *  - Category: use `normalizeInput` and dynamically filter suggestions
+   *  - Occurrence: same concept
+   */
   const handleChange = (e) => {
     const { name, value } = e.target;
-
     let formattedValue = value;
 
-    if (
-      name === "startDate" ||
-      name === "endDate" ||
-      name === "transactionDate"
-    ) {
-      setExpense((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
+    if (["startDate", "endDate", "transactionDate"].includes(name)) {
+      setExpense((prev) => ({ ...prev, [name]: value }));
       return;
     }
 
     if (name === "category") {
       formattedValue = normalizeInput(value, categories);
-      const filtered = categories.filter(
-        (cat) => cat.toLowerCase().includes(value.toLowerCase()) // Match partially
+      const filtered = categories.filter((cat) =>
+        cat.toLowerCase().includes(value.toLowerCase())
       );
       setFilteredCategories(filtered);
     } else if (name === "occurrence") {
@@ -80,17 +120,26 @@ const AddExpense = ({ isOpen, onClose }) => {
     setExpense((prev) => ({ ...prev, [name]: formattedValue }));
   };
 
-  // Select Category from Suggestions
+  /**
+   * When a user clicks one of the suggested categories, we set that
+   * as the category and clear the suggestions.
+   */
   const handleCategorySelect = (selectedCategory) => {
     setExpense((prev) => ({ ...prev, category: selectedCategory }));
-    setFilteredCategories([]); // Hide suggestions
+    setFilteredCategories([]);
   };
 
+  /**
+   * Toggles whether the expense is recurring or not. If we're
+   * switching from non-recurring to recurring, we clear the
+   * one-time transaction date. If we're switching back, we
+   * clear the start/end dates.
+   */
   const handleToggleRecurring = () => {
     setExpense((prev) => ({
       ...prev,
       isRecurring: !prev.isRecurring,
-      transactionDate: !prev.isRecurring ? "" : prev.transactionDate, // Reset only if switching to recurring
+      transactionDate: !prev.isRecurring ? "" : prev.transactionDate,
       startDate: prev.isRecurring ? prev.startDate : "",
       endDate: prev.isRecurring ? prev.endDate : "",
       recurringFrequency: prev.isRecurring
@@ -99,7 +148,9 @@ const AddExpense = ({ isOpen, onClose }) => {
     }));
   };
 
-  // Toggle Notifications
+  /**
+   * Toggles whether notifications are enabled for this expense.
+   */
   const handleToggleNotifications = () => {
     setExpense((prev) => ({
       ...prev,
@@ -107,15 +158,24 @@ const AddExpense = ({ isOpen, onClose }) => {
     }));
   };
 
+  /**
+   * Main submit handler.
+   * 1) We format the expense data properly for the backend.
+   * 2) We call createExpense (imported from expenseApi.js).
+   * 3) We dispatch the "ADD_EXPENSE" action to the global context
+   *    so the local state is up to date.
+   * 4) Show success/failure messages accordingly.
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setMessage(null);
 
+    // A helper to safely convert date strings to ISO format
     const formatDate = (date) =>
       date ? new Date(date).toISOString().split("T")[0] : null;
 
-    // Convert occurrence to match the expected enum values in the schema
+    // Map local 'occurrence' field to what the backend expects
     const occurrenceMapping = {
       "One-time": "one-time",
       Weekly: "weekly",
@@ -135,36 +195,39 @@ const AddExpense = ({ isOpen, onClose }) => {
         : "one-time",
       ...(expense.isRecurring
         ? {
-            startDate: formatDate(expense.startDate),
-            endDate: formatDate(expense.endDate),
-          } // Recurring expense
-        : { transactionDate: formatDate(expense.transactionDate) }), // One-time expense
+          startDate: formatDate(expense.startDate),
+          endDate: formatDate(expense.endDate),
+        }
+        : { transactionDate: formatDate(expense.transactionDate) }),
     };
 
-    //console.log("Sending this data to backend:", formattedExpense);
-
     try {
-      await axios.post("http://localhost:8000/expenses/add", formattedExpense, {
-        withCredentials: true,
-        headers: { "Content-Type": "application/json" },
-      });
+      // 1) Call the API
+      await createExpense(formattedExpense, expenseDispatch);
 
+      // 3) Show success message
       setMessage({ type: "success", text: "Expense added successfully!" });
+
+      // 4) Close modal after a short delay
       setTimeout(() => {
         setMessage(null);
         onClose();
       }, 1500);
     } catch (error) {
+      // If the API call fails, show an error message
       setMessage({ type: "error", text: "Failed to add expense. Try again." });
+      console.error("Error adding expense:", error);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-opacity-80 backdrop-blur-lg z-[100]">
-      <div className="bg-gray-200 p-6 rounded-lg w-full max-w-3/4 shadow-lg mt-16 relative">
-        {/* Close Button */}
+      <div className="bg-gray-200 p-8 rounded-lg w-full max-w-[40%] shadow-lg mt-16 relative">
+
+
+        {/* Close Modal Button (top-right corner) */}
         <button
           className="absolute top-4 right-4 text-gray-600 hover:text-gray-900"
           onClick={onClose}
@@ -180,11 +243,10 @@ const AddExpense = ({ isOpen, onClose }) => {
         {/* Success/Error Message */}
         {message && (
           <div
-            className={`mt-2 p-2 text-sm rounded ${
-              message.type === "success"
-                ? "bg-green-200 text-green-800"
-                : "bg-red-200 text-red-800"
-            }`}
+            className={`mt-2 p-2 text-sm rounded ${message.type === "success"
+              ? "bg-green-200 text-green-700"
+              : "bg-red-200 text-red-700"
+              }`}
           >
             {message.text}
           </div>
@@ -192,28 +254,24 @@ const AddExpense = ({ isOpen, onClose }) => {
 
         {/* Expense Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Expense Name */}
+          {/* Expense Title */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700">
-              Expense Name
-            </label>
+            <label className="block text-sm font-semibold">Expense Name</label>
             <input
               type="text"
               name="title"
               value={expense.title}
               onChange={handleChange}
               required
-              placeholder="e.g., Dinner at restaurant"
-              className="w-full p-3 rounded-lg border border-gray-300 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500"
+              placeholder="e.g., Dinner at a restaurant"
+              className="w-full p-3 rounded-lg border border-gray-300 bg-gray-100
+                         focus:outline-none focus:ring-2 focus:ring-gray-500"
             />
           </div>
 
           {/* Total Amount */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700">
-              Total Amount
-            </label>
-
+            <label className="block text-sm font-semibold">Total Amount</label>
             <input
               type="number"
               name="amount"
@@ -221,7 +279,8 @@ const AddExpense = ({ isOpen, onClose }) => {
               onChange={handleChange}
               required
               placeholder="e.g., 100"
-              className="w-full p-3 rounded-lg border border-gray-300 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500"
+              className="w-full p-3 rounded-lg border border-gray-300 bg-gray-100
+                         focus:outline-none focus:ring-2 focus:ring-gray-500"
             />
             <span className="text-gray-600 text-lg mr-2">
               {expense.currency || "€"}
@@ -230,12 +289,9 @@ const AddExpense = ({ isOpen, onClose }) => {
 
           {/* Category */}
           <div className="relative">
-            <label className="block text-sm font-semibold text-gray-700">
-              Category
-            </label>
-
+            <label className="block text-sm font-semibold">Category</label>
             {categories.includes(expense.category) ? (
-              // Selected category displayed as a button
+              // If the selected category is one of the known ones, show it as a "button"
               <button
                 type="button"
                 onClick={() =>
@@ -262,7 +318,8 @@ const AddExpense = ({ isOpen, onClose }) => {
                   );
                 }}
                 placeholder="Start typing... (e.g., Fixed, Food&Drinks, Entertainment)"
-                className="w-full p-3 rounded-lg border border-gray-300 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                className="w-full p-3 rounded-lg border border-gray-300 bg-gray-100
+                           focus:outline-none focus:ring-2 focus:ring-gray-500"
               />
             )}
 
@@ -273,8 +330,7 @@ const AddExpense = ({ isOpen, onClose }) => {
                   <li
                     key={cat}
                     onClick={() => {
-                      setExpense((prev) => ({ ...prev, category: cat }));
-                      setFilteredCategories([]);
+                      handleCategorySelect(cat);
                     }}
                     className="p-2 cursor-pointer hover:bg-gray-200"
                   >
@@ -287,9 +343,7 @@ const AddExpense = ({ isOpen, onClose }) => {
 
           {/* Recurring Expense Toggle */}
           <div className="flex justify-between items-center mt-4">
-            <span className="text-sm font-semibold text-gray-700">
-              Recurring Expense
-            </span>
+            <span className="text-sm font-semibold">Recurring Expense</span>
             <label className="relative inline-flex items-center cursor-pointer">
               <input
                 type="checkbox"
@@ -297,15 +351,20 @@ const AddExpense = ({ isOpen, onClose }) => {
                 checked={expense.isRecurring}
                 onChange={handleToggleRecurring}
               />
-              <div className="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-black peer-checked:after:translate-x-5 after:absolute after:top-0.5 after:left-1 after:bg-white after:w-5 after:h-5 after:rounded-full after:transition-all"></div>
+              <div
+                className="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-black
+                              peer-checked:after:translate-x-5
+                              after:absolute after:top-0.5 after:left-1 after:bg-white 
+                              after:w-5 after:h-5 after:rounded-full after:transition-all"
+              ></div>
             </label>
           </div>
 
-          {/* Recurrence Frequency Selection */}
+          {/* If recurring, show Frequency + Start/End Dates; otherwise show transactionDate */}
           {expense.isRecurring ? (
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold text-gray-700">
+                <label className="block text-sm font-semibold">
                   Recurrence Frequency
                 </label>
                 <div className="flex gap-4 mt-2">
@@ -313,11 +372,11 @@ const AddExpense = ({ isOpen, onClose }) => {
                     <button
                       key={option}
                       type="button"
-                      className={`px-4 py-2 rounded-lg font-semibold transition ${
-                        expense.recurringFrequency === option.toLowerCase()
+                      className={`px-4 py-2 rounded-lg font-semibold transition 
+                        ${expense.recurringFrequency === option.toLowerCase()
                           ? "bg-black text-white"
                           : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                      }`}
+                        }`}
                       onClick={() =>
                         setExpense((prev) => ({
                           ...prev,
@@ -334,7 +393,7 @@ const AddExpense = ({ isOpen, onClose }) => {
               {/* Start & End Dates */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700">
+                  <label className="block text-sm font-semibold">
                     Start Date
                   </label>
                   <input
@@ -343,11 +402,12 @@ const AddExpense = ({ isOpen, onClose }) => {
                     value={expense.startDate}
                     onChange={handleChange}
                     required
-                    className="w-full p-3 rounded-lg border border-gray-300 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                    className="w-full p-3 rounded-lg border border-gray-300 bg-gray-100
+                               focus:outline-none focus:ring-2 focus:ring-gray-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700">
+                  <label className="block text-sm font-semibold">
                     End Date
                   </label>
                   <input
@@ -356,7 +416,8 @@ const AddExpense = ({ isOpen, onClose }) => {
                     value={expense.endDate}
                     onChange={handleChange}
                     required
-                    className="w-full p-3 rounded-lg border border-gray-300 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                    className="w-full p-3 rounded-lg border border-gray-300 bg-gray-100
+                               focus:outline-none focus:ring-2 focus:ring-gray-500"
                   />
                 </div>
               </div>
@@ -372,7 +433,8 @@ const AddExpense = ({ isOpen, onClose }) => {
                 value={expense.transactionDate}
                 onChange={handleChange}
                 required
-                className="w-full p-3 rounded-lg border border-gray-300 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                className="w-full p-3 rounded-lg border border-gray-300 bg-gray-100
+                           focus:outline-none focus:ring-2 focus:ring-gray-500"
               />
             </div>
           )}
@@ -390,17 +452,19 @@ const AddExpense = ({ isOpen, onClose }) => {
                 onChange={handleToggleNotifications}
               />
               <div
-                className="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-black peer-checked:after:translate-x-5 
-         after:absolute after:top-0.5 after:left-1 after:bg-white after:w-5 after:h-5 after:rounded-full after:transition-all"
+                className="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-black 
+                           peer-checked:after:translate-x-5 
+                           after:absolute after:top-0.5 after:left-1 after:bg-white 
+                           after:w-5 after:h-5 after:rounded-full after:transition-all"
               ></div>
             </label>
           </div>
 
-          {/* Add Expense Button */}
+          {/* Submit Button */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-black text-white py-3 rounded-lg text-lg hover:bg-gray-800 transition"
+            className="w-full bg-black text-white py-3 rounded-lg text-lg hover:bg-gray-600 cursor-pointer transition-all duration-300"
           >
             {loading ? "Saving..." : "Add Expense"}
           </button>

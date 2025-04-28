@@ -1,13 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
 import { useState } from "react";
-import {
-  FaMoneyBillWave,
-  FaChartPie,
-  FaClipboardList,
-  FaBars,
-  FaTimes,
-} from "react-icons/fa";
+import { FaMoneyBillWave, FaChartPie, FaClipboardList } from "react-icons/fa";
+
+// import LandingPageNavbar from "../components/LandingPageNavbar";
 
 const LandingPage = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -16,7 +12,6 @@ const LandingPage = () => {
     email: "",
     message: "",
   });
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleGoToLogin = () => navigate("/login");
@@ -31,80 +26,10 @@ const LandingPage = () => {
     }, 5000);
   };
 
-  const scrollToSection = (id) => {
-    document.getElementById(id).scrollIntoView({ behavior: "smooth" });
-    setIsMenuOpen(false);
-  };
-
   return (
     <div className="flex flex-col min-h-screen w-full overflow-hidden m-0 p-0">
       {/* Navbar */}
-      <nav className="bg-white shadow-md fixed w-full z-10 top-0 flex justify-between items-center px-6 py-4 md:px-10">
-        <h1 className="text-2xl font-bold">TRACK$</h1>
-        <button
-          className="text-2xl md:hidden"
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-        >
-          {isMenuOpen ? <FaTimes /> : <FaBars />}
-        </button>
-        <ul className={`md:flex space-x-6 hidden`}>
-          <li>
-            <button
-              onClick={() => scrollToSection("services")}
-              className="hover:text-gray-500"
-            >
-              Services
-            </button>
-          </li>
-          <li>
-            <button
-              onClick={() => scrollToSection("pricing")}
-              className="hover:text-gray-500"
-            >
-              Pricing
-            </button>
-          </li>
-          <li>
-            <button
-              onClick={() => scrollToSection("contact")}
-              className="hover:text-gray-500"
-            >
-              Contact
-            </button>
-          </li>
-        </ul>
-      </nav>
-
-      {/* Mobile Dropdown Menu */}
-      {isMenuOpen && (
-        <ul className="md:hidden absolute top-16 left-0 w-full bg-white shadow-md flex flex-col items-center space-y-4 py-4">
-          <li>
-            <button
-              onClick={() => scrollToSection("services")}
-              className="hover:text-gray-500"
-            >
-              Services
-            </button>
-          </li>
-          <li>
-            <button
-              onClick={() => scrollToSection("pricing")}
-              className="hover:text-gray-500"
-            >
-              Pricing
-            </button>
-          </li>
-          <li>
-            <button
-              onClick={() => scrollToSection("contact")}
-              className="hover:text-gray-500"
-            >
-              Contact
-            </button>
-          </li>
-        </ul>
-      )}
-
+      {/* <LandingPageNavbar /> */}
       {/* Hero Section */}
       <header className="relative flex flex-col items-center justify-center text-center h-screen w-full overflow-hidden m-0 p-0">
         <video
@@ -117,22 +42,24 @@ const LandingPage = () => {
           <source src="/videohero.mp4" type="video/mp4" />
         </video>
         <div className="absolute inset-0 flex flex-col justify-center items-center px-6 bg-black opacity-60">
-          <h1 className="text-6xl font-extrabold text-white mb-4 tracking-wide drop-shadow-lg">
-            TRACK$
-          </h1>
+          <img
+            src="/Logo_w.png"
+            alt="Track$ Logo"
+            className="w-60 h-auto mb-4 drop-shadow-lg"
+          />
           <p className="text-2xl text-gray-200 font-light mb-8">
             Managing Expenses Like a Pro
           </p>
           <div className="flex space-x-10 absolute bottom-20">
             <button
               onClick={handleGoToSignUp}
-              className="px-6 py-3 bg-white text-black font-semibold rounded-lg shadow-lg hover:bg-gray-400 transition duration-300"
+              className="px-6 py-3 bg-white text-black font-semibold rounded-lg shadow-lg hover:bg-gray-400 transition duration-300 cursor-pointer"
             >
               Sign Up
             </button>
             <button
               onClick={handleGoToLogin}
-              className="px-6 py-3 bg-white text-black font-semibold rounded-lg shadow-lg hover:bg-gray-400 transition duration-300"
+              className="px-6 py-3 bg-white text-black font-semibold rounded-lg shadow-lg hover:bg-gray-400 transition duration-300 cursor-pointer"
             >
               Log In
             </button>
@@ -141,7 +68,7 @@ const LandingPage = () => {
       </header>
 
       {/* Services Section */}
-      <section className="py-24 bg-white text-center">
+      <section id="services" className="py-24 bg-white text-center">
         <h2 className="text-4xl font-extrabold mb-12 text-gray-900 tracking-wide">
           Our Core Services
         </h2>
@@ -162,16 +89,16 @@ const LandingPage = () => {
               description:
                 "Set clear financial goals, monitor your cash flow, and optimize your monthly budget.",
               icon: (
-                <FaChartPie className="text-6xl text-blue-500 mb-6 mx-auto" />
+                <FaChartPie className="text-6xl text-indigo-600 mb-6 mx-auto" />
               ), // Centered Icon
-              bgColor: "bg-blue-50",
+              bgColor: "bg-indigo-50",
             },
             {
               title: "Reports & Insights",
               description:
                 "Make informed financial decisions with AI-powered analytics and visual reports.",
               icon: (
-                <FaClipboardList className="text-6xl text-purple-500 mb-6 mx-auto" />
+                <FaClipboardList className="text-6xl text-indigo-600 mb-6 mx-auto" />
               ), // Centered Icon
               bgColor: "bg-purple-50",
             },
@@ -193,7 +120,7 @@ const LandingPage = () => {
       </section>
 
       {/* Pricing Section */}
-      <section className="py-10 bg-gray-50 text-center">
+      <section id="pricing" className="py-10 bg-gray-50 text-center">
         <h2 className="text-4xl font-extrabold mb-12 text-gray-900 tracking-wide">
           Pricing Plans
         </h2>
@@ -214,13 +141,13 @@ const LandingPage = () => {
             {
               plan: "Pro",
               price: "€50",
-              color: "text-blue-500",
+              color: "text-indigo-600",
               features: [
                 "Advanced Expense Tracking",
                 "Budget Planning Tools",
                 "Priority Support",
               ],
-              bgColor: "bg-blue-50",
+              bgColor: "bg-indigo-50",
             },
             {
               plan: "Enterprise",
@@ -260,7 +187,7 @@ const LandingPage = () => {
       </section>
 
       {/* Contact Form */}
-      <section className="py-16 bg-gray-50 text-center">
+      <section id="contact" className="py-16 bg-gray-50 text-center">
         <h2 className="text-3xl font-bold mb-6">Get in Touch</h2>
 
         {/* State to track form submission */}
@@ -301,7 +228,7 @@ const LandingPage = () => {
             ></textarea>
             <button
               type="submit"
-              className="w-full bg-black text-white py-3 rounded-md hover:bg-gray-800 transition"
+              className="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-800 transition"
             >
               Send Message
             </button>
