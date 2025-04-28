@@ -1,6 +1,10 @@
 export function formatDate(dateString, isRecurring, recurringFrequency) {
   // If recurring, display the frequency in a capitalized form
   if (isRecurring && recurringFrequency) {
+    // Special handling for monthly income
+    if (recurringFrequency === "monthly" && dateString === undefined) {
+      return "Monthly";
+    }
     return `${recurringFrequency
       .charAt(0)
       .toUpperCase()}${recurringFrequency.slice(1)}`;

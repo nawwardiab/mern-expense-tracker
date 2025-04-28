@@ -9,7 +9,12 @@ import { GiTiedScroll } from "react-icons/gi";
 import { formatDate } from "../../utils/date";
 import { FaArrowDown, FaArrowUp } from "react-icons/fa";
 
-const ExpenseItem = ({ expense, transactionState, isGroupExpense, onClick }) => {
+const ExpenseItem = ({
+  expense,
+  transactionState,
+  isGroupExpense,
+  onClick,
+}) => {
   const { groupState } = useContext(GroupContext);
   const [groupName, setGroupName] = useState("");
 
@@ -52,18 +57,31 @@ const ExpenseItem = ({ expense, transactionState, isGroupExpense, onClick }) => 
     transactionState === "Pending Transactions"
       ? "border-dashed border-l-4 border-gray-500"
       : transactionState === "Today's Transactions"
-        ? "border-solid border-l-4 border-gray-500"
-        : "border-dotted border-l-4 border-gray-500";
+      ? "border-solid border-l-4 border-gray-500"
+      : "border-dotted border-l-4 border-gray-500";
 
-  // Check if this item is a payment transaction
+  const handleClick = () => {
+    if (onClick) {
+      onClick(expense);
+    } else {
+      expenseDispatch({ type: "SET_SELECTED_EXPENSE", payload: expense });
+      expenseDispatch({ type: "OPEN_MODAL" });
+    }
+  };
+
+  // Check if this item is a payment transaction or income
   const isPayment = expense.isPayment || false;
+  const isIncome = expense.isIncome || false; // Only true if explicitly tagged as income
   const isIncoming = expense.amount > 0 && isPayment;
 
   // Get appropriate icon and styling
   let itemIcon;
   let colorClass;
 
-  if (isPayment) {
+  if (isIncome) {
+    itemIcon = <FaArrowDown size={24} />; // Incoming money icon
+    colorClass = "bg-green-600"; // Green for incoming
+  } else if (isPayment) {
     itemIcon = isIncoming ? (
       <FaArrowDown size={24} /> // Incoming payment
     ) : (
@@ -80,8 +98,12 @@ const ExpenseItem = ({ expense, transactionState, isGroupExpense, onClick }) => 
     colorClass = isGroupExpense ? "bg-blue-600" : "bg-black";
   }
 
-  // Determine if this is a positive incoming payment (the only case that should be green)
-  const isPositiveIncomingPayment = isPayment && expense.amount > 0;
+  // Determine text color for amount display
+  const amountTextColor = isIncome
+    ? "text-green-500"
+    : isIncoming
+    ? "text-green-500"
+    : "text-red-500";
 
   return (
     <div
@@ -104,7 +126,11 @@ const ExpenseItem = ({ expense, transactionState, isGroupExpense, onClick }) => 
 
           <div className="flex flex-wrap gap-2 text-xs sm:text-sm">
             {(isGroupExpense || isPayment) && groupName && (
-              <span className={`${isGroupExpense ? "text-indigo-600" : "text-blue-600"} font-medium`}>
+              <span
+                className={`${
+                  isGroupExpense ? "text-indigo-600" : "text-blue-600"
+                } font-medium`}
+              >
                 {groupName}
               </span>
             )}
@@ -117,8 +143,7 @@ const ExpenseItem = ({ expense, transactionState, isGroupExpense, onClick }) => 
       </div>
 
       <span
-        className={`mt-2 sm:mt-0 text-base sm:text-lg font-bold
-          ${isPositiveIncomingPayment ? "text-green-500" : "text-red-500"}`}
+        className={`mt-2 sm:mt-0 text-base sm:text-lg font-bold ${amountTextColor}`}
       >
         {expense.amount < 0 ? `-€${formattedAmount}` : `€${formattedAmount}`}
       </span>
