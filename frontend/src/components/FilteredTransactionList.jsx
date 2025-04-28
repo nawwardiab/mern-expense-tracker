@@ -111,19 +111,43 @@ const FilteredTransactionList = () => {
   const filteredTransactions = React.useMemo(() => {
     if (!allTransactions || !Array.isArray(allTransactions)) return [];
 
+    // Add monthly income as a transaction
+    let transactions = [...allTransactions];
+
+    // Add monthly income only if user has income set
+    if (user && user.income && parseFloat(user.income) > 0) {
+      const incomeAmount = parseFloat(user.income);
+      const incomeTransaction = {
+        _id: "monthly-income",
+        title: "Monthly Income",
+        amount: incomeAmount, // Income is a positive number
+        category: "Income",
+        isRecurring: true,
+        recurringFrequency: "monthly",
+        isIncome: true, // Explicitly mark as income
+      };
+
+      transactions.push(incomeTransaction);
+    }
+
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
     const startOfMonth = new Date(year, month, 1);
     const endOfMonth = new Date(year, month + 1, 0, 23, 59, 59);
 
-    let filtered = allTransactions.filter((transaction) => {
+    let filtered = transactions.filter((transaction) => {
+      // Always include recurring transactions
+      if (transaction.isRecurring) return true;
+
       const transactionDate = new Date(transaction.transactionDate);
       return transactionDate >= startOfMonth && transactionDate <= endOfMonth;
     });
 
     if (filterType === "private") {
       filtered = filtered.filter(
-        (transaction) => !transaction.groupId && !transaction.isPayment
+        (transaction) =>
+          (!transaction.groupId && !transaction.isPayment) ||
+          transaction.isIncome
       );
     } else if (filterType === "group") {
       filtered = filtered.filter(
@@ -132,7 +156,7 @@ const FilteredTransactionList = () => {
     }
 
     return filtered;
-  }, [allTransactions, currentDate, filterType]);
+  }, [allTransactions, currentDate, filterType, user]);
 
   // Group by transaction status and date
   const groupedTransactions = React.useMemo(() => {
@@ -142,6 +166,13 @@ const FilteredTransactionList = () => {
     const currentMonth = today.getMonth();
 
     return filteredTransactions.reduce((acc, transaction) => {
+      // Handle recurring expenses separately
+      if (transaction.isRecurring) {
+        if (!acc["Recurring Expenses"]) acc["Recurring Expenses"] = [];
+        acc["Recurring Expenses"].push(transaction);
+        return acc;
+      }
+
       const transactionDate = new Date(transaction.transactionDate);
       const transactionDateString = isNaN(transactionDate)
         ? ""
@@ -166,13 +197,16 @@ const FilteredTransactionList = () => {
     }, {});
   }, [filteredTransactions]);
 
+  // Order sections with pending and today first
   const orderedSections = React.useMemo(() => {
     return [
+      "Recurring Expenses",
       "Pending Transactions",
       "Today's Transactions",
       ...Object.keys(groupedTransactions)
         .filter(
           (section) =>
+            section !== "Recurring Expenses" &&
             section !== "Pending Transactions" &&
             section !== "Today's Transactions"
         )
@@ -185,7 +219,7 @@ const FilteredTransactionList = () => {
       // Open payment details modal
       paymentDispatch({
         type: "SET_SELECTED_PAYMENT",
-        payload: transaction.paymentId,
+        payload: transaction.paymentData?._id || transaction._id,
       });
       paymentDispatch({ type: "OPEN_PAYMENT_MODAL" });
     } else {
@@ -223,11 +257,12 @@ const FilteredTransactionList = () => {
             }
           >
             <FaChevronRight
-              className={`${currentDate.getMonth() === new Date().getMonth() &&
+              className={`${
+                currentDate.getMonth() === new Date().getMonth() &&
                 currentDate.getFullYear() === new Date().getFullYear()
-                ? "text-gray-300"
-                : "text-gray-600"
-                }`}
+                  ? "text-gray-300"
+                  : "text-gray-600"
+              }`}
             />
           </button>
         </div>
@@ -236,28 +271,31 @@ const FilteredTransactionList = () => {
       {/* Transaction Type Filter */}
       <div className="flex border-b mb-4">
         <button
-          className={`px-4 py-2 font-medium text-sm ${filterType === "all"
-            ? "border-b-2 border-indigo-600 text-indigo-600"
-            : "text-gray-500"
-            }`}
+          className={`px-4 py-2 font-medium text-sm ${
+            filterType === "all"
+              ? "border-b-2 border-indigo-600 text-indigo-600"
+              : "text-gray-500"
+          }`}
           onClick={() => setFilterType("all")}
         >
           All
         </button>
         <button
-          className={`px-4 py-2 font-medium text-sm ${filterType === "private"
-            ? "border-b-2 border-indigo-600 text-indigo-600"
-            : "text-gray-500"
-            }`}
+          className={`px-4 py-2 font-medium text-sm ${
+            filterType === "private"
+              ? "border-b-2 border-indigo-600 text-indigo-600"
+              : "text-gray-500"
+          }`}
           onClick={() => setFilterType("private")}
         >
           Private
         </button>
         <button
-          className={`px-4 py-2 font-medium text-sm ${filterType === "group"
-            ? "border-b-2 border-indigo-600 text-indigo-600"
-            : "text-gray-500"
-            }`}
+          className={`px-4 py-2 font-medium text-sm ${
+            filterType === "group"
+              ? "border-b-2 border-indigo-600 text-indigo-600"
+              : "text-gray-500"
+          }`}
           onClick={() => setFilterType("group")}
         >
           Group
@@ -277,14 +315,14 @@ const FilteredTransactionList = () => {
             </h3>
             <div className="space-y-2">
               {groupedTransactions[section] &&
-                groupedTransactions[section].length > 0 ? (
+              groupedTransactions[section].length > 0 ? (
                 groupedTransactions[section].map((expense) => (
                   <ExpenseItem
                     key={expense._id}
                     expense={expense}
                     transactionState={section}
                     isGroupExpense={!!expense.groupId}
-
+                    onClick={() => handleTransactionClick(expense)}
                   />
                 ))
               ) : section === "Today's Transactions" ? (

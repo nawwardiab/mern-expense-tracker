@@ -47,9 +47,11 @@ const SummaryCards = () => {
     };
 
     const calculateStats = (isMonthly = false) => {
-      // Filter expenses for the period
+      // Filter expenses for the period - include all recurring expenses regardless of date
       const filteredExpenses = isMonthly
-        ? expenses.filter((e) => isInCurrentMonth(e.transactionDate))
+        ? expenses.filter(
+            (e) => e.isRecurring || isInCurrentMonth(e.transactionDate)
+          )
         : expenses;
 
       // Filter payments for the period

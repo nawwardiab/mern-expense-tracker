@@ -1,11 +1,14 @@
 import React, { useContext, useEffect } from "react";
 import { ExpenseContext } from "../contexts/ExpenseContext";
+import { AuthContext } from "../contexts/AuthContext";
 import ExpenseItem from "./reusable/ExpenseItem";
 import { getAllExpenses } from "../api/expenseApi";
 
 const TransactionList = () => {
   const { expenseState, expenseDispatch } = useContext(ExpenseContext);
+  const { userState } = useContext(AuthContext);
   const { expenses } = expenseState;
+  const { user } = userState;
 
   useEffect(() => {
     getAllExpenses(expenseDispatch);
@@ -17,6 +20,14 @@ const TransactionList = () => {
   const currentMonth = today.getMonth();
 
   const groupedTransactions = expenses.reduce((acc, transaction) => {
+    // Handle recurring expenses separately
+    if (transaction.isRecurring) {
+      if (!acc["Recurring Expenses"]) acc["Recurring Expenses"] = [];
+      acc["Recurring Expenses"].push(transaction);
+      return acc;
+    }
+
+    // Handle regular expenses as before
     const transactionDate = new Date(transaction.transactionDate);
     const transactionDateString = isNaN(transactionDate)
       ? ""
@@ -39,13 +50,35 @@ const TransactionList = () => {
     return acc;
   }, {});
 
+  // Add monthly income as a recurring transaction
+  if (user && user.income && parseFloat(user.income) > 0) {
+    const incomeAmount = parseFloat(user.income);
+    const incomeTransaction = {
+      _id: "monthly-income",
+      title: "Monthly Income",
+      amount: incomeAmount,
+      category: "Income",
+      isRecurring: true,
+      recurringFrequency: "monthly",
+      isIncome: true,
+    };
+
+    if (!groupedTransactions["Recurring Expenses"]) {
+      groupedTransactions["Recurring Expenses"] = [];
+    }
+    groupedTransactions["Recurring Expenses"].push(incomeTransaction);
+  }
+
   const orderedSections = [
+    "Recurring Expenses",
     "Pending Transactions",
     "Today's Transactions",
     ...Object.keys(groupedTransactions)
       .filter(
         (section) =>
-          section !== "Pending Transactions" && section !== "Today's Transactions"
+          section !== "Recurring Expenses" &&
+          section !== "Pending Transactions" &&
+          section !== "Today's Transactions"
       )
       .sort((a, b) => new Date(b) - new Date(a)),
   ];
@@ -56,22 +89,30 @@ const TransactionList = () => {
 
       {orderedSections.map((section, i) => (
         <div key={i} className="mb-6">
-          <h3 className="font-semibold text-gray-600 text-xs sm:text-sm mb-2">{section}</h3>
+          <h3 className="font-semibold text-gray-600 text-xs sm:text-sm mb-2">
+            {section}
+          </h3>
           <div className="space-y-2">
-            {groupedTransactions[section] && groupedTransactions[section].length > 0 ? (
+            {groupedTransactions[section] &&
+            groupedTransactions[section].length > 0 ? (
               groupedTransactions[section].map((expense) => (
                 <ExpenseItem
                   key={expense._id}
                   expense={expense}
                   transactionState={section}
                   onClick={() => {
-                    expenseDispatch({ type: "SET_SELECTED_EXPENSE", payload: expense });
+                    expenseDispatch({
+                      type: "SET_SELECTED_EXPENSE",
+                      payload: expense,
+                    });
                     expenseDispatch({ type: "OPEN_MODAL" });
                   }}
                 />
               ))
             ) : section === "Today's Transactions" ? (
-              <p className="text-gray-500 text-xs sm:text-sm italic">No expenses today</p>
+              <p className="text-gray-500 text-xs sm:text-sm italic">
+                No expenses today
+              </p>
             ) : null}
           </div>
         </div>
@@ -85,5 +126,3 @@ const TransactionList = () => {
 };
 
 export default TransactionList;
-
-
