@@ -14,10 +14,8 @@ const ExpenseList = ({ search, category, occurrence }) => {
   // 2) Local state for controlling the detail modal visibility
   const [showDetail, setShowDetail] = useState(false);
 
-
   useEffect(() => {
     let filtered = expenses;
-
 
     // Search by title
     if (search) {
@@ -39,7 +37,9 @@ const ExpenseList = ({ search, category, occurrence }) => {
     }
 
     // Sort by newest first (assuming createdAt is a Date or ISO string)
-    filtered.sort((a, b) => new Date(b.transactionDate) - new Date(a.transactionDate));
+    filtered.sort(
+      (a, b) => new Date(b.transactionDate) - new Date(a.transactionDate)
+    );
 
     // Update local state
     setFilteredExpenses(filtered);
@@ -64,8 +64,6 @@ const ExpenseList = ({ search, category, occurrence }) => {
 
   return (
     <div className="mt-10 w-full max-w-5xl mx-auto px-2 sm:px-4">
-     
-
       {/* 5) Render a list of ExpenseItem components */}
       <div className="flex flex-col gap-4">
         {filteredExpenses.map((exp) => (
@@ -73,6 +71,7 @@ const ExpenseList = ({ search, category, occurrence }) => {
             key={exp._id}
             expense={exp}
             onClick={() => handleSelectExpense(exp)}
+            inExpenseManager={true}
           />
         ))}
       </div>
