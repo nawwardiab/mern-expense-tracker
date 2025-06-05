@@ -2,28 +2,78 @@
 
 A comprehensive expense management application built with the MERN stack (MongoDB, Express, React, Node.js).
 
-## 1. Project Features
+---
 
-- **User Authentication (Register/Login/Logout)**
+## 1. Getting Started
+
+### Prerequisites
+
+- Node.js and npm
+- MongoDB
+
+### Installation
+
+1. **Clone the repository**
+2. **Create a `.env` file** at the project root based on `.env.example` and fill in your environment variables.
+3. **Install backend dependencies:**
+
+   ```bash
+   cd backend
+   npm install
+   ```
+
+4. **Install frontend dependencies:**
+
+   ```bash
+   cd ../frontend
+   npm install
+   ```
+
+5. **Start the backend server:**
+
+   ```bash
+   cd ../backend
+   npm start
+   ```
+
+6. **Start the frontend development server:**
+
+   ```bash
+   cd ../frontend
+   npm run dev
+   ```
+
+---
+
+## 2. Project Features
+
+- **User Authentication (Register / Login / Logout)**
 - **User Profile Management with Profile Picture Upload**
 - **Customizable User Notifications**
 - **Onboarding Experience for New Users**
 - **Personal Expense Management**
+
   - Add, Edit, Delete Expenses
   - Filter Expenses by Date, Category, or Search Term
   - Recurring Expense Support
   - Expense Attachments
+
 - **Group Expense Management**
+
   - Create and Manage Groups
   - Add Members to Groups via Invite System
   - Add Group Expenses with Automatic Split
   - Track Settlement Status
+
 - **Financial Overview**
+
   - Visual Expense Breakdown (Charts)
   - Expense Summary and Statistics
   - Monthly Reports
 
-## 2. Core Features & User Stories
+---
+
+## 3. Core Features & User Stories
 
 - As a guest user, I want to create an account to track my expenses.
 - As a user, I want to log in and out securely.
@@ -37,7 +87,9 @@ A comprehensive expense management application built with the MERN stack (MongoD
 - As a user, I want to create and manage expense groups with my friends.
 - As a user, I want to manage settlements within my expense groups.
 
-## 3. Database Schemas
+---
+
+## 4. Database Schemas
 
 ### User Schema
 
@@ -156,7 +208,23 @@ A comprehensive expense management application built with the MERN stack (MongoD
 }
 ```
 
-## 4. Backend API Structure
+### **Group Balance Schema**
+
+```js
+{
+  groupId: { type: mongoose.Schema.Types.ObjectId, ref: "Group", required: true },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  totalContributed: { type: Number, default: 0 },
+  totalOwed: { type: Number, default: 0 },
+  netBalance: { type: Number, default: 0 }, // totalContributed - totalOwed
+}
+```
+
+_Compound index:_ `{ groupId: 1, userId: 1 }` (unique) for fast look‑ups.
+
+---
+
+## 5. Backend API Structure
 
 ### User Routes (`/users`)
 
@@ -215,7 +283,16 @@ A comprehensive expense management application built with the MERN stack (MongoD
 | GET    | `/`          | Get user's invites   | Yes            |
 | PATCH  | `/:inviteId` | Accept/reject invite | Yes            |
 
-## 5. Frontend Structure
+### **Group Balance Routes (`/balances`)**
+
+| Method | Endpoint            | Description                                  | Auth Required? |
+| ------ | ------------------- | -------------------------------------------- | -------------- |
+| GET    | `/:groupId`         | Get balances for all members of a group      | Yes            |
+| GET    | `/:groupId/:userId` | Get balance for a specific user in the group | Yes            |
+
+---
+
+## 6. Frontend Structure
 
 ### Pages
 
@@ -273,7 +350,9 @@ The application uses React's Context API for state management:
 | `BalanceContext` | Manages group balances                  |
 | `InviteContext`  | Manages group invitations               |
 
-## 6. Technologies Used
+---
+
+## 7. Technologies Used
 
 ### Frontend
 
@@ -289,40 +368,11 @@ The application uses React's Context API for state management:
 - JWT for authentication
 - Multer for file uploads
 
-## 7. Getting Started
-
-### Prerequisites
-
-- Node.js and npm
-- MongoDB
-
-### Installation
-
-1. Clone the repository
-2. Install backend dependencies:
-   ```
-   cd backend
-   npm install
-   ```
-3. Install frontend dependencies:
-   ```
-   cd frontend
-   npm install
-   ```
-4. Start the backend server:
-   ```
-   cd backend
-   npm start
-   ```
-5. Start the frontend development server:
-   ```
-   cd frontend
-   npm run dev
-   ```
+---
 
 ## 8. Contributors
 
-- [github.com/HMusenja]
-- [github.com/nawwardiab]
-- [github.com/Manudd25]
-- [github.com/irinaholler]
+- [github.com/HMusenja](https://github.com/HMusenja)
+- [github.com/nawwardiab](https://github.com/nawwardiab)
+- [github.com/Manudd25](https://github.com/Manudd25)
+- [github.com/irinaholler](https://github.com/irinaholler)
