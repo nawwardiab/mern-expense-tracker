@@ -52,24 +52,39 @@ A comprehensive expense management application built with the MERN stack (MongoD
 - **Customizable User Notifications**
 - **Onboarding Experience for New Users**
 - **Personal Expense Management**
-
   - Add, Edit, Delete Expenses
   - Filter Expenses by Date, Category, or Search Term
   - Recurring Expense Support
   - Expense Attachments
 
 - **Group Expense Management**
-
   - Create and Manage Groups
   - Add Members to Groups via Invite System
   - Add Group Expenses with Automatic Split
   - Track Settlement Status
 
 - **Financial Overview**
-
   - Visual Expense Breakdown (Charts)
   - Expense Summary and Statistics
   - Monthly Reports
+
+### Screenshots
+
+#### Landing Page
+![Landing Page](screenshots/landing-page.jpeg)
+*Welcome page with authentication options*
+
+#### Dashboard Overview
+![Dashboard](screenshots/dashboard-overview.jpeg)
+*Main dashboard showing expense overview, charts, and financial summary*
+
+#### Personal Expense Management
+![Expense Manager](screenshots/expense-manager.jpeg)
+*Personal expense tracking with filtering and categorization*
+
+#### Group Expense Splitting
+![Group Management](screenshots/group-management.jpeg)
+*Group expense management with automatic splitting and balance tracking*
 
 ---
 
